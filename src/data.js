@@ -24,20 +24,49 @@ export async function start(){
  client=createClient(endpoint,publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  const {data,error}=await client.auth.getUser();
  if(error&&error.name!=='AuthSessionMissingError')throw error;
- return {profile:data?.user?await getProfile(data.user.id):null};
+ if(!data?.user)return {profile:null};
+ try{return {profile:await getProfile(data.user.id)};}
+ catch(e){
+  // Remove the incomplete session: avoid a refresh loop on an unregistered user.
+  await client.auth.signOut({scope:'local'}).catch(()=>{});
+  throw e;
+ }
 }
 export async function login(email,password){
  if(isDemo)return demoProfile;
- const {data,error}=await client.auth.signInWithPassword({email,password});err(error);
- return getProfile(data.user.id);
+ if(!client)throw new Error('Supabase belum siap. Muat ulang halaman dan periksa pengaturan proyek.');
+ const {data,error}=await client.auth.signInWithPassword({email,password});err(error,'Login: ');
+ if(!data?.user?.id)throw new Error('Login tidak menghasilkan sesi pengguna. Silakan coba kembali.');
+ try{return await getProfile(data.user.id);}
+ catch(e){
+  // Auth may succeed before a profile exists; keep the UI in a clean logged-out state.
+  await client.auth.signOut({scope:'local'}).catch(()=>{});
+  throw e;
+ }
 }
 export async function logout(){if(!isDemo&&client)await client.auth.signOut();}
 async function getProfile(id){
- const {data,error}=await client.from('profiles').select('id,display_name,role,store_id,active').eq('id',id).single();err(error,'Profil: ');
- if(!data.active)throw new Error('Akun telah dinonaktifkan. Hubungi Master.');
- const {data:stores,error:se}=await client.rpc('my_stores');err(se,'Akses toko: ');
+ // A missing profile is a setup problem, not an invalid email/password.
+ const {data,error}=await client.from('profiles')
+  .select('id,display_name,role,store_id,active')
+  .eq('id',id).maybeSingle();
+ if(error){
+  if(error.code==='PGRST205'||error.code==='42P01')
+   throw new Error('Tabel profiles belum tersedia. Jalankan migrasi SQL Supabase terlebih dahulu.');
+  if(error.code==='42501')
+   throw new Error('Supabase menolak akses ke tabel profiles. Periksa GRANT dan kebijakan RLS.');
+  err(error,'Profil: ');
+ }
+ if(!data)throw new Error('Login Supabase Auth berhasil, tetapi profil pengguna belum ditemukan atau tidak terlihat oleh RLS. Minta Master mendaftarkan email Anda pada public.profiles (lihat SQL perbaikan).');
+ if(!data.active)throw new Error('Profil pengguna dinonaktifkan. Hubungi Master.');
+ if(!['master','spv','store'].includes(data.role))throw new Error('Role profil tidak valid. Hubungi Master.');
+ const {data:stores,error:se}=await client.rpc('my_stores');
+ if(se){
+  if(se.code==='PGRST202'||se.code==='42883')throw new Error('Fungsi my_stores belum dibuat. Jalankan seluruh migrasi SQL Supabase.');
+  err(se,'Akses toko: ');
+ }
  data.storeIds=(stores||[]).map(s=>s.id);
- if(!data.storeIds.length)throw new Error('Tidak ada toko yang diizinkan untuk akun ini.');
+ if(!data.storeIds.length)throw new Error('Tidak ada toko yang diizinkan untuk akun ini. Periksa role, store_id, master toko, dan kebijakan RLS.');
  return data;
 }
 async function allRows(table,sort,limit=10000){
