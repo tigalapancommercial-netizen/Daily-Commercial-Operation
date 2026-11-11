@@ -7,7 +7,7 @@ fungsi-per-fungsi ke JavaScript + fungsi database Supabase.
 
 | Bagian | Apps Script v6/v7 | v9 (repo ini) |
 |---|---|---|
-| Tampilan | `Index.html` | `index.html` = `legacy/Index.reference.html` + 9 patch kecil (lihat `scripts/build_index.py`) |
+| Tampilan | `Index.html` | `index.html` = `legacy/Index.reference.html` + patch (lihat `scripts/build_index.py`); v9.1: menu per role, login baru, lihat `docs/PARITAS_APPS_SCRIPT.md` |
 | Server | `Code.gs` (`api(action,p,token)`) | `src/server/*.js` (port fungsi-per-fungsi) + RPC `dco_*` di Postgres |
 | Database | Tab spreadsheet | Schema `dco` (tabel = tab, kolom = kolom) |
 | Foto | Folder Drive | Supabase Storage bucket `dco-foto` (foto dikompres di HP seperti sebelumnya) |

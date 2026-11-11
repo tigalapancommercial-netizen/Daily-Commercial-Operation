@@ -16,7 +16,7 @@ window.__dcoBackup = (id) => {
 // Keluar: cabut sesi di server juga
 if (typeof window.logout === 'function') {
   const orig = window.logout;
-  window.logout = function () { const t = token(); if (t) logoutToken(t); return orig.apply(this, arguments); };
+  window.logout = function () { const t = token(); if (t) logoutToken(t); const pin = document.getElementById('lPin'); if (pin) { pin.value = ''; pin.type = 'password'; } return orig.apply(this, arguments); };
 }
 
 if (!CONFIGURED) {

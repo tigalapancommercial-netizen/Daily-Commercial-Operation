@@ -32,3 +32,12 @@ Setiap aksi `api(action, …)` di Code.gs punya padanan dengan nama, parameter, 
 5. **Reminder email terjadwal** (`pasangTriggerReminder`/`kirimReminder`) belum disertakan — lihat `REMINDER_EMAIL.md`.
    Notifikasi 🔔 dalam aplikasi (isi & logika sama) tetap berjalan.
 6. Teks yang menyebut "Google Drive / Apps Script" pada kartu Backup & Reminder disesuaikan (9 patch di `scripts/build_index.py`).
+
+## Perubahan v9.1 (permintaan 12 Nov 2026)
+1. **Menu per role**: STORE hanya *Assignment Checklist Store*, *Daily Store Operation*, *Rekap Masalah* (langsung membuka Checklist;
+   menu lain dialihkan). SPV: semua menu kecuali Pengaturan. Master: semua menu.
+2. **Halaman login baru**: panel brand bergradien + kartu login (jam WITA & sapaan otomatis, ikon, tombol lihat PIN, indikator memuat,
+   username terakhir diingat). Responsif untuk HP.
+3. **Dashboard**: banner "Executive Control Center" dihapus. Tanggal pantau tetap tersedia di tab *02 · Kepatuhan*.
+4. **Visiting Check Point**: foto per seksi ("Foto kolase maks 4") dihapus; kolom *Catatan [seksi]* dibuat selebar form (kotak teks).
+   Foto bukti per poin (📷 di tiap baris) tetap ada.

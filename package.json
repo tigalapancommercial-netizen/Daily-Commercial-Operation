@@ -1,6 +1,6 @@
 {
   "name": "daily-operation-commercial",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "private": true,
   "type": "module",
   "description": "Assignment Checklist Store / Daily Operation Commercial — paritas Apps Script v6/v7 di atas Supabase",
