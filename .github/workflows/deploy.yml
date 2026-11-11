@@ -1,4 +1,4 @@
-name: Deploy Assignment Control Center (GitHub Pages)
+name: Deploy Daily Operation Commercial (GitHub Pages)
 
 on:
   push:
@@ -50,10 +50,12 @@ jobs:
       - name: Build Vite application
         env:
           GITHUB_PAGES_BASE: /Daily-Commercial-Operation/
-          VITE_DEMO_MODE: 'false'
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-        run: npm run build
+          VITE_GOOGLE_API_KEY: ${{ secrets.VITE_GOOGLE_API_KEY }}
+        run: |
+          node scripts/check.mjs
+          npm run build
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
