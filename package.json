@@ -1,0 +1,17 @@
+{
+  "name": "tigalapan-assignment-control-center",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "check": "node --check src/main.js && node --check src/data.js && node --check src/constants.js && node scripts/check_project.mjs && python3 -m unittest discover -s tests -v"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "vite": "^7.0.0"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,222 @@
+[
+  {
+    "width": 1440,
+    "tab": "overview",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Executive Control Center",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "compliance",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Kepatuhan Toko",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "issues",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Action Plan & Issues",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "checklist",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Assignment Checklist Store",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "dso",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Daily Store Operation",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "schedule",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Jadwal Visit",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "visits",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Visiting Check Point",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "pending",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Pending Matter",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "scorecard",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Store Performance Scorecard",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "tab": "settings",
+    "measure": {
+      "doc": 1440,
+      "win": 1440,
+      "title": "Pengaturan & Migrasi",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "overview",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Executive Control Center",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "compliance",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Kepatuhan Toko",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "issues",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Action Plan & Issues",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "checklist",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Assignment Checklist Store",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "dso",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Daily Store Operation",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "schedule",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Jadwal Visit",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "visits",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Visiting Check Point",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "pending",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Pending Matter",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "scorecard",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Store Performance Scorecard",
+      "nav": 0
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "tab": "settings",
+    "measure": {
+      "doc": 390,
+      "win": 390,
+      "title": "Pengaturan & Migrasi",
+      "nav": 0
+    },
+    "errors": []
+  }
+]
