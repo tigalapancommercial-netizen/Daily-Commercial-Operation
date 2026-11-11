@@ -1,0 +1,33 @@
+PERBAIKAN LOGIN ASSIGNMENT CONTROL CENTER — SUPABASE + GITHUB PAGES
+
+Error: "Profil: Cannot coerce the result to a single JSON object"
+Penyebab yang paling mungkin: Supabase Auth berhasil, tetapi public.profiles
+belum berisi profil user tersebut atau profil tidak terlihat karena RLS.
+
+LANGKAH CEPAT
+1) Supabase > Authentication > Users. Cari email yang digunakan untuk login.
+   Jika belum ada, klik Add user dan buat akun. Pastikan email terkonfirmasi.
+2) Supabase > SQL Editor > New query.
+   Buka sql/00_PERIKSA_AKUN.sql, ganti GANTI_EMAIL_LOGIN_ANDA, lalu RUN.
+   Jika profil_terdaftar=false, lanjut ke langkah 3.
+3) Buka sql/01_BUAT_PROFIL_MASTER.sql dan ganti email pada 1 tempat (login_email).
+   Jalankan di SQL Editor HANYA untuk akun Master yang benar-benar berwenang.
+   Periksa hasil: role master, active true.
+4) GitHub: unggah file src/data.js dari ZIP patch ke lokasi src/data.js
+   dalam repository Daily-Commercial-Operation, lalu Commit changes.
+5) GitHub > Actions: tunggu workflow Pages selesai dan status sukses.
+   Buka ulang aplikasi dengan Ctrl+Shift+R lalu login kembali.
+6) Jika masih error, periksa empat SQL migrasi awal sudah diaplikasikan:
+   supabase/migrations/20261111_001_initial.sql sampai ...004_integrity.sql
+   (JANGAN jalankan ulang secara membabi buta, cek migration history dahulu).
+
+PERINGATAN
+- Jangan menonaktifkan RLS untuk menghilangkan error login.
+- Jangan upload SERVICE_ROLE_KEY, password, PIN, atau file .env.local ke GitHub.
+- Jangan beri role master pada akun toko atau staf yang tidak berwenang.
+- File src/data.js hanya mengubah validasi login dan pesan kesalahan.
+  File tersebut TIDAK membuat profil otomatis, untuk mencegah eskalasi hak akses.
+- Jika login sudah berhasil tetapi halaman data error, periksa fungsi RPC my_stores
+  dan 12 master toko (migrasi SQL 001-002).
+- Tidak ada akses langsung ke project Supabase produksi dalam sesi ini; verifikasi
+  akhir memerlukan Anda menjalankan SQL pada project yang benar.

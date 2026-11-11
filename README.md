@@ -1,3 +1,5 @@
+> **UPDATE v8:** Menu Export & Penyimpanan (Master), CSV penuh pagination, backup JSONL, arsip/hapus terkontrol, foto baru kompres WebP. Lihat [docs/UPDATE_EXPORT_ARSIP.md](docs/UPDATE_EXPORT_ARSIP.md). Ini bukan bukti migrasi histori 1:1 telah tuntas.
+
 # Assignment Control Center — Supabase Native
 
 **Tidak menggunakan Google Apps Script sebagai backend maupun runtime.**

@@ -1,0 +1,43 @@
+# PANDUAN GITHUB PAGES + SUPABASE (TANPA VERCEL)
+
+Target repository: https://github.com/tigalapancommercial-netizen/Daily-Commercial-Operation
+Target website: https://tigalapancommercial-netizen.github.io/Daily-Commercial-Operation/
+
+A. PASTIKAN FILE APLIKASI ADA DI ROOT REPOSITORY
+- package.json
+- index.html
+- src/main.js, src/data.js, src/constants.js, src/styles.css
+- supabase/migrations/ (untuk setup database terpisah)
+
+B. TAMBAHKAN DUA FILE DARI PATCH INI
+- .github/workflows/deploy.yml (GitHub Actions otomatis)
+- vite.config.js (base path khusus GitHub Pages)
+Jika kedua file sudah ada, bandingkan isinya sebelum mengganti; jangan menimpa perubahan tim tanpa audit.
+
+C. KONFIGURASI SUPABASE DI GITHUB (TIDAK PERLU VERCEL)
+- Repository -> Settings -> Secrets and variables -> Actions -> New repository secret
+- VITE_SUPABASE_URL = URL project dari Supabase
+- VITE_SUPABASE_PUBLISHABLE_KEY = Publishable key dari Supabase
+HANYA publishable key yang boleh dipakai oleh frontend. JANGAN masukkan service_role atau secret key backend.
+Key publik tetap akan tertanam dalam bundle web meskipun disimpan sebagai Actions secret; karena itu RLS wajib aktif.
+
+D. AKTIFKAN GITHUB PAGES
+- Repository -> Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+- Repository -> Actions -> jalankan workflow 'Deploy Assignment Control Center (GitHub Pages)'
+- Tunggu status hijau, lalu buka URL target di atas.
+Jika file sebelumnya diunggah ke folder bersarang, pindahkan package.json/index.html/src ke root atau sesuaikan working-directory.
+
+E. SUPABASE AUTH
+- Authentication -> URL Configuration
+- Site URL: https://tigalapancommercial-netizen.github.io/Daily-Commercial-Operation/
+- Redirect URLs: tambahkan alamat yang sama
+- Pastikan 4 migrasi SQL telah dijalankan berurutan, storage dan RLS aktif, serta akun Master tersedia.
+
+F. JIKA GAGAL
+- Halaman 'Konfigurasi belum lengkap': periksa Actions Secrets (NAMA PERSIS) dan run baru Actions.
+- Actions gagal 'npm run build': periksa apakah package.json, index.html, dan src berada di root.
+- Tampilan putih/404 pada asset: periksa vite.config.js dan base path /Daily-Commercial-Operation/.
+- Login gagal setelah halaman tampil: periksa Auth Users, profiles, migrasi dan RLS Supabase.
+- GitHub Pages belum bisa diaktifkan: pada GitHub Free, repository harus PUBLIC. Situs Pages juga tetap publik walau sumber private pada paket berbayar. Jangan simpan data sensitif pada bundle frontend.
+
+CATATAN PENTING: file-file ini belum dikirim ke repo karena koneksi GitHub belum tersedia. Tidak ada deployment baru yang dikonfirmasi.

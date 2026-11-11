@@ -15,7 +15,7 @@ export const STORES = [
 export const NAV = [
  ['overview','Overview','dashboard'],['compliance','Kepatuhan Toko','check-circle'],['issues','Action Plan','clipboard-list'],
  ['checklist','Assignment Checklist','list-checks'],['dso','Daily Store Operation','camera'],['schedule','Jadwal Visit','calendar-days'],
- ['visits','Visiting Check Point','map-pin'],['pending','Pending Matter','flag'],['scorecard','Scorecard','bar-chart'],['settings','Pengaturan','settings']
+ ['visits','Visiting Check Point','map-pin'],['pending','Pending Matter','flag'],['scorecard','Scorecard','bar-chart'],['maintenance','Export & Penyimpanan','database'],['settings','Pengaturan','settings']
 ];
 export const PRIORITIES=['Kritis','Tinggi','Sedang','Rendah'];
 export const STATUSES=['Open','On Progress','Pending','Selesai','Dibatalkan'];

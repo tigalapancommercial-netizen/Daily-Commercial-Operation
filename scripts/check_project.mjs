@@ -3,7 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {dirname,resolve} from 'node:path';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 let failure=0;
-for(const file of ['index.html','src/main.js','src/data.js','src/constants.js','src/styles.css','supabase/migrations/20261111_001_initial.sql','supabase/migrations/20261111_002_full_operations.sql','supabase/migrations/20261111_003_security_and_briefing.sql','supabase/migrations/20261111_004_integrity.sql','docs/INSTALL_GITHUB_SUPABASE.md']){
+for(const file of ['index.html','src/main.js','src/data.js','src/constants.js','src/styles.css','supabase/migrations/20261111_001_initial.sql','supabase/migrations/20261111_002_full_operations.sql','supabase/migrations/20261111_003_security_and_briefing.sql','supabase/migrations/20261111_004_integrity.sql','supabase/migrations/20261111_005_storage_maintenance.sql','docs/INSTALL_GITHUB_SUPABASE.md']){
  if(!existsSync(resolve(root,file))){console.error('MISSING',file);failure++;}
 }
 const pkg=JSON.parse(readFileSync(resolve(root,'package.json')));
