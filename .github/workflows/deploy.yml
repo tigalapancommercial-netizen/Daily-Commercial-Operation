@@ -61,14 +61,8 @@ jobs:
       - name: Upload dist folder
         uses: actions/upload-pages-artifact@v3
         with:
-        path: dist
+          path: dist
 
       - name: Publish website
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Build aplikasi
-        run: npm run build
-        env:
-        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-        VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
