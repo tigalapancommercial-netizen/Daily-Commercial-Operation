@@ -1,41 +1,49 @@
-> **UPDATE v8:** Menu Export & Penyimpanan (Master), CSV penuh pagination, backup JSONL, arsip/hapus terkontrol, foto baru kompres WebP. Lihat [docs/UPDATE_EXPORT_ARSIP.md](docs/UPDATE_EXPORT_ARSIP.md). Ini bukan bukti migrasi histori 1:1 telah tuntas.
+# Daily Operation Commercial — Assignment Checklist Store (v9, Supabase)
 
-# Assignment Control Center — Supabase Native
+Aplikasi ini adalah **pindahan 1:1** dari Apps Script v6/v7 (`Code.gs` + `Index.html`) ke **Supabase + GitHub Pages**.
+Tampilan, menu, alur, rumus scorecard, SLA, notifikasi, role, dan pesan error **sama persis** dengan versi Apps Script,
+karena UI referensi dipakai apa adanya (CSS/markup/script tidak diubah) dan seluruh fungsi server `Code.gs` dipindahkan
+fungsi-per-fungsi ke JavaScript + fungsi database Supabase.
 
-**Tidak menggunakan Google Apps Script sebagai backend maupun runtime.**
+| Bagian | Apps Script v6/v7 | v9 (repo ini) |
+|---|---|---|
+| Tampilan | `Index.html` | `index.html` = `legacy/Index.reference.html` + 9 patch kecil (lihat `scripts/build_index.py`) |
+| Server | `Code.gs` (`api(action,p,token)`) | `src/server/*.js` (port fungsi-per-fungsi) + RPC `dco_*` di Postgres |
+| Database | Tab spreadsheet | Schema `dco` (tabel = tab, kolom = kolom) |
+| Foto | Folder Drive | Supabase Storage bucket `dco-foto` (foto dikompres di HP seperti sebelumnya) |
+| Backup | Google Sheet di Drive | File Excel `.xlsx` disimpan di Supabase + langsung terunduh |
+| Login | username + PIN (PIN teks biasa di sheet) | username + PIN (**hash bcrypt**), sesi token 30 hari, kunci 10 menit setelah 5x salah |
 
-Aplikasi web modern PT Tigalapan Sukses Indonesia untuk 12 toko: Executive Dashboard, Kepatuhan Briefing, Rekap Masalah, Assignment Checklist, DSO, Jadwal Visit, Visit Check Point 15 poin, Pending Matter, Scorecard dan Pengaturan.
+## Isi folder
+- `index.html` — UI referensi + jembatan `google.script.run` → Supabase.
+- `src/` — `main.js` (pemasang), `db.js` (Supabase RPC & Storage), `xlsx.js` (file backup), `server/` (port Code.gs).
+- `supabase/migrations/20261112_006_dco_parity.sql` — **satu-satunya SQL yang wajib dijalankan** (tabel, fungsi aman, storage, data awal).
+- `supabase/legacy_v8/` — migrasi v8 lama (arsip; tidak dipakai aplikasi v9).
+- `scripts/import_sheets.py` — membuat SQL impor data dari spreadsheet lama (CSV/JSON).
+- `tests/` — uji database & uji end-to-end (138 skenario) dengan PostgreSQL lokal.
+- `docs/` — panduan pemasangan, peta paritas, catatan reminder email.
 
-## Stack
-- Frontend: Vite + ES Modules + responsive CSS, cocok untuk Vercel.
-- Backend: Supabase Auth, PostgreSQL + RLS, private Supabase Storage, SQL RPC untuk bundel input briefing dan visit atomik.
-- GitHub: version control; bukan database.
-- Tanggal bisnis WITA / Asia-Makassar. Timestamp database tersimpan dalam UTC.
+## Mulai cepat
+1. Supabase → SQL Editor → jalankan `supabase/migrations/20261112_006_dco_parity.sql`.
+2. (Data lama) jalankan file `20261112_007_import_data.sql` yang dikirim terpisah (**jangan diunggah ke GitHub**).
+3. GitHub → Settings → Secrets → Actions: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`.
+4. Push ke `main` → workflow GitHub Pages membangun & menerbitkan.
+5. Login `master` / `1234` → **segera Ganti PIN**, lalu ganti PIN semua user di Pengaturan → User.
 
-## Mulai
+Langkah lengkap: [docs/INSTALL_SUPABASE_GITHUB.md](docs/INSTALL_SUPABASE_GITHUB.md).
 
+## Pengembangan lokal
 ```bash
 npm install
-cp .env.example .env.local
-# Isi URL + Supabase publishable key di .env.local (jangan commit file ini)
+cp .env.example .env.local   # isi URL + publishable key
 npm run dev
+npm run check                # pemeriksaan statis
+npm run test:db              # uji migrasi SQL (butuh PostgreSQL lokal)
+npm run test:e2e             # uji end-to-end (butuh PostgreSQL + Chrome + Playwright)
 ```
 
-`npm run build` menghasilkan `dist` untuk Vercel. `npm run check` menjalankan pemeriksaan kode dan uji importer.
-
-## Database
-Urutan migrasi `20261111_001_initial.sql`, `20261111_002_full_operations.sql`, `20261111_003_security_and_briefing.sql`, `20261111_004_integrity.sql`. Jalankan di Supabase **staging** dan uji RLS sebelum production.
-
-## Migrasi data dari v7
-- `scripts/migrate_legacy.py` mengimpor CSV tab spreadsheet lama; **dry run adalah default**.
-- `scripts/migrate_photos.py` mengunggah foto yang telah diekspor ke private Supabase Storage serta menghasilkan daftar pemetaan; tautan foto lama perlu diverifikasi.
-- `scripts/backup_supabase.py` membuat snapshot data JSON beserta checksum, **tanpa menghapus data**.
-- `USERS`/PIN lama tidak diekspor; akun diprovisikan ulang menggunakan Supabase Auth.
-
 ## Keamanan
-Tidak menyimpan `service_role`/secret di web atau GitHub. Pengguna store hanya boleh melihat/mengubah toko yang diizinkan; validasi SPV/Master dijaga di server. Backup dan kunci rahasia hanya dijalankan pada komputer/admin server yang aman.
-
-## Status
-**Paket sumber aplikasi siap dipasang di staging; belum terkoneksi/deploy ke akun Supabase atau GitHub pengguna.** Pengujian sintaks dan importer lokal tidak menggantikan pengujian database RLS, akses foto, serta cutover produksi. Jangan matikan Apps Script lama sebelum checklist penerimaan selesai.
-
-**Tutorial pemasangan terperinci:** [docs/INSTALL_GITHUB_SUPABASE.md](docs/INSTALL_GITHUB_SUPABASE.md).
+- Hanya **publishable/anon key** di frontend. Jangan pernah memasukkan `service_role`, secret key, atau password database ke variabel `VITE_*` atau GitHub.
+- Tabel schema `dco` tidak bisa diakses langsung dari API; semua akses lewat fungsi `dco_*` yang memeriksa sesi dan role di server
+  (STORE hanya tokonya & kolom yang diizinkan, data tervalidasi terkunci, SLA dihitung jam server WITA).
+- PIN disimpan sebagai hash bcrypt; PIN tidak pernah dikirim balik ke aplikasi / export.

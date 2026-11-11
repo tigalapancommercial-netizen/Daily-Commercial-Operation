@@ -1,17 +1,24 @@
 {
-  "name": "tigalapan-assignment-control-center",
-  "version": "0.1.0",
+  "name": "daily-operation-commercial",
+  "version": "9.0.0",
   "private": true,
   "type": "module",
+  "description": "Assignment Checklist Store / Daily Operation Commercial — paritas Apps Script v6/v7 di atas Supabase",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
+    "make:index": "python3 scripts/build_index.py",
     "preview": "vite preview --host 0.0.0.0",
-    "check": "node --check src/main.js && node --check src/data.js && node --check src/constants.js && node scripts/check_project.mjs && python3 -m unittest discover -s tests -v"
+    "check": "node scripts/check.mjs",
+    "test:db": "bash tests/run_db_tests.sh",
+    "test:e2e": "bash tests/run_e2e.sh"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.0.0",
-    "vite": "^7.0.0"
+    "@supabase/supabase-js": "^2.49.0",
+    "fflate": "^0.8.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "pg": "^8.13.0",
+    "vite": "^7.0.0"
+  }
 }

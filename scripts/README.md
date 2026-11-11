@@ -1,0 +1,3 @@
+- `build_index.py` — membuat ulang `index.html` dari `legacy/Index.reference.html` + patch minimal (`npm run make:index`).
+- `import_sheets.py` — membuat SQL impor data dari CSV/JSON spreadsheet lama (lihat docs/INSTALL_SUPABASE_GITHUB.md bagian D).
+- `check.mjs` — pemeriksaan statis (`npm run check`), juga dijalankan otomatis oleh workflow GitHub sebelum build.
