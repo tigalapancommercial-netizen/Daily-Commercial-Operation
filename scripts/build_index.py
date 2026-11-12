@@ -185,6 +185,8 @@ for patch in PATCHES:
 # viewport bawaan doGet Apps Script; jika sudah ada meta viewport di referensi, hindari ganda
 if out.count('name="viewport"') > 1:
     out = out.replace('\n<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">', '', 1)
+from patch_v10_photo_nav import patch_html
+out = patch_html(out)
 target = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'index.html'
 target.write_text(out, encoding='utf-8')
 print(target.name, 'dibuat:', len(out), 'byte,', len(PATCHES), 'patch')

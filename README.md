@@ -1,9 +1,8 @@
-# Daily Operation Commercial — Assignment Checklist Store (v9, Supabase)
+# Daily Operation Commercial — Assignment Checklist Store (v10, Supabase)
 
-Aplikasi ini adalah **pindahan 1:1** dari Apps Script v6/v7 (`Code.gs` + `Index.html`) ke **Supabase + GitHub Pages**.
-Tampilan, menu, alur, rumus scorecard, SLA, notifikasi, role, dan pesan error **sama persis** dengan versi Apps Script,
-karena UI referensi dipakai apa adanya (CSS/markup/script tidak diubah) dan seluruh fungsi server `Code.gs` dipindahkan
-fungsi-per-fungsi ke JavaScript + fungsi database Supabase.
+Aplikasi ini menggunakan **struktur/paritas UI v7 sebagai baseline** dari Apps Script v6/v7 (`Code.gs` + `Index.html`) ke **Supabase + GitHub Pages**.
+Fungsi asal diadaptasi ke Supabase (tidak membutuhkan Apps Script). Kesesuaian setiap alur produksi perlu diuji dengan pengguna nyata.
+Update v10 menambahkan kamera langsung/HP, bukti foto multi-file WebP, dan perbaikan navigasi.
 
 | Bagian | Apps Script v6/v7 | v9 (repo ini) |
 |---|---|---|
@@ -17,20 +16,20 @@ fungsi-per-fungsi ke JavaScript + fungsi database Supabase.
 ## Isi folder
 - `index.html` — UI referensi + jembatan `google.script.run` → Supabase.
 - `src/` — `main.js` (pemasang), `db.js` (Supabase RPC & Storage), `xlsx.js` (file backup), `server/` (port Code.gs).
-- `supabase/migrations/20261112_006_dco_parity.sql` — **satu-satunya SQL yang wajib dijalankan** (tabel, fungsi aman, storage, data awal).
+- `supabase/migrations/20261112_006_dco_parity.sql` — **SQL dasar v9** (tabel, fungsi aman, storage, data awal).
 - `supabase/legacy_v8/` — migrasi v8 lama (arsip; tidak dipakai aplikasi v9).
 - `scripts/import_sheets.py` — membuat SQL impor data dari spreadsheet lama (CSV/JSON).
 - `tests/` — uji database & uji end-to-end (138 skenario) dengan PostgreSQL lokal.
 - `docs/` — panduan pemasangan, peta paritas, catatan reminder email.
 
 ## Mulai cepat
-1. Supabase → SQL Editor → jalankan `supabase/migrations/20261112_006_dco_parity.sql`.
+1. Supabase → SQL Editor → jalankan `supabase/migrations/20261112_006_dco_parity.sql`, kemudian `supabase/migrations/20261112_008_multiphoto.sql` untuk mendukung banyak foto.
 2. (Data lama) jalankan file `20261112_007_import_data.sql` yang dikirim terpisah (**jangan diunggah ke GitHub**).
 3. GitHub → Settings → Secrets → Actions: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`.
 4. Push ke `main` → workflow GitHub Pages membangun & menerbitkan.
 5. Login `master` / `1234` → **segera Ganti PIN**, lalu ganti PIN semua user di Pengaturan → User.
 
-Langkah lengkap: [docs/INSTALL_SUPABASE_GITHUB.md](docs/INSTALL_SUPABASE_GITHUB.md).
+Langkah lengkap: [docs/INSTALL_SUPABASE_GITHUB.md](docs/INSTALL_SUPABASE_GITHUB.md). Untuk fitur baru, baca [docs/UPDATE_V10_KAMERA_NAVIGASI.md](docs/UPDATE_V10_KAMERA_NAVIGASI.md).
 
 ## Pengembangan lokal
 ```bash
