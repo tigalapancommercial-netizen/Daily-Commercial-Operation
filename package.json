@@ -1,9 +1,9 @@
 {
   "name": "daily-operation-commercial",
-  "version": "14.0.0",
+  "version": "17.0.0",
   "private": true,
   "type": "module",
-  "description": "Assignment Checklist Store / Daily Operation Commercial — paritas Apps Script v6/v7 di atas Supabase",
+  "description": "Daily Commercial Operations v17 — Weekly/Monthly + Global Tasks on Supabase",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
@@ -12,7 +12,8 @@
     "check": "node scripts/check.mjs",
     "test:db": "bash tests/run_db_tests.sh",
     "test:e2e": "bash tests/run_e2e.sh",
-    "test:ui": "python3 tests/v14_assignment_auto_smoke.py"
+    "test:ui": "python3 tests/v14_assignment_auto_smoke.py",
+    "test:v17": "node tests/v17_routine_schedule.mjs && python3 tests/v17_global_tasks_smoke.py && python3 tests/v17_period_smoke.py"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",

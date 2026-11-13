@@ -5,6 +5,7 @@ import { Ctx, auth_, forgetToken } from './ctx.js';
 import * as C from './core.js';
 import * as R from './report.js';
 import * as A from './admin.js';
+import * as P from './period.js';
 
 async function login_(username, pin) {
   const r = await rpc('dco_login', { p_username: String(username || ''), p_pin: String(pin == null ? '' : pin) });
@@ -19,6 +20,10 @@ export async function api(action, p, sesi) {
     const me = await auth_(sesi), ctx = new Ctx(me, sesi);
     const fn = {
       meta: () => C.meta_(ctx),
+      periodList: () => P.list_(ctx, p),
+      periodSubmit: () => P.submit_(ctx, p),
+      periodValidate: () => P.validate_(ctx, p),
+      periodSummary: () => P.summary_(ctx, p),
       list: () => C.list_(ctx, p.type, p.filter),
       storeSummary: () => R.storeSummary_(ctx, p.tanggal),
       issueList: () => C.issueList_(ctx, p.filter),

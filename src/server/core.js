@@ -110,35 +110,94 @@ export async function bulk_(ctx, type, ids, op, value) {
 }
 
 // ================= DAILY ROUTINE & CHECKLIST HARIAN STORE =================
+const ROUTINE_FREQUENCIES = new Set(['Harian', 'Mingguan', 'Bulanan', 'Tahunan', 'Periodik', 'Sekali', 'Rentang']);
+const validYmd = (v) => { if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false; const d = new Date(v+'T00:00:00Z'); return !Number.isNaN(d.getTime()) && d.toISOString().slice(0,10)===v; };
 export async function rutinSave_(ctx, d) {
-  const me = ctx.me; d = d || {}; mustMgr_(me); if (!d.judul) throw new Error('Judul wajib diisi');
-  const r = { id: d.id || '', judul: d.judul, deskripsi: d.deskripsi || '', kategori: d.kategori || '', prioritas: d.prioritas || 'Sedang', pic: d.pic || '',
-    frekuensi: d.frekuensi || 'Harian', hari: d.hari || '', toko: d.toko || 'SEMUA', aktif: d.aktif === 'N' ? 'N' : 'Y', dibuatOleh: d.dibuatOleh || me.nama, updateTgl: now_(),
-    interval: d.interval || '', mulai: d.mulai || '' };
+  const me = ctx.me; d = d || {}; mustMgr_(me);
+  const title = String(d.judul || '').trim(), freq = String(d.frekuensi || 'Sekali');
+  if (!title || title.length > 240) throw new Error('Judul tugas wajib diisi (maksimal 240 karakter)');
+  if (!ROUTINE_FREQUENCIES.has(freq)) throw new Error('Frekuensi tugas tidak dikenal');
+  const mulai = String(d.mulai || ''), akhir = freq === 'Sekali' ? '' : String(d.akhir || ''), tenggat = String(d.tenggat || '');
+  if (mulai && !validYmd(mulai) || akhir && !validYmd(akhir) || tenggat && !validYmd(tenggat))
+    throw new Error('Tanggal mulai, akhir atau tenggat tidak valid');
+  if (['Sekali','Rentang','Periodik'].includes(freq) && !mulai) throw new Error('Pilih tanggal mulai tugas');
+  if (freq === 'Rentang' && !akhir) throw new Error('Pilih tanggal akhir campaign / project');
+  if (mulai && akhir && akhir < mulai) throw new Error('Tanggal akhir tidak boleh lebih awal dari mulai');
+  if (['Mingguan','Bulanan','Tahunan'].includes(freq) && !String(d.hari || '').trim())
+    throw new Error('Lengkapi hari atau tanggal pengulangan');
+  const interval = freq === 'Periodik' ? Number(d.interval) : 0;
+  if (freq === 'Periodik' && (!Number.isInteger(interval) || interval < 1 || interval > 3650))
+    throw new Error('Interval tugas periodik harus 1–3650 hari');
+  const toko = String(d.toko || 'SEMUA');
+  if (toko !== 'SEMUA') {
+    const chosen = toko.split('|').filter(Boolean), allowed = await tokoAktif_(ctx);
+    if (!chosen.length || chosen.some((x) => !allowed.includes(x))) throw new Error('Toko penugasan tidak valid');
+  }
+  const r = {
+    id: d.id || '', judul: title, deskripsi: String(d.deskripsi || '').slice(0,6000),
+    kategori: String(d.kategori || '').slice(0,120), prioritas: d.prioritas || 'Sedang',
+    pic: String(d.pic || '').slice(0,180), frekuensi: freq,
+    hari: ['Mingguan','Bulanan','Tahunan'].includes(freq) ? String(d.hari || '') : '',
+    toko, aktif: d.aktif === 'N' ? 'N' : 'Y', dibuatOleh: d.dibuatOleh || me.nama,
+    updateTgl: now_(), interval: freq === 'Periodik' ? String(interval) : '', mulai,
+    akhir, tenggat, jenisTugas: String(d.jenisTugas || 'Operasional').slice(0,100),
+    namaProject: String(d.namaProject || '').slice(0,200), lokasi: String(d.lokasi || '').slice(0,300),
+    hasilDiharapkan: String(d.hasilDiharapkan || '').slice(0,2000),
+  };
   const saved = (await ctx.save('RUTIN', [r], 'upsert'))[0];
-  r.id = saved.id; r.updateTgl = saved.updateTgl; return r;
+  if (!saved || !Object.prototype.hasOwnProperty.call(saved, 'jenisTugas'))
+    throw new Error('Migrasi database 013 Global Tasks belum diterapkan. Tugas belum lengkap, jalankan SQL 013 dahulu.');
+  return saved;
 }
 export async function rutinHapus_(ctx, id) { mustMgr_(ctx.me); if (id) await ctx.del('RUTIN', [id]); return { ok: true }; }
 // Apakah template rutin berlaku pada tanggal & toko tertentu
 export function rutinBerlaku_(rt, tgl, toko) {
   if (String(rt.aktif).toUpperCase() === 'N') return false;
-  const tk = String(rt.toko || 'SEMUA'); if (tk !== 'SEMUA' && tk.split('|').indexOf(toko) < 0) return false;
+  const tk = String(rt.toko || 'SEMUA');
+  if (tk !== 'SEMUA' && tk.split('|').indexOf(toko) < 0) return false;
   if (rt.mulai && tgl < rt.mulai) return false;
-  const d = new Date(tgl + 'T00:00:00Z'), list = String(rt.hari || '').split(',').map((x) => x.trim()).filter(String);
+  if (rt.akhir && tgl > rt.akhir) return false;
+  const d = new Date(tgl + 'T00:00:00Z');
+  if (Number.isNaN(d.getTime())) return false;
+  const list = String(rt.hari || '').split(',').map((x) => x.trim()).filter(String);
   switch (rt.frekuensi) {
+    case 'Sekali': return !!rt.mulai && tgl === rt.mulai;
+    case 'Rentang': return !!rt.mulai && !!rt.akhir && tgl >= rt.mulai && tgl <= rt.akhir;
     case 'Mingguan': return list.indexOf(String(d.getUTCDay())) >= 0;
     case 'Bulanan': return list.indexOf(String(d.getUTCDate())) >= 0;
     case 'Tahunan': return list.indexOf(pad_(d.getUTCDate(), 2) + '-' + pad_(d.getUTCMonth() + 1, 2)) >= 0;
-    case 'Periodik': { const n = parseInt(rt.interval, 10) || 1, m = rt.mulai || tgl; return daysBetween_(m, tgl) % n === 0; }
-    default: return true;
+    case 'Periodik': {
+      const n = parseInt(rt.interval, 10) || 1, m = rt.mulai || tgl;
+      return daysBetween_(m, tgl) % n === 0;
+    }
+    default: return true; // Kompatibel dengan template Harian lama
   }
 }
 export async function ceklisHari_(ctx, tgl, toko) {
-  const me = ctx.me; tgl = tgl || today_(); toko = me.isMgr ? toko : me.toko; if (!toko || toko === 'SEMUA') throw new Error('Pilih toko');
-  const rutin = (await ctx.read('RUTIN')).filter((r) => rutinBerlaku_(r, tgl, toko)), real = {};
-  (await ctx.read('CEKLIS', { tanggal: tgl, toko })).forEach((c) => { if (c.tanggal === tgl && c.toko === toko) real[c.rutinId] = c; });
-  return rutin.map((r) => { const c = real[r.id] || {}; return { rutinId: r.id, judul: r.judul, deskripsi: r.deskripsi, kategori: r.kategori, prioritas: r.prioritas, pic: r.pic, frekuensi: r.frekuensi,
-    id: c.id || '', status: c.status || 'Belum', jam: c.jam || '', catatan: c.catatan || '', fotoId: c.fotoId || '', validasi: c.validasi || '', validasiOleh: c.validasiOleh || '' }; });
+  const me = ctx.me; tgl = tgl || today_(); toko = me.isMgr ? toko : me.toko;
+  if (!toko || toko === 'SEMUA') throw new Error('Pilih toko');
+  const active = (await ctx.read('RUTIN')).filter((r) => rutinBerlaku_(r, tgl, toko));
+  const existing = (await ctx.read('CEKLIS', { tanggal: tgl, toko })).filter((c) => c.tanggal === tgl && c.toko === toko);
+  const real = new Map(existing.map((c) => [c.rutinId, c]));
+  const rows = active.map((r) => {
+    const c = real.get(r.id) || {};
+    return {
+      rutinId: r.id, judul: r.judul, deskripsi: r.deskripsi, kategori: r.kategori,
+      prioritas: r.prioritas, pic: r.pic, frekuensi: r.frekuensi, jenisTugas: r.jenisTugas || 'Operasional',
+      namaProject: r.namaProject || '', lokasi: r.lokasi || '', hasilDiharapkan: r.hasilDiharapkan || '',
+      tenggat: r.tenggat || '', id: c.id || '', status: c.status || 'Belum', jam: c.jam || '',
+      catatan: c.catatan || '', fotoId: c.fotoId || '', validasi: c.validasi || '', validasiOleh: c.validasiOleh || '',
+    };
+  });
+  // Jangan menyembunyikan riwayat yang sudah dikerjakan saat template dinonaktifkan/diedit/dihapus.
+  const ids = new Set(active.map((r) => r.id));
+  existing.filter((c) => !ids.has(c.rutinId)).forEach((c) => rows.push({
+    rutinId: c.rutinId, judul: c.judul, deskripsi: '', kategori: '', prioritas: '', pic: '',
+    frekuensi: 'Historis', jenisTugas: 'Arsip Tugas', namaProject: '', lokasi: '', hasilDiharapkan: '', tenggat: '',
+    id: c.id || '', status: c.status || 'Belum', jam: c.jam || '', catatan: c.catatan || '', fotoId: c.fotoId || '',
+    validasi: c.validasi || '', validasiOleh: c.validasiOleh || '',
+  }));
+  return rows;
 }
 export async function ceklisSet_(ctx, p) {
   const me = ctx.me, tgl = p.tanggal || today_(), toko = me.isMgr ? p.toko : me.toko;

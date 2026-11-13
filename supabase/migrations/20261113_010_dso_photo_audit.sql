@@ -93,7 +93,7 @@ CREATE OR REPLACE FUNCTION public.dco_photo_register(
 SET search_path = pg_catalog, pg_temp AS $dco$
 DECLARE
   me jsonb := dco.auth(p_token);
-  ticket text;
+  v_ticket text;
   created_at_storage timestamptz;
   r dco.photo_receipts%ROWTYPE;
 BEGIN
@@ -103,10 +103,10 @@ BEGIN
      THEN RAISE EXCEPTION 'Sumber foto tidak dikenal'; END IF;
   IF p_client_sha256 IS NULL OR p_client_sha256 !~ '^[0-9a-f]{64}$'
      THEN RAISE EXCEPTION 'Checksum upload tidak valid'; END IF;
-  ticket := substr(p_path,9,32);
+  v_ticket := substr(p_path,9,32);
   IF NOT EXISTS (
     SELECT 1 FROM dco.upload_tickets t
-    WHERE t.ticket = ticket AND t.username = me->>'username'
+    WHERE t.ticket = v_ticket AND t.username = me->>'username'
       AND t.expires_at > now() - interval '2 minutes'
   ) THEN RAISE EXCEPTION 'Tiket foto tidak cocok dengan pengguna atau telah kedaluwarsa'; END IF;
   SELECT o.created_at INTO created_at_storage

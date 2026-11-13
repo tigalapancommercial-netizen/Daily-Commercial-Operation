@@ -483,6 +483,81 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 
 /* v14: a validated/locked photo hub must not show upload actions */
 #dcoCameraModal .hub-actions[hidden]{display:none!important}
+
+/* Weekly / Monthly Reporting forms and dashboard — responsive, no overflowing controls */
+#pPeriod {width:100%;min-width:0;}
+.pr-toolbar{display:grid;grid-template-columns:minmax(170px,1.25fr) minmax(170px,1fr) minmax(145px,.8fr) minmax(130px,.8fr);gap:12px;align-items:end;}
+.pr-toolbar label{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--mu);}
+.pr-toolbar label>*{margin-top:5px;}
+.pr-form-head{display:flex;justify-content:space-between;align-items:start;gap:15px;padding:16px;background:linear-gradient(115deg,#f1f0ff,#fff);border:1px solid #e3e0ff;border-radius:15px;margin:12px 0 14px;}
+.pr-form-head h3{font-size:20px;margin:3px 0 4px;}.pr-form-head p{font-size:12px;color:var(--mu);margin:0;}.pr-eyebrow{font-size:10px;color:#6655d8;letter-spacing:.1em;text-transform:uppercase;font-weight:800;}
+.pr-status{background:#fff;padding:7px 12px;border:1px solid var(--bd);border-radius:20px;font-size:12px;font-weight:800;white-space:nowrap;}
+.pr-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-bottom:12px;}
+.pr-field{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;min-width:0;}
+.pr-field>span{font-size:11px;text-transform:uppercase;letter-spacing:.015em;color:#54627c;}.pr-field em{color:var(--r);font-style:normal;}
+.pr-field textarea{min-height:115px;}.pr-field>small{font-weight:400;color:var(--mu);}
+.pr-wide{grid-column:1/-1;}
+.pr-photo{display:flex;align-items:center;gap:14px;border:1px solid #dde5f6;background:#f8faff;border-radius:11px;padding:12px;flex-wrap:wrap;justify-content:space-between;}
+.pr-photo .evidence-panel{min-width:160px;margin:0!important;max-width:100%;}.pr-photo-caption{font-size:12px;color:#516078;font-weight:700;}
+.pr-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px;}.pr-check{padding:13px;background:#fff;border:1px solid var(--bd);border-radius:13px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:11px;}.pr-check b{font-size:13px;}.pr-check small{display:block;color:var(--mu);font-size:11px;margin-top:4px;}.pr-check .pr-field{margin-top:auto;}
+.pr-check .pr-photo{margin-top:7px;}.pr-tip{padding:12px;background:#f7faff;border:1px solid #dee6f6;border-radius:10px;font-size:12px;color:#4c5c79;}
+.pr-message{padding:10px 12px;background:#fff4df;border:1px solid #f8ddb4;border-radius:10px;font-size:12px;color:#795520;}
+.pr-savebar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;padding:14px;border:1px solid var(--bd);border-radius:12px;margin:14px 0;}.pr-savebar span{font-size:12px;color:var(--mu);flex:1 1 200px;}.pr-savebar .btn{min-width:135px;}
+.pr-badge{display:inline-block;background:#e2e8f0;border-radius:18px;padding:4px 8px;white-space:nowrap;font-size:10px;font-weight:800;color:#465065;}.pr-badge.pr-done{background:#d9fbe8;color:#147a4f;}.pr-badge.pr-pending{background:#fff0d1;color:#995a1c;}.pr-badge.pr-late{background:#fee2e2;color:#ad333b;}.pr-badge.pr-revise{background:#ffe4df;color:#a64125;}
+.pr-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px;}.pr-stats>div{border:1px solid var(--bd);background:#fff;border-radius:13px;padding:12px;}.pr-stats strong{font-size:22px;display:block;}.pr-stats span{font-size:10px;color:var(--mu);text-transform:uppercase;font-weight:700;}
+.pr-matrix-button{border:0;background:none;padding:5px 2px;cursor:pointer;}.pr-matrix-button:hover{text-decoration:underline;}.pr-totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}.pr-kpi{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:13px;cursor:pointer;text-align:left;}.pr-kpi strong{font-size:13px;}.pr-kpi span{font-size:11px;color:var(--mu);}.pr-kpi .bar{width:100%;}
+.pr-history-header{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;}.pr-history-header h3{font-size:17px;}.pr-history-header .btn{flex:0 0 auto;}
+#prHistory table{min-width:830px;}#prMatrix table{min-width:860px;}.pr-history-header .btn{white-space:nowrap;}
+@media(max-width:980px){.pr-toolbar{grid-template-columns:repeat(2,minmax(0,1fr));}.pr-stats,.pr-totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.pr-toolbar,.pr-fields,.pr-checks{grid-template-columns:1fr;}.pr-form-head{flex-direction:column;}.pr-status{align-self:flex-start;}.pr-totals{grid-template-columns:1fr 1fr;}.pr-stats>div{padding:9px;}.pr-stats strong{font-size:19px;}.pr-photo{align-items:start;}.pr-savebar .btn{width:100%;}.pr-history-header .btn{max-width:100%;}}
+
+/* v17 Global Tasks - compact and responsive, no change to old report layout */
+#pRutin .routine-stats,.routine-stats{display:grid;grid-template-columns:repeat(5,minmax(110px,1fr));gap:10px;margin:10px 0 14px}
+.routine-stats>div{background:#fff;border:1px solid #dfe6f4;border-radius:13px;padding:12px;min-width:0}
+.routine-stats span{display:block;font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase}
+.routine-stats strong{display:block;font-size:22px;color:#1b2c55;margin-top:2px}
+.routine-filter{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
+.routine-filter label{min-width:180px;max-width:320px;flex:1;font-weight:650;font-size:12px;color:#475569}
+.routine-filter select{margin-top:4px}
+#rutinTbl{overflow-x:auto;max-height:none}#rutinTbl table{min-width:880px}
+.routine-table td{vertical-align:top;padding:10px;overflow-wrap:anywhere}
+.routine-table-actions{white-space:nowrap}
+.routine-type-badge{display:inline-block;padding:4px 9px;border-radius:20px;background:#eef0ff;color:#564cd8;font-weight:700;font-size:11px}
+#mRutin .box{max-width:940px}#rBody{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.routine-field{display:flex;flex-direction:column;min-width:0;gap:4px}.routine-field .lbl{margin:0}
+.routine-head{display:flex;flex-direction:column;gap:1px;border-bottom:1px solid #dde5f2;padding:10px 0 8px;margin-top:5px}
+.routine-head strong{font-size:14px;color:#1f315e}.routine-head small{font-size:11px;color:#64748b}
+.routine-frequency{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.routine-frequency-button{background:#fff;border:1px solid #dbe3f1;border-radius:12px;padding:9px 10px;display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;cursor:pointer;min-height:64px;min-width:0}
+.routine-frequency-button span{font-weight:750;font-size:12px;color:#334155}.routine-frequency-button small{font-size:10px;color:#64748b;white-space:normal;line-height:1.35}
+.routine-frequency-button.selected{border:2px solid #5146e8;background:#eeedff;padding:8px 9px;box-shadow:0 0 0 2px #e8e6ff}
+.routine-preview{border:1px solid #bfe8d4;background:#f0fdf4;border-radius:11px;padding:11px;font-size:12px}
+.routine-stores{border:1px solid #e0e7f1;padding:10px;border-radius:12px;min-width:0}
+.routine-all-label{display:inline-flex;align-items:center;gap:8px;font-weight:750;margin-bottom:8px}
+.routine-all-label input{width:17px;height:17px;min-height:17px}
+.routine-stores .chk{max-height:130px;overflow-y:auto}
+.routine-date-row{display:flex;gap:7px;align-items:center;margin:5px 0}.routine-date-row input{width:86px}.routine-date-row select{flex:1}
+.routine-check-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.routine-check-meta span{display:inline-block;background:#eef2ff;color:#4642a9;border-radius:8px;padding:2px 7px;font-size:10px;font-weight:650}
+.routine-check-output{font-size:11px;color:#64748b;margin-top:5px}
+@media(max-width:780px){#pRutin .routine-stats,.routine-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.routine-frequency{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){#pRutin .routine-stats,.routine-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#rBody{grid-template-columns:1fr}.routine-frequency{grid-template-columns:repeat(2,minmax(0,1fr))}.routine-frequency-button{min-height:72px}.routine-head{gap:5px}}
+
+
+@media(max-width:560px){
+  #rutinTbl table{min-width:0;width:100%}
+  #rutinTbl thead{display:none}
+  #rutinTbl tbody{display:block;padding:7px}
+  #rutinTbl tbody tr{display:block;border:1px solid #e0e7f1;border-radius:11px;background:white;margin:5px 0 9px;padding:9px;box-shadow:0 2px 9px #19284709}
+  #rutinTbl tbody td{display:block;max-width:none;padding:5px 7px;border:0;white-space:normal;font-size:12px}
+  #rutinTbl tbody td:nth-child(2)::before{content:'Jenis: ';color:#64748b}
+  #rutinTbl tbody td:nth-child(3)::before{content:'Jadwal: ';color:#64748b}
+  #rutinTbl tbody td:nth-child(4)::before{content:'PIC: ';color:#64748b}
+  #rutinTbl tbody td:nth-child(5)::before{content:'Toko: ';color:#64748b}
+  #rutinTbl tbody td:nth-child(6)::before{content:'Status: ';color:#64748b}
+  #rutinTbl tbody td.routine-table-actions{display:flex;gap:8px}
+  #rutinTbl tbody td.routine-table-actions .btn{flex:1}
+}
 </style>
 </head>
 <body>
@@ -544,6 +619,24 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
         <div style="flex:1"><div class="seg"><button class="on" id="ckModeA" onclick="ckMode('isi')">Isi checklist</button><button id="ckModeB" onclick="ckMode('riwayat')">Riwayat & validasi</button></div></div></div></div><div id="ckIsi"></div></section>
     <section id="pDso" class="hid"><div class="card" style="padding:10px 14px"><div class="row"><div style="flex:0 1 160px"><label>Tanggal</label><input type="date" id="dsTgl" onchange="S.dsJaw={};loadDso()"></div><div class="mgr" style="flex:0 1 230px"><label>Toko</label><select id="dsToko" onchange="S.dsJaw={};loadDso()"></select></div>
         <div style="flex:1"><div class="seg"><button class="on" id="dsModeA" onclick="dsMode('isi')">Form & status</button><button id="dsModeB" onclick="dsMode('riwayat')">Riwayat & validasi</button></div></div></div></div><div id="dsBody"></div></section>
+
+    <section id="pPeriod" class="hid">
+      <div class="card"><h3>📊 Weekly & Monthly Reporting</h3>
+        <p class="mu">Form input 12 toko · data dikirim ke Supabase · validasi SPV Area · foto lama tidak dimigrasikan.</p>
+        <div class="pr-toolbar">
+          <div><label>Jenis laporan</label><select id="prType" onchange="loadPeriodReports()">
+            <option value="WEEKLY_SALES">Weekly Sales Report</option><option value="WEEKLY_GENSET">Weekly Genset Report</option>
+            <option value="MONTHLY_SALES">Monthly Sales Report</option><option value="MONTHLY_APAR">Monthly APAR Report</option>
+          </select></div>
+          <div class="mgr"><label>Toko</label><select id="prToko" onchange="loadPeriodReports()"><option value="SEMUA">Semua toko</option></select></div>
+          <div><label>Tanggal periode</label><input id="prDate" type="date" onchange="loadPeriodReports()"></div>
+          <div><label>Pembaruan</label><button type="button" class="btn w" onclick="loadPeriodReports()">↻ Muat laporan</button></div>
+        </div>
+      </div>
+      <div id="prContent"><div class="skel"></div></div>
+      <div id="prMatrix"></div>
+      <div id="prHistory"></div>
+    </section>
     <section id="pList" class="hid"><div id="listMini"></div><div class="row" style="margin-bottom:8px;align-items:center"><div style="flex:1"><b id="listTitle" style="font-size:14px"></b> <span class="mu" id="listCount"></span></div><div style="flex:0"><button class="btn g" id="btnAdd" onclick="openForm()">+ Tambah</button></div><div style="flex:0"><button class="btn" onclick="exportCsv(false)">⬇ CSV</button></div></div>
       <div class="bulk" id="bulk"><b id="bulkN"></b>&nbsp;dipilih <button class="btn s g mgr" onclick="bulk('validasi')">✔ Validasi</button><button class="btn s mgr" onclick="bulk('batalValidasi')">Batal validasi</button><span id="bulkStWrap"><select id="bulkStatus" style="width:auto;padding:4px 8px"><option value="">Set status…</option></select> <button class="btn s" onclick="bulkStatus()">Terapkan</button></span><button class="btn s" onclick="exportCsv(true)">⬇ Terpilih</button><button class="btn s r" onclick="bulk('hapus')">🗑 Hapus</button><button class="btn s" onclick="selAll(false)">Batal</button></div>
       <div class="card tbl" id="tblWrap" style="padding:0"></div></section>
@@ -583,7 +676,7 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
   </div>
   <div id="jdBody"></div>
 </section>
-    <section id="pRutin" class="hid"><div id="rtMini"></div><div class="row" style="margin-bottom:8px;align-items:center"><div style="flex:1"><b style="font-size:14px">Daily Routine</b> <span class="mu">— template tugas berulang untuk Assignment Checklist Store</span></div><div style="flex:0"><button class="btn g" onclick="openRutin()">+ Routine baru</button></div></div><div class="card tbl" id="rutinTbl" style="padding:0"></div></section>
+    <section id="pRutin" class="hid"><div class="row" style="margin-bottom:8px;align-items:center"><div style="flex:1"><b style="font-size:14px">Tugas Global & Routine</b> <span class="mu">— Tugas periodik, campaign, visit sekolah, project, dan penugasan lainnya</span></div><div style="flex:0"><button class="btn g" onclick="openRutin()">+ Tugas baru</button></div></div><div id="rtMini"></div><div class="card tbl" id="rutinTbl" style="padding:0"></div></section>
     <section id="pSet" class="hid"><div class="tabs" id="setTabs"></div><div id="setBody"></div></section>
   </main>
 </div>
@@ -647,11 +740,12 @@ var NAV=[['dash','Dashboard','<rect x="3" y="3" width="7" height="9" rx="1"/><re
   ['MASALAH','Rekap Masalah','<path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/>','','#d97706,#f59e0b'],
   ['jadwal','Jadwal Visit','<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>','','#db2777,#ec4899'],
   ['visit','Visiting Check Point','<path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>','mgr','#7c3aed,#a855f7'],
-  ['rutin','Daily Routine','<path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/>','mgr','#0d9488,#14b8a6'],
+  ['rutin','Tugas Global & Routine','<path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/>','mgr','#0d9488,#14b8a6'],
   ['set','Pengaturan','<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/>','mst','#475569,#64748b']];
-var STORE_TABS=['ceklis','dso','MASALAH'];
+var STORE_TABS=['ceklis','dso','MASALAH','period'];
+NAV.splice(3,0,['period','Weekly & Monthly Report','<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M7 14h4M7 18h4"/>','','#0f8b8d,#36b1ac']);
 NAV.splice(6,0,['issues','Issue Visit','<path d="M5 6h14M5 12h14M5 18h14"/>','mgr','#c2410c,#f97316']);
-var SHORT={issues:'Issue Visit',dash:'Dashboard',ceklis:'Assignment',dso:'Daily Ops',MASALAH:'Masalah',jadwal:'Jadwal',visit:'Visiting',rutin:'Routine',set:'Pengaturan'};
+var SHORT={period:'Reports',issues:'Issue Visit',dash:'Dashboard',ceklis:'Assignment',dso:'Daily Ops',MASALAH:'Masalah',jadwal:'Jadwal',visit:'Visiting',rutin:'Tugas',set:'Pengaturan'};
 var TITLE={};NAV.forEach(function(n){TITLE[n[0]]=n[1];});var CLAMP=/judul|masalah|akar|solusi|catatan|update|deskripsi|agenda/;
 function cfg(){return S.meta.cfg;}function formById(id){return cfg().dsoForms.filter(function(f){return f.id===id;})[0]||{nama:id};}
 
@@ -681,12 +775,12 @@ function goWith(tab,f){f=f||{};
   else{if(f.toko!=null&&isMgr())$('fToko').value=f.toko;if(f.from||f.to){$('fFrom').value=f.from||'';$('fTo').value=f.to||'';$('fPeriode').value='custom';}if(f.periode)setPeriode(f.periode);$('fStatus').value=f.status||'SEMUA';$('fVal').value=f.validasi||'';$('fKhusus').value=f.khusus||'';$('fQ').value=f.q||'';}
   if(f.tambah)S.afterLoad=function(){openForm();};$('notifBox').classList.remove('on');go(tab);}
 function go(t){if(S.me&&!isMgr()&&STORE_TABS.indexOf(t)<0)t='ceklis';S.tab=t;S.sel={};$('pageTitle').textContent=TITLE[t];document.querySelectorAll('[data-t]').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
-  var show=function(id,on){$(id).classList.toggle('hid',!on);};show('pDash',t==='dash');show('pCeklis',t==='ceklis');show('pDso',t==='dso');show('pList',t==='MASALAH');show('pVisit',t==='visit');show('pIssues',t==='issues');show('pJadwal',t==='jadwal');show('pRutin',t==='rutin');show('pSet',t==='set');
+  var show=function(id,on){$(id).classList.toggle('hid',!on);};show('pDash',t==='dash');show('pPeriod',t==='period');show('pCeklis',t==='ceklis');show('pDso',t==='dso');show('pList',t==='MASALAH');show('pVisit',t==='visit');show('pIssues',t==='issues');show('pJadwal',t==='jadwal');show('pRutin',t==='rutin');show('pSet',t==='set');
   show('filterCard',t==='dash'||t==='MASALAH'||t==='visit');document.querySelectorAll('.onlyMs').forEach(function(e){e.classList.toggle('hid',t!=='MASALAH');});window.scrollTo(0,0);refresh();}
 function refresh(manual){var t=S.tab,ic=$('refIc');ic.classList.add('spin');var done=function(){ic.classList.remove('spin');if(manual){toast('Data diperbarui','ok');loadNotif();}if(S.afterLoad){var f=S.afterLoad;S.afterLoad=null;f();}};var p;
   if(t==='dash')p=Promise.all([call('list',{type:'MASALAH',filter:filter()}),call('tracking',{to:S.meta.today,from:addDays(S.meta.today,-(S.trkDays-1)),toko:$('fToko').value}),call('notif')]).then(function(r){S.notif=r[2];S.tr=r[1];renderNotif();renderDash(r[0],r[1]);});
   else if(t==='MASALAH')p=call('list',{type:t,filter:filter()}).then(function(rows){S.rows=rows;renderList(t);});
-  else if(t==='ceklis')p=loadCeklis();else if(t==='dso')p=loadDso();else if(t==='jadwal')p=loadJadwal();
+  else if(t==='ceklis')p=loadCeklis();else if(t==='dso')p=loadDso();else if(t==='period')p=loadPeriodReports();else if(t==='jadwal')p=loadJadwal();
   else if(t==='visit')p=call('list',{type:'VISIT',filter:filter()}).then(function(r){S.visits=r;renderVisits();});
   else if(t==='issues')p=loadIssues();else if(t==='rutin')p=call('list',{type:'RUTIN'}).then(function(r){S.rutin=r;renderRutin();});
   else if(t==='set')p=call('meta').then(function(m){S.meta=m;renderSet();});else p=Promise.resolve();p.then(done,done);}
@@ -1216,7 +1310,7 @@ function execFindings(ms,rows){var open=ms.filter(execOpen),over=open.filter(isL
 function execVisitSchedule(tr){var arr=(tr.jadwalHariIni||[]).slice(0,6);if(!arr.length)return '<div class="exec-empty">Tidak ada jadwal visit hari ini pada data yang dimuat.</div>';
  return '<div class="exec-store-list">'+arr.map(function(j){return '<div class="exec-store-row" onclick="go(\'jadwal\')" role="button"><span class="sdot ok"></span><span class="name">'+esc(j.toko||'—')+' <span style="font-weight:500;color:#8791a5">· '+esc(j.pic||'—')+'</span></span><span class="state">'+esc(parseHour(j.jamMulai)||'')+'</span></div>';}).join('')+'</div>';}
 renderDash=function(ms,tr){if(!tr||!S.meta)return;S._ms=ms;S.tr=tr;var date=S.dashDate||S.meta.today,rows=Array.isArray(S.storeSummary)?S.storeSummary:[],open=ms.filter(execOpen),late=open.filter(isLate),done=ms.filter(function(x){return x.status==='Selesai';}),hi=open.filter(function(x){return x.prioritas==='Kritis'||x.prioritas==='Tinggi';}),reported=rows.filter(function(x){return x.masalah&&x.masalah.lapor>0;}).length,total=rows.length||tr.toko.length||0,coverage=total?Math.round(100*reported/total):0,visit=tr.visit||{},pending=rows.reduce(function(a,x){return a+execSafeNum(x.issues&&x.issues.pending);},0);
- var tab=S.dashTab||'ringkasan',tabs=[['ringkasan','01 · Overview'],['kepatuhan','02 · Kepatuhan'],['masalah','03 · Action Plan'],['visit','04 · Visit & Issue'],['score','05 · Scorecard']],f=filter();
+ var tab=S.dashTab||'ringkasan',tabs=[['ringkasan','01 · Overview'],['kepatuhan','02 · Kepatuhan'],['masalah','03 · Action Plan'],['visit','04 · Visit & Issue'],['score','05 · Scorecard'],['periodic','06 · Weekly & Monthly']],f=filter();
  var header='<div class="exec-hero"><div><span class="exec-eyebrow">TSI · COMMERCIAL OPERATIONS</span><h2>Executive Control Center</h2><p>Monitoring operasional, akuntabilitas PIC, dan kepatuhan 12 store — satu ruang keputusan terintegrasi.</p></div><div class="exec-current"><span class="status"><span class="exec-live-dot"></span> Data operasional</span><small>Tanggal monitoring</small><input type="date" aria-label="Tanggal monitoring" title="Pilih tanggal laporan toko" style="width:168px;padding:7px 9px;font-weight:800;color:#293e64" value="'+esc(date)+'" onchange="loadStoreMatrix(this.value)"></div></div>';
  var nav='<div class="exec-nav" role="tablist" aria-label="Tampilan dashboard">'+tabs.map(function(x){return '<button role="tab" aria-selected="'+(tab===x[0])+'" class="btn '+(tab===x[0]?'on':'')+'" onclick="switchDashTab(\''+x[0]+'\')">'+x[1]+'</button>';}).join('')+'</div>';
  var html='<div class="exec-root">'+nav;
@@ -1235,6 +1329,7 @@ renderDash=function(ms,tr){if(!tr||!S.meta)return;S._ms=ms;S.tr=tr;var date=S.da
    html+='<div class="exec-split">';
    html+='<div class="exec-card">'+execHead('7-day operating rhythm','Tren masuk briefing dibandingkan tingkat penyelesaian checklist.')+execTrend(tr,7)+'</div>';
    html+='<div class="exec-card">'+execHead('Executive attention & next steps','Titik kontrol yang perlu ditindaklanjuti oleh PIC dan SPV.')+execFindings(ms,rows)+'</div></div>';
+   html+='<div id="periodOverview" class="exec-card">Memuat Weekly & Monthly…</div>';
    html+='<div class="exec-card">'+execHead('Store performance ranking','Scorecard berbobot sesuai konfigurasi; ranking seluruh toko.','<button class="btn s" onclick="switchDashTab(\'score\')">Scorecard lengkap</button>')+execScore(tr,12)+'</div>';
  }else if(tab==='kepatuhan'){
    var absent=total-reported;
@@ -1249,6 +1344,9 @@ renderDash=function(ms,tr){if(!tr||!S.meta)return;S._ms=ms;S.tr=tr;var date=S.da
    html+='<div class="exec-metric-grid">'+execMetric('Total temuan',ms.length,'▤','#5658d9','#eaeaff','<span>Periode filter</span>',"go('MASALAH')")+execMetric('Open action',open.length,'↗','#c27b22','#fff2df','<span>Belum selesai</span>',"go('MASALAH')")+execMetric('Selesai',done.length,'✓','#16a27e','#e2f8f1','<span>Closing tercatat</span>',"go('MASALAH')")+execMetric('Overdue',late.length,'⏱','#df4354','#fff0f1','<span>Prioritas pemulihan</span>',"execOpenModule('MASALAH',{periode:'semua',khusus:'terlambat'})")+execMetric('Tanpa due date',noDue,'📅','#c27b22','#fff2df','<span>Butuh penetapan SLA</span>',"go('MASALAH')")+execMetric('Tanpa PIC',noPic,'♙','#d04864','#fff0f1','<span>Butuh penanggung jawab</span>',"go('MASALAH')")+'</div>';
    html+='<div class="exec-card">'+execHead('Action plan by urgency','Masalah terbuka diurutkan menurut overdue, kritis, dan tinggi.','<button class="btn p s" onclick="go(\'MASALAH\')">Kelola masalah</button>')+execIssueRows(ms,25)+'</div>';
    html+='<div class="exec-card">'+execHead('Immediate management recommendations','Rekomendasi berbasis data yang tampil, bukan asumsi. ')+execFindings(ms,rows)+'</div>';
+ }else if(tab==='periodic'){
+   html+=execHead('Weekly & Monthly Reporting','Matriks kepatuhan 4 form, seluruh toko, periode terpilih; angka berasal dari Supabase.');
+   html+='<div id="periodDashContent" class="exec-card">Memuat data Supabase…</div>';
  }else if(tab==='visit'){
    html+=execHead('Visit governance','Audit toko, jadwal, hasil inspeksi, dan progres corrective action.');
    html+='<div class="exec-metric-grid">'+execMetric('Visit periode',visit.n||0,'⌖','#555fc9','#ebeeff','<span>Hasil periode filter</span>',"go('visit')")+execMetric('Skor rata-rata',visit.avg==null?'—':visit.avg+'%','★','#109f79','#e2f8f1','<span>Skor kunjungan</span>',"go('visit')")+execMetric('Menunggu validasi',visit.pending||0,'✓','#ca851f','#fff2df','<span>Approval manager</span>',"go('visit')")+execMetric('Pending issue',pending,'⚠','#d04d61','#fff0f1','<span>Belum ditutup</span>',"goIssues('pending')")+'</div>';
@@ -1259,6 +1357,7 @@ renderDash=function(ms,tr){if(!tr||!S.meta)return;S._ms=ms;S.tr=tr;var date=S.da
    html+='<div class="exec-card">'+execHead('Detail komponen scorecard','Komponen checklist, briefing, DSO, visit, serta masalah tepat waktu.','<button class="btn s" onclick="exportActive()">↓ CSV</button>')+renderScorecard(tr)+'</div>';
  }
  $('pDash').innerHTML=html+'</div>';
+ if(tab==='periodic')loadPeriodDashboard();else if(tab==='ringkasan')loadPeriodicOverview();
 };
 
 // ===== v9.1: login =====
@@ -1313,9 +1412,9 @@ function evidenceFileToDataURL(file){return new Promise(function(resolve,reject)
  img.onerror=function(){clean();reject(new Error('Gambar tidak dapat dibaca'))};
  img.onload=function(){try{var maxSide=1600,scale=Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');
   c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-  var data='',quality=.82;
-  for(var z=0;z<5;z++){data=c.toDataURL('image/webp',quality);if(!data.startsWith('data:image/webp;'))data=c.toDataURL('image/jpeg',quality);
-   if(data.length*0.75<500*1024||z===4)break;
+  var data='',quality=.80;
+  for(var z=0;z<6;z++){data=c.toDataURL('image/webp',quality);if(!data.startsWith('data:image/webp;'))data=c.toDataURL('image/jpeg',quality);
+   if(data.length*0.75<420*1024||z===5)break;
    quality=Math.max(.60,quality-.07);if(z>=2){var out=document.createElement('canvas');out.width=Math.max(1,Math.round(c.width*.87));out.height=Math.max(1,Math.round(c.height*.87));out.getContext('2d').drawImage(c,0,0,out.width,out.height);c=out;}
   }clean();resolve(data);
  }catch(e){clean();reject(e);}};img.src=url;});}
@@ -1886,6 +1985,397 @@ renderIssues=function(){
   };
 })();
 
+</script>
+<script>
+// DCO v16: Store-owned Weekly & Monthly reports, without Apps Script.
+// Forms are derived from the four attached CSV headers. No historical image files are migrated.
+(function(){
+ 'use strict';
+ const typeLabels={WEEKLY_SALES:'Weekly Sales Report',MONTHLY_SALES:'Monthly Sales Report',WEEKLY_GENSET:'Weekly Genset Report',MONTHLY_APAR:'Monthly APAR Report'};
+ const saleCategories=[
+   ['','Pilih kategori achievement'],['Target Achieved > 100%','🟢 Target Achieved > 100%'],
+   ['Need Improvement 80% - 99%','🟡 Need Improvement 80% - 99%'],
+   ['Below Target < 80%','🔴 Below Target < 80%']
+ ];
+ const gensetItems=[
+   ['physical','Kondisi fisik & area','Body/frame, kebocoran, kebersihan, ventilasi'],
+   ['oil','Oli mesin','Level oli berada MIN–MAX; tidak ada kebocoran'],
+   ['fuel','Bahan bakar','Cukup untuk operasional, minimal 80%, tidak bocor'],
+   ['cooling','Sistem pendingin','Ventilasi/fan/coolant berfungsi'],
+   ['starter','Sistem starter & aki','Starter, aki, terminal dan kabel baik'],
+   ['cables','Kabel, socket & pengaman','Socket, breaker, kabel dan grounding aman'],
+   ['safety','Safety & kelengkapan','Tidak ada bahan mudah terbakar, APAR tersedia'],
+   ['running','Running test 5–10 menit','Mesin hidup normal tanpa mati mendadak; bukti foto']
+ ];
+ const aparItems=[
+   ['pressure','Tekanan normal'],['seal','Segel utuh'],['pin','Pin masih terpasang'],
+   ['rust','Tidak berkarat'],['placement','Posisi sesuai'],['access','Bersih & mudah dijangkau']
+ ];
+ function prError(e){return String(e&&e.message||e||'Gagal memuat laporan');}
+ function prType(){return $('prType').value;}
+ function prStore(){return isMgr() ? $('prToko').value : S.me.toko;}
+ function prDate(){return $('prDate').value||S.meta.today;}
+ function prStart(){let d=prDate();return prType().startsWith('WEEKLY')?weekStart(d):d.slice(0,7)+'-01';}
+ function prState(){if(!S.periodDraft)S.periodDraft={payload:{},evidence:{}};return S.periodDraft;}
+ function prLocked(){return !!(S.periodCurrent&&S.periodCurrent.validation_status==='Approved'&&!isMaster());}
+ function prField(key,value){if(prLocked())return;prState().payload[key]=String(value);if(key==='has_genset'&&$('prContent'))$('prContent').innerHTML=prForm();}
+ function prOption(value,label,selected){return '<option value="'+esc(value)+'" '+(value===selected?'selected':'')+'>'+esc(label)+'</option>';}
+ function prInput(id,label,kind,required,choices,span,help){
+  const v=String(prState().payload[id]||''),disable=prLocked()?'disabled':'',attr='data-pr-field="'+esc(id)+'" '+disable;
+  let ctrl='';
+  if(kind==='select')ctrl='<select '+attr+' onchange="prField(this.dataset.prField,this.value)">'+choices.map(x=>prOption(x[0],x[1],v)).join('')+'</select>';
+  else if(kind==='textarea')ctrl='<textarea rows="3" '+attr+' placeholder="Tulis hasil atau NIHIL" onchange="prField(this.dataset.prField,this.value)">'+esc(v)+'</textarea>';
+  else ctrl='<input type="'+kind+'" '+attr+' value="'+esc(v)+'" onchange="prField(this.dataset.prField,this.value)">';
+  return '<label class="pr-field '+(span?'pr-wide':'')+'"><span>'+esc(label)+(required?' <em>*</em>':'')+'</span>'+ctrl+(help?'<small>'+esc(help)+'</small>':'')+'</label>';
+ }
+ function prPhoto(key,title){return '<div class="pr-photo"><div class="pr-photo-caption">'+esc(title||'Bukti foto')+'</div>'+evidencePanel('period',key,true)+'</div>';}
+ function prForm(){
+  const t=prType(),draft=prState(),p=draft.payload,lock=prLocked();let html='';
+  if(!t)return '<div class="card empty">Pilih jenis laporan</div>';
+  if(prStore()==='SEMUA')return '<div class="card empty">Untuk mengisi laporan, pilih satu toko. Ringkasan seluruh toko ada di bawah.</div>';
+  const rec=S.periodCurrent;
+  html+='<div class="pr-form-head"><div><span class="pr-eyebrow">'+(t.startsWith('WEEKLY')?'Laporan mingguan':'Laporan bulanan')+'</span><h3>'+esc(typeLabels[t])+'</h3><p>Periode '+esc(prStart())+' · '+esc(prStore())+'</p></div><span class="pr-status">'+esc(rec?rec.validation_status==='Approved'?'✔ Divalidasi':rec.validation_status==='Rejected'?'Perlu Revisi':'Menunggu Validasi':'Belum Submit')+'</span></div>';
+  if(rec&&rec.validation_note)html+='<div class="pr-message">Catatan SPV: '+esc(rec.validation_note)+'</div>';
+  if(lock)html+='<div class="pr-message">Laporan ini sudah divalidasi dan terkunci. Hanya Master dapat mengubah.</div>';
+  html+='<div class="pr-fields">';
+  if(t==='WEEKLY_SALES'||t==='MONTHLY_SALES'){
+    html+=prInput('spv_area','SPV Area','text',false,null,false)+prInput('achievement','Achievement Sales','select',true,saleCategories,false);
+    html+=prInput('reason','Reason Sales (Achieve / Tidak Achieve)','textarea',true,null,true);
+    html+=prInput('issues',t==='WEEKLY_SALES'?'Issue Operasional Mingguan':'Issue Operasional Bulanan','textarea',true,null,true);
+    html+=prInput('followup','Follow-up Issue Sebelumnya','textarea',true,null,true);
+    html+='<div class="pr-wide">'+prPhoto('attachment','Lampiran jika ada (kamera live atau galeri)')+'</div>';
+  } else if(t==='WEEKLY_GENSET'){
+    html+=prInput('has_genset','Apakah toko memiliki genset?','select',true,[['','Pilih jawaban'],['Ada Genset','Ada Genset'],['Tidak ada Genset','Tidak ada Genset']],true);
+    if(p.has_genset==='Ada Genset'){
+      html+='<div class="pr-wide pr-tip">Lengkapi foto pada delapan poin di bawah. Setiap poin dapat memiliki beberapa foto WebP.</div>';
+      html+='</div><div class="pr-checks">'+gensetItems.map((x,i)=>'<div class="pr-check"><div><b>'+(i+1)+'. '+esc(x[1])+'</b><small>'+esc(x[2])+'</small></div>'+prPhoto(x[0],'Bukti pemeriksaan')+'</div>').join('')+'</div><div class="pr-fields">';
+    } else if(p.has_genset==='Tidak ada Genset')html+='<div class="pr-wide pr-tip">Toko dinyatakan tidak memiliki genset. Delapan foto pemeriksaan tidak diwajibkan.</div>';
+  } else if(t==='MONTHLY_APAR'){
+    html+='</div><div class="pr-checks">'+aparItems.map((x,i)=>'<div class="pr-check"><div><b>'+(i+1)+'. '+esc(x[1])+'</b></div>'+prInput(x[0],'Hasil','select',true,[['','Belum diisi'],['1','✓ Baik / Sesuai'],['0','✕ Tidak Sesuai']],false)+'</div>').join('')+'</div><div class="pr-fields">';
+    html+=prInput('expired_date','Tanggal expired APAR','date',true,null,false);
+    html+='<div class="pr-wide">'+prPhoto('attachment','Lampiran bukti APAR (wajib)')+'</div>';
+  }
+  html+='</div><div class="pr-savebar"><span id="prMessage" role="status">Foto tersimpan setelah laporan dikirim. Tidak perlu migrasi foto lama.</span>'+
+    (lock?'':'<button type="button" id="prSubmitBtn" class="btn p" onclick="submitPeriodReport()">📤 '+(rec?'Update laporan':'Kirim laporan')+'</button>')+'</div>';
+  return html;
+ }
+ function prStatus(s){const cls=s==='Selesai'?'pr-done':s==='Menunggu Validasi'?'pr-pending':s==='Terlewat'?'pr-late':s==='Perlu Revisi'?'pr-revise':'';return '<span class="pr-badge '+cls+'">'+esc(s||'—')+'</span>';}
+ function prRenderHistory(){
+  const rows=S.periodRows||[],total=S.periodTotal||rows.length;const wrap=$('prHistory');if(!wrap)return;
+  const cs=['WEEKLY_SALES','WEEKLY_GENSET','MONTHLY_SALES','MONTHLY_APAR'];
+  let html='<div class="card"><div class="pr-history-header"><h3>Riwayat & validasi</h3><button class="btn s" onclick="exportPeriodCsv()">↓ Export CSV Lengkap</button></div><p class="mu">'+total+' laporan, '+rows.length+' tampil. Data mengikuti hak akses pengguna.</p><div class="tbl"><table><thead><tr><th>Periode</th><th>Toko</th><th>Form</th><th>Dikirim</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
+  rows.forEach((r,i)=>{
+    const st=r.validation_status==='Approved'?'Selesai':r.validation_status==='Rejected'?'Perlu Revisi':'Menunggu Validasi';
+    html+='<tr><td>'+esc(r.period_key||'')+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td>'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td>'+prStatus(st)+'</td><td><button class="btn s" onclick="editPeriodRow('+i+')">Buka</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button class="btn s g" onclick="validatePeriodRow('+i+',\'Approved\')">✔ Approve</button><button class="btn s r" onclick="validatePeriodRow('+i+',\'Rejected\')">✕ Revisi</button>':'')+'</td></tr>';
+  });
+  if(!rows.length)html+='<tr><td colspan="6" class="empty">Belum ada laporan yang dikirim pada filter ini</td></tr>';
+  html+='</tbody></table></div>';
+  if(S.periodHasMore)html+='<button type="button" class="btn" onclick="periodNextPage()">Muat '+Math.min(100,total-rows.length)+' data berikutnya</button>';
+  html+='</div>';wrap.innerHTML=html;
+ }
+ async function loadPeriodReports(){
+  if(!S.meta||!$('prType'))return;
+  if(!$('prType').value)$('prType').value='WEEKLY_SALES';
+  if(!$('prDate').value)$('prDate').value=S.meta.today;
+  const sel=$('prToko');if(isMgr() && sel && sel.options.length<=1){
+    sel.innerHTML='<option value="SEMUA">Semua toko (monitoring)</option>'+S.meta.toko.map(x=>'<option>'+esc(x)+'</option>').join('');
+    sel.value=S.meta.toko[0]||'SEMUA';
+  }
+  if(!isMgr())sel.value=S.me.toko;
+  const key=prType()+'|'+prStore()+'|'+prStart(),seq=S.periodLoadSeq=(S.periodLoadSeq||0)+1;
+  if(S.periodKey!==key){S.periodKey=key;S.periodDraft={payload:{},evidence:{}};S.periodCurrent=null;}
+  $('prContent').innerHTML='<div class="skel"></div>';
+  try{
+    const [listing,overview]=await Promise.all([
+      call('periodList',{type:prType(),toko:prStore(),limit:100,offset:0},true),
+      call('periodSummary',{date:prDate()},true),
+    ]);
+    if(seq!==S.periodLoadSeq)return;
+    S.periodRows=listing.rows||[];S.periodTotal=listing.total||0;S.periodHasMore=listing.hasMore||false;S.periodOverview=overview;
+    const found=S.periodRows.find(r=>r.report_type===prType()&&r.toko===prStore()&&r.period_start===prStart());
+    S.periodCurrent=found||null;
+    if(found){S.periodDraft={payload:found.payload||{},evidence:found.evidence||{}};}
+    $('prContent').innerHTML=prForm();
+    prRenderHistory();prRenderMatrix();
+  }catch(e){if(seq===S.periodLoadSeq){$('prContent').innerHTML='<div class="card pr-message">'+esc(prError(e))+'</div>';
+   $('prHistory').innerHTML='<div class="card mu">Data belum dapat dimuat. Pastikan migrasi SQL 012 telah dijalankan.</div>';}}
+ }
+ function prRenderMatrix(){const o=S.periodOverview||{},a=o.items||[],target=$('prMatrix');if(!target)return;
+  const done=a.filter(x=>x.status==='Selesai').length,pending=a.filter(x=>x.status==='Menunggu Validasi').length,
+    submitted=a.filter(x=>x.id).length,missing=a.filter(x=>x.status==='Belum Submit'||x.status==='Terlewat').length;
+  let html='<div class="pr-stats"><div><span>Sudah submit</span><strong>'+submitted+' / '+a.length+'</strong></div><div><span>Belum submit</span><strong>'+missing+'</strong></div><div><span>Menunggu validasi</span><strong>'+pending+'</strong></div><div><span>Selesai</span><strong>'+done+'</strong></div></div>';
+  if(isMgr()){
+   const types=['WEEKLY_SALES','WEEKLY_GENSET','MONTHLY_SALES','MONTHLY_APAR'],stores=[...new Set(a.map(x=>x.toko))];
+   html+='<div class="card"><h3>Kepatuhan Weekly & Monthly per toko</h3><p class="mu">Klik status untuk membuka form / riwayat toko. Status Terlewat hanya untuk periode yang sudah berakhir.</p><div class="tbl"><table><thead><tr><th>Toko</th>'+types.map(t=>'<th>'+esc(typeLabels[t].replace(' Report',''))+'</th>').join('')+'</tr></thead><tbody>';
+   stores.forEach(store=>{html+='<tr><td><b>'+esc(store)+'</b></td>';types.forEach(type=>{const item=a.find(x=>x.toko===store&&x.type===type)||{};html+='<td><button class="pr-matrix-button" data-type="'+esc(type)+'" data-store="'+esc(store)+'" onclick="periodJump(this.dataset.type,this.dataset.store)">'+prStatus(item.status||'Belum Submit')+'</button></td>';});html+='</tr>';});
+   html+='</tbody></table></div></div>';
+  }
+  target.innerHTML=html;
+ }
+ function periodJump(type,store){$('prType').value=type;$('prToko').value=store;loadPeriodReports();if($('pPeriod'))$('pPeriod').scrollIntoView({block:'start',behavior:'smooth'});}
+ function prValidatePayload(){
+  const p=prState().payload,t=prType(),e=prState().evidence,missing=[];
+  if(t==='WEEKLY_SALES'||t==='MONTHLY_SALES'){
+    ['achievement','reason','issues','followup'].forEach(k=>{if(!String(p[k]||'').trim())missing.push(k);});
+  }else if(t==='WEEKLY_GENSET'){
+    if(!p.has_genset)missing.push('Apakah memiliki genset');
+    if(p.has_genset==='Ada Genset')gensetItems.forEach(x=>{if(!photoList(e[x[0]]).length)missing.push(x[1]);});
+  }else if(t==='MONTHLY_APAR'){
+    aparItems.forEach(x=>{if(!['0','1'].includes(p[x[0]]))missing.push(x[1]);});
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(String(p.expired_date||'')))missing.push('Tanggal expired');
+    if(!photoList(e.attachment).length)missing.push('Foto APAR');
+  }
+  return missing;
+ }
+ async function submitPeriodReport(){
+   const btn=$('prSubmitBtn'),note=$('prMessage');if(!btn)return;
+   if(prStore()==='SEMUA')return toast('Pilih satu toko',true);
+   if(Object.keys(evidenceBusy).some(k=>k.startsWith('period:')))return toast('Foto masih diunggah, selesaikan dulu.',true);
+   const missing=prValidatePayload();if(missing.length){note.textContent='Belum lengkap: '+missing.join(', ');note.classList.add('late');return toast('Lengkapi '+missing.slice(0,2).join(', '),true);}
+   btn.disabled=true;btn.textContent='Menyimpan…';note.textContent='Mengirim ke server…';note.classList.remove('late');
+   try{
+     const rec=await call('periodSubmit',{type:prType(),toko:prStore(),date:prDate(),payload:prState().payload,evidence:prState().evidence},true);
+     if(!rec||!rec.id)throw new Error('Server tidak mengembalikan bukti penyimpanan');
+     note.textContent='✓ Laporan berhasil diterima server';toast('Laporan tersimpan dan menunggu validasi SPV','ok');
+     await loadPeriodReports();
+   }catch(e){note.textContent='Gagal mengirim: '+prError(e);note.classList.add('late');toast(prError(e),true);}
+   finally{if(btn.isConnected){btn.disabled=false;btn.textContent='📤 Kirim laporan';}}
+ }
+ async function validatePeriodRow(i,action){const r=S.periodRows&&S.periodRows[i];if(!r||!isMgr())return;
+   const note=action==='Rejected'?prompt('Jelaskan koreksi yang diperlukan (wajib):',''):prompt('Catatan validasi (opsional):','');
+   if(note===null)return;if(action==='Rejected'&&!String(note).trim())return toast('Catatan perbaikan wajib diisi',true);
+   try{await call('periodValidate',{id:r.id,action,note:note||''},true);toast('Validasi berhasil disimpan','ok');await loadPeriodReports();}
+   catch(e){toast(prError(e),true);}}
+ function editPeriodRow(i){const r=S.periodRows&&S.periodRows[i];if(!r)return;
+   $('prType').value=r.report_type;if(isMgr())$('prToko').value=r.toko;
+   $('prDate').value=r.report_date;loadPeriodReports();}
+ async function periodNextPage(){const old=S.periodRows||[];try{const r=await call('periodList',{type:prType(),toko:prStore(),limit:100,offset:old.length},true);
+    S.periodRows=old.concat(r.rows||[]);S.periodTotal=r.total;S.periodHasMore=r.hasMore;prRenderHistory();}
+   catch(e){toast(prError(e),true);}}
+ async function exportPeriodCsv(){
+  const q=v=>'"'+String(v===null||v===undefined?'':typeof v==='object'?JSON.stringify(v):v).replace(/"/g,'""')+'"';
+  const rows=[];let offset=0,total=0;
+  do{const r=await call('periodList',{type:prType(),toko:prStore(),limit:200,offset},true);
+    rows.push(...(r.rows||[]));offset+=r.rows.length;total=r.total;
+    if(!r.hasMore)break;if(rows.length>=50000)throw new Error('Data terlalu besar, gunakan rentang tanggal lebih sempit');
+   }while(offset<total);
+  if(!rows.length)return toast('Belum ada data untuk diexport',true);
+  const columns=['id','report_type','toko','period_key','period_start','report_date','payload','evidence','status','validation_status','validation_note','submitted_by','submitted_at','validated_by','validated_at'];
+  const csv='\uFEFF'+columns.map(q).join(';')+'\r\n'+rows.map(x=>columns.map(k=>q(x[k])).join(';')).join('\r\n');
+  const a=document.createElement('a'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.href=url;a.download='DCO_'+prType()+'_ALL_'+S.meta.today+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);
+ }
+ function prRenderExecutive(rows){const all=(rows&&rows.items)||[];const t=['WEEKLY_SALES','WEEKLY_GENSET','MONTHLY_SALES','MONTHLY_APAR'];
+   let html='<div class="exec-metric-grid">';
+   const submitted=all.filter(x=>x.id).length,completed=all.filter(x=>x.status==='Selesai').length,waiting=all.filter(x=>x.status==='Menunggu Validasi').length,missing=all.filter(x=>x.status==='Belum Submit'||x.status==='Terlewat').length;
+   html+=execMetric('Sudah submit',submitted+' / '+all.length,'✓','#129775','#dff8ee','<span>4 form per toko</span>',"go('period')");
+   html+=execMetric('Belum submit',missing,'!','#e14e59','#fff0f1','<span>Termasuk periode terlewat</span>',"go('period')");
+   html+=execMetric('Menunggu validasi',waiting,'◷','#c48129','#fff0d9','<span>Perlu SPV</span>',"go('period')");
+   html+=execMetric('Selesai/approved',completed,'★','#4f59c7','#ebeeff','<span>Sudah validasi</span>',"go('period')");
+   html+='</div><div class="exec-card"><div class="pr-totals">'+t.map(k=>{const subset=all.filter(x=>x.type===k),done=subset.filter(x=>x.id).length;
+    return '<button class="pr-kpi" onclick="go(\'period\');document.getElementById(\'prType\').value=\''+k+'\';loadPeriodReports()"><strong>'+esc(typeLabels[k])+'</strong><span>'+done+'/'+subset.length+' toko sudah submit</span><div class="bar"><i style="width:'+(subset.length?Math.round(done/subset.length*100):0)+'%"></i></div></button>';}).join('')+'</div></div>';
+   if(isMgr()){
+     const stores=[...new Set(all.map(x=>x.toko))];html+='<div class="exec-card"><h3>Tracking seluruh toko — Weekly & Monthly</h3><div class="tbl"><table><tr><th>Toko</th>'+t.map(k=>'<th>'+esc(typeLabels[k].replace(' Report',''))+'</th>').join('')+'</tr>';
+     stores.forEach(st=>{html+='<tr><td>'+esc(st)+'</td>';t.forEach(k=>{const r=all.find(x=>x.toko===st&&x.type===k)||{};html+='<td>'+prStatus(r.status||'Belum Submit')+'</td>';});html+='</tr>';});html+='</table></div></div>';
+   }
+   return html;
+ }
+ async function loadPeriodDashboard(){const n=$('periodDashContent');if(!n)return;
+  try{const s=await call('periodSummary',{date:S.dashDate||S.meta.today},true);if(n.isConnected)n.innerHTML=prRenderExecutive(s);}
+  catch(e){if(n.isConnected)n.innerHTML='<div class="pr-message">Tidak dapat memuat tracking: '+esc(prError(e))+'</div>';}}
+ async function loadPeriodicOverview(){const n=$('periodOverview');if(!n)return;
+  try{const s=await call('periodSummary',{date:S.dashDate||S.meta.today},true);
+   if(n.isConnected)n.innerHTML='<div class="exec-card"><h3>Weekly & Monthly Reporting</h3><p class="mu">Pencapaian kepatuhan dari empat jenis laporan dan 12 toko</p>'+prRenderExecutive(s)+'<button class="btn p s" onclick="switchDashTab(\'periodic\')">Lihat tracking lengkap</button></div>';}
+  catch(e){if(n.isConnected)n.innerHTML='<div class="pr-message">Report Weekly & Monthly belum tersedia: '+esc(prError(e))+'</div>';}}
+ // Extend existing multi-photo hub. Evidence remains a Storage path list, not HTML files.
+ const eid=evidenceId,eLock=evidenceLock,eSave=evidenceStateSave;
+ evidenceId=function(kind,key){if(kind==='period')return (prState().evidence||{})[String(key)]||'';return eid.apply(this,arguments);};
+ evidenceLock=function(kind,key){if(kind==='period')return prLocked();return eLock.apply(this,arguments);};
+ evidenceStateSave=function(kind,key,packed){if(kind==='period'){prState().evidence[String(key)]=packed;return Promise.resolve();}return eSave.apply(this,arguments);};
+ // Photo status refresh via compact hub only. Do not redraw textarea inputs on each upload.
+ const oldUpdate=updateEvidencePanel;
+ updateEvidencePanel=function(kind,key){oldUpdate.apply(this,arguments);if(kind==='period'&&$('prMessage')){
+  $('prMessage').textContent='Foto terunggah ke Storage; klik Kirim laporan untuk mencatat bukti pada report.';}};
+ // Export functions for onclick handlers in classic-script generated HTML.
+ Object.assign(window,{prField,loadPeriodReports,submitPeriodReport,validatePeriodRow,editPeriodRow,periodNextPage,exportPeriodCsv,periodJump,loadPeriodDashboard,loadPeriodicOverview});
+})();
+
+</script>
+<script>
+/* v17 - Tugas Global & Routine: uses existing nav, Supabase RPC, checklist, and photo controls. */
+(function () {
+  'use strict';
+  const TYPES = ['Operasional', 'Periodik', 'Campaign', 'Kunjungan Sekolah', 'Project', 'Administrasi', 'Lainnya'];
+  const FREQ = [
+    ['Sekali', 'Tugas satu kali pada tanggal mulai', '📌'],
+    ['Rentang', 'Setiap hari selama campaign / project', '📣'],
+    ['Harian', 'Setiap hari', '☀️'],
+    ['Mingguan', 'Hari tertentu tiap minggu', '📅'],
+    ['Periodik', 'Setiap N hari', '🔁'],
+    ['Bulanan', 'Tanggal tertentu tiap bulan', '🗓️'],
+    ['Tahunan', 'Tanggal tertentu tiap tahun', '🎯'],
+  ];
+  const el = (id) => document.getElementById(id);
+  const val = (id, fallback='') => el(id) ? el(id).value : fallback;
+  const field = (id, label, value, placeholder='', type='text', full=false) =>
+    '<label class="routine-field' + (full ? ' full' : '') + '"><span class="lbl">' + label +
+    '</span><input id="' + id + '" type="' + type + '" value="' + esc(value || '') + '" placeholder="' + esc(placeholder) + '" onchange="rtSync();rtPrev()"></label>';
+  const opts = (arr, selected) => arr.map((x) => '<option value="' + esc(x) + '"' + (x === selected ? ' selected' : '') + '>' + esc(x) + '</option>').join('');
+  const selected = (s, x) => String(s || '').split(',').includes(String(x));
+  const storeNames = () => S.meta && S.meta.toko || [];
+  const txt = (s) => String(s || '').trim();
+  const isDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s) && Number.isFinite(Date.parse(s + 'T00:00:00Z'));
+
+  window.fraseRutin = function (r) {
+    const l=String(r.hari||'').split(',').filter(Boolean),f=r.frekuensi;
+    if(f==='Sekali')return 'Satu kali · '+(r.mulai?fmtTgl(r.mulai):'tanggal belum diisi');
+    if(f==='Rentang')return 'Setiap hari · '+(r.mulai?fmtTgl(r.mulai):'—')+' s.d. '+(r.akhir?fmtTgl(r.akhir):'—');
+    if(f==='Mingguan')return 'Setiap '+l.map(x=>HARI[+x]||x).join(', ');
+    if(f==='Bulanan')return 'Tanggal '+l.join(', ')+' tiap bulan';
+    if(f==='Tahunan')return l.map(x=>{const a=x.split('-');return (+a[0])+' '+(BULAN[+a[1]-1]||'');}).join(', ')+' tiap tahun';
+    if(f==='Periodik')return 'Setiap '+r.interval+' hari mulai '+(r.mulai?fmtTgl(r.mulai):'—');
+    return 'Setiap hari'+(r.mulai?' mulai '+fmtTgl(r.mulai):'');
+  };
+  window.berlakuLokal = function (r,tgl) {
+    if(r.aktif==='N'||r.mulai&&tgl<r.mulai||r.akhir&&tgl>r.akhir)return false;
+    const d=new Date(tgl+'T00:00:00Z');if(!Number.isFinite(d.getTime()))return false;
+    const l=String(r.hari||'').split(',').filter(Boolean);
+    switch(r.frekuensi){
+      case 'Sekali':return !!r.mulai&&tgl===r.mulai;
+      case 'Rentang':return !!r.mulai&&!!r.akhir&&tgl>=r.mulai&&tgl<=r.akhir;
+      case 'Mingguan':return l.includes(String(d.getUTCDay()));
+      case 'Bulanan':return l.includes(String(d.getUTCDate()));
+      case 'Tahunan':return l.includes(('0'+d.getUTCDate()).slice(-2)+'-'+('0'+(d.getUTCMonth()+1)).slice(-2));
+      case 'Periodik':{
+        const start=new Date((r.mulai||tgl)+'T00:00:00Z'),n=parseInt(r.interval,10)||1;
+        return Math.round((d-start)/86400000)%n===0;
+      }
+      default:return true;
+    }
+  };
+  window.rtSync = function () {
+    const r=S.rt;if(!r)return;
+    for(const [id,key] of [
+      ['r_judul','judul'],['r_deskripsi','deskripsi'],['r_jenis','jenisTugas'],
+      ['r_kategori','kategori'],['r_project','namaProject'],['r_lokasi','lokasi'],
+      ['r_hasil','hasilDiharapkan'],['r_pic','pic'],['r_mulai','mulai'],
+      ['r_akhir','akhir'],['r_tenggat','tenggat'],['r_prioritas','prioritas'],['r_aktif','aktif'],
+    ])if(el(id))r[key]=el(id).value;
+    if(r.frekuensi==='Mingguan'||r.frekuensi==='Bulanan')r.hari=Array.from(document.querySelectorAll('#r_hari input:checked')).map(c=>c.value).join(',');
+    else if(r.frekuensi==='Tahunan')r.hari=Array.from(document.querySelectorAll('#r_thn>div')).map(d=>{
+      const a=d.querySelector('input'),b=d.querySelector('select');return a&&a.value?('0'+a.value).slice(-2)+'-'+('0'+b.value).slice(-2):'';
+    }).filter(Boolean).join(',');
+    else r.hari='';
+    r.interval=r.frekuensi==='Periodik'?val('r_interval',r.interval||'7'):'';
+    r.toko=el('r_semua')&&el('r_semua').checked?'SEMUA':Array.from(document.querySelectorAll('#r_tokoChk input:checked')).map(c=>c.value).join('|');
+  };
+  window.rtPickFreq = function (f) { rtSync();S.rt.frekuensi=f;S.rt.hari='';if(f==='Sekali')S.rt.akhir='';if(!S.rt.mulai)S.rt.mulai=S.meta.today;renderRutinForm(); };
+  window.rtStoreToggle=function(checked){
+    const wrap=el('r_tokoChk');if(!wrap)return;
+    wrap.style.opacity=checked?'.35':'1';wrap.querySelectorAll('input').forEach(x=>{x.disabled=checked;});rtSync();
+  };
+  window.rtPrev = function () {
+    const n=el('r_prev');if(!n||!S.rt)return;
+    const r=S.rt,next=[],start=S.meta.today;let d=start,k=0;
+    while(next.length<5&&k<735){if(berlakuLokal(r,d))next.push(fmtTgl(d));d=addDays(d,1);k++;}
+    n.innerHTML='<b>📌 '+esc(fraseRutin(r))+'</b><div class="mu">'+(next.length?'Berikutnya: '+next.map(esc).join(' · '):'Tidak ada jadwal dalam 2 tahun ke depan.')+'</div>'+(r.frekuensi==='Rentang'?'<div class="mu">Tugas rentang muncul setiap hari dan dicentang per hari.</div>':'');
+  };
+  window.openRutin = function (i) {
+    const r=i!=null?S.rutin[i]:{
+      judul:'',deskripsi:'',jenisTugas:'Operasional',kategori:'',namaProject:'',lokasi:'',hasilDiharapkan:'',
+      frekuensi:'Sekali',prioritas:'Sedang',pic:'',toko:'SEMUA',aktif:'Y',hari:'',interval:7,
+      mulai:S.meta.today,akhir:'',tenggat:''
+    };
+    S.editId=r.id||null;S.rt=JSON.parse(JSON.stringify(r));
+    el('rTitle').textContent=(r.id?'Edit':'Tambah')+' Tugas / Routine';renderRutinForm();el('mRutin').classList.add('on');
+    el('mRutin').scrollTop=0;const box=el('mRutin').querySelector('.box');if(box)box.scrollTop=0;
+  };
+  window.renderRutinForm = function () {
+    if(!S.rt)return;const r=S.rt,hari=String(r.hari||'').split(',').filter(Boolean),tk=String(r.toko||'SEMUA'),tkList=tk==='SEMUA'?[]:tk.split('|');
+    let h='<div class="full routine-head"><strong>01 · Informasi penugasan</strong><small>Bisa tugas harian, kunjungan sekolah, campaign, project, atau kegiatan lain.</small></div>';
+    h+=field('r_judul','Judul tugas *',r.judul,'Mis. Kunjungan SMK Negeri 1 / Program Payday', 'text',true);
+    h+='<label class="routine-field full"><span class="lbl">Instruksi / deskripsi</span><textarea id="r_deskripsi" oninput="rtSync()" placeholder="Tuliskan kegiatan, output, dan langkah yang harus dikerjakan">'+esc(r.deskripsi||'')+'</textarea></label>';
+    h+='<label class="routine-field"><span class="lbl">Jenis pekerjaan</span><input id="r_jenis" list="r_listJenis" value="'+esc(r.jenisTugas||'Operasional')+'" placeholder="Bebas diisi" onchange="rtSync()"><datalist id="r_listJenis">'+TYPES.map(x=>'<option value="'+esc(x)+'"></option>').join('')+'</datalist></label>';
+    h+='<label class="routine-field"><span class="lbl">Kategori / divisi</span><input id="r_kategori" list="r_listKategori" value="'+esc(r.kategori||'')+'" placeholder="Mis. Sales, Operasional" onchange="rtSync()"><datalist id="r_listKategori">'+(cfg().kategori||[]).map(x=>'<option value="'+esc(x)+'"></option>').join('')+'</datalist></label>';
+    h+=field('r_project','Campaign / project (opsional)',r.namaProject,'Mis. Back to School 2027');
+    h+=field('r_lokasi','Lokasi tujuan (opsional)',r.lokasi,'Mis. SMKN 1 Makassar / Store');
+    h+=field('r_hasil','Target hasil / output',r.hasilDiharapkan,'Mis. 10 prospek terdata / dokumentasi', 'text',true);
+    h+='<div class="full routine-head"><strong>02 · Jadwal & tenggat</strong><small>Penugasan satu kali atau tugas berulang.</small></div>';
+    h+='<div class="routine-frequency full">'+FREQ.map(f=>'<button type="button" class="routine-frequency-button '+(r.frekuensi===f[0]?'selected':'')+'" onclick="rtPickFreq(\''+f[0]+'\')"><span>'+f[2]+' '+f[0]+'</span><small>'+f[1]+'</small></button>').join('')+'</div>';
+    if(r.frekuensi==='Mingguan')h+='<div class="full"><span class="lbl">Hari dalam seminggu *</span><div class="chk" id="r_hari">'+HARI.map((n,i)=>'<label class="'+(selected(r.hari,i)?'on':'')+'"><input type="checkbox" value="'+i+'"'+(selected(r.hari,i)?' checked':'')+' style="display:none" onchange="this.parentNode.classList.toggle(\'on\',this.checked);rtSync();rtPrev()">'+esc(n)+'</label>').join('')+'</div></div>';
+    if(r.frekuensi==='Bulanan')h+='<div class="full"><span class="lbl">Tanggal tiap bulan *</span><div class="chk" id="r_hari">'+Array.from({length:31},(_,i)=>'<label class="'+(selected(r.hari,i+1)?'on':'')+'"><input type="checkbox" value="'+(i+1)+'"'+(selected(r.hari,i+1)?' checked':'')+' style="display:none" onchange="this.parentNode.classList.toggle(\'on\',this.checked);rtSync();rtPrev()">'+(i+1)+'</label>').join('')+'</div></div>';
+    if(r.frekuensi==='Tahunan')h+='<div class="full"><span class="lbl">Tanggal dan bulan *</span><div id="r_thn">'+(hari.length?hari:['']).map(x=>{const a=x.split('-');return '<div class="routine-date-row"><input type="number" min="1" max="31" placeholder="Tanggal" value="'+esc(a[0]||'')+'" onchange="rtSync();rtPrev()"><select onchange="rtSync();rtPrev()">'+BULAN.map((m,i)=>'<option value="'+(i+1)+'"'+(+a[1]===i+1?' selected':'')+'>'+esc(m)+'</option>').join('')+'</select><button type="button" class="btn s" onclick="this.parentNode.remove();rtSync();rtPrev()">Hapus</button></div>';}).join('')+'</div><button type="button" class="btn s" onclick="this.previousElementSibling.insertAdjacentHTML(\'beforeend\',this.previousElementSibling.firstElementChild.outerHTML);rtSync();rtPrev()">+ Tanggal</button></div>';
+    if(r.frekuensi==='Periodik')h+=field('r_interval','Setiap ... hari *',r.interval||7,'7','number');
+    h+=field('r_mulai',(r.frekuensi==='Sekali'?'Tanggal tugas *':'Mulai berlaku')+(r.frekuensi==='Rentang'||r.frekuensi==='Periodik'?' *':''),r.mulai||'', '', 'date');
+    if(r.frekuensi!=='Sekali')h+=field('r_akhir',r.frekuensi==='Rentang'?'Selesai periode *':'Berakhir (opsional)',r.akhir||'', '', 'date');
+    h+=field('r_tenggat','Deadline tindak lanjut (opsional)',r.tenggat||'','','date');
+    h+='<div class="full routine-preview" id="r_prev"></div>';
+    h+='<div class="full routine-head"><strong>03 · PIC, prioritas, dan target toko</strong><small>Master / SPV dapat menugaskan seluruh toko atau beberapa toko sekaligus.</small></div>';
+    h+=field('r_pic','PIC / tim penanggung jawab',r.pic,'Nama orang / tim');
+    h+='<label class="routine-field"><span class="lbl">Prioritas</span><select id="r_prioritas" onchange="rtSync()">'+opts(cfg().prioritas||['Rendah','Sedang','Tinggi','Kritis'],r.prioritas||'Sedang')+'</select></label>';
+    h+='<label class="routine-field"><span class="lbl">Status template</span><select id="r_aktif" onchange="rtSync()"><option value="Y"'+(r.aktif!=='N'?' selected':'')+'>Aktif</option><option value="N"'+(r.aktif==='N'?' selected':'')+'>Nonaktif</option></select></label>';
+    h+='<div class="full routine-stores"><label class="routine-all-label"><input type="checkbox" id="r_semua"'+(tk==='SEMUA'?' checked':'')+' onchange="rtStoreToggle(this.checked)"> Terapkan ke seluruh toko</label><div class="chk" id="r_tokoChk" style="opacity:'+(tk==='SEMUA'?'.35':'1')+'">'+storeNames().map(x=>'<label class="'+(tkList.includes(x)?'on':'')+'"><input type="checkbox" value="'+esc(x)+'"'+(tkList.includes(x)?' checked':'')+(tk==='SEMUA'?' disabled':'')+' style="display:none" onchange="this.parentNode.classList.toggle(\'on\',this.checked);rtSync()">'+esc(x)+'</label>').join('')+'</div></div>';
+    el('rBody').innerHTML=h;rtPrev();
+  };
+  window.saveRutin = function () {
+    rtSync();const r=S.rt;if(!r)return;
+    r.judul=txt(r.judul);r.jenisTugas=txt(r.jenisTugas)||'Operasional';
+    if(!r.judul)return toast('Isi judul tugas',true);
+    if(['Sekali','Rentang','Periodik'].includes(r.frekuensi)&&!isDate(r.mulai))return toast('Pilih tanggal mulai yang benar',true);
+    if(r.frekuensi==='Rentang'&&!isDate(r.akhir))return toast('Pilih tanggal akhir periode',true);
+    if(r.akhir&&r.mulai&&r.akhir<r.mulai)return toast('Tanggal akhir lebih awal dari tanggal mulai',true);
+    if(['Mingguan','Bulanan','Tahunan'].includes(r.frekuensi)&&!r.hari)return toast('Tentukan hari atau tanggal jadwal',true);
+    if(r.frekuensi==='Periodik'&&(+r.interval<1||!Number.isInteger(+r.interval)))return toast('Interval harus lebih dari nol',true);
+    if(!r.toko)return toast('Pilih setidaknya satu toko atau Semua toko',true);
+    r.id=S.editId||'';
+    const button=el('mRutin').querySelector('.btn.p');button.disabled=true;button.textContent='Menyimpan…';
+    call('rutinSave',{data:r},true).then(()=>{
+      toast('Tugas berhasil disimpan ke Assignment Checklist','ok');closeM('mRutin');
+      return call('list',{type:'RUTIN'},true).then(rows=>{S.rutin=rows;renderRutin();});
+    }).catch(e=>toast('Tugas belum tersimpan: '+(e.message||e),true)).finally(()=>{button.disabled=false;button.textContent='Simpan';});
+  };
+  window.renderRutin = function () {
+    const all=S.rutin||[],active=all.filter(r=>r.aktif!=='N');
+    const counts={};active.forEach(r=>{const t=r.jenisTugas||'Operasional';counts[t]=(counts[t]||0)+1;});
+    const summary='<div class="routine-stats"><div><span>Total template</span><strong>'+all.length+'</strong></div><div><span>Aktif</span><strong>'+active.length+'</strong></div><div><span>Campaign</span><strong>'+(counts.Campaign||0)+'</strong></div><div><span>Kunjungan sekolah</span><strong>'+(counts['Kunjungan Sekolah']||0)+'</strong></div><div><span>Project</span><strong>'+(counts.Project||0)+'</strong></div></div>';
+    const values=['SEMUA',...new Set(all.map(r=>r.jenisTugas||'Operasional'))];const type=values.includes(S.rtFilter)?S.rtFilter:'SEMUA';
+    let h=summary+'<div class="routine-filter"><label>Jenis pekerjaan <select onchange="S.rtFilter=this.value;renderRutin()">'+opts(values,values.includes(type)?type:'SEMUA')+'</select></label><span class="mu">Tugas aktif muncul otomatis di Assignment sesuai toko dan tanggal.</span></div>';
+    el('rtMini').innerHTML=h;
+    const rows=all.filter(r=>type==='SEMUA'||(r.jenisTugas||'Operasional')===type);
+    let tab='<table class="routine-table"><thead><tr><th>Tugas</th><th>Tipe</th><th>Frekuensi / jadwal</th><th>PIC</th><th>Target toko</th><th>Status</th><th>Aksi</th></tr></thead><tbody>';
+    rows.forEach(r=>{const i=all.indexOf(r);
+      tab+='<tr><td><b>'+esc(r.judul)+'</b>'+(r.namaProject?'<div class="mu">'+esc(r.namaProject)+'</div>':'')+(r.lokasi?'<div class="mu">⌖ '+esc(r.lokasi)+'</div>':'')+'</td><td><span class="routine-type-badge">'+esc(r.jenisTugas||'Operasional')+'</span></td><td><b>'+esc(r.frekuensi||'Harian')+'</b><div class="mu">'+esc(fraseRutin(r))+'</div>'+(r.tenggat?'<div class="mu">Deadline: '+fmtTgl(r.tenggat)+'</div>':'')+'</td><td>'+esc(r.pic||'—')+'</td><td>'+esc(r.toko==='SEMUA'?'12 toko / Semua toko':String(r.toko||'').split('|').join(', '))+'</td><td>'+(r.aktif==='N'?pill('Nonaktif','r'):pill('Aktif','g'))+'</td><td class="routine-table-actions"><button class="btn s o" onclick="openRutin('+i+')">Edit</button><button class="btn s r" onclick="hapusRutin(\''+esc(r.id)+'\')">Hapus</button></td></tr>';
+    });
+    if(!rows.length)tab+='<tr><td colspan="7" class="empty">Belum ada penugasan pada filter ini.</td></tr>';
+    tab+='</tbody></table>';el('rutinTbl').innerHTML=tab;
+  };
+  // Visual metadata in Assignment, without changing the upload-and-auto-check workflow.
+  const oldRender=window.renderCeklis;
+  window.renderCeklis=function(){oldRender();if(!S.ckRows)return;
+    document.querySelectorAll('#ckIsi .ckrow').forEach(row=>{
+      const i=Number(row.id.slice(2)),r=S.ckRows[i],title=row.querySelector('.t');if(!r||!title)return;
+      let a=[];if(r.jenisTugas&&r.jenisTugas!=='Operasional'&&r.jenisTugas!=='Arsip Tugas')a.push(r.jenisTugas);
+      if(r.namaProject)a.push(r.namaProject);if(r.lokasi)a.push('⌖ '+r.lokasi);
+      if(r.tenggat)a.push('Deadline '+fmtTgl(r.tenggat));
+      if(a.length)title.insertAdjacentHTML('afterend','<div class="routine-check-meta">'+a.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>');
+      if(r.hasilDiharapkan)title.parentNode.insertAdjacentHTML('beforeend','<div class="routine-check-output">🎯 '+esc(r.hasilDiharapkan)+'</div>');
+    });
+  };
+  // Add global task status to Executive Overview, using live manager-authorized data.
+  const oldDash=window.renderDash;
+  window.renderDash=function(ms,tr){oldDash(ms,tr);
+    if(!S.me||!isMgr()||S.dashTab&&S.dashTab!=='ringkasan')return;
+    const root=document.querySelector('#pDash .exec-root');if(!root)return;
+    const holder=document.createElement('div');holder.className='exec-card';holder.id='routineExec';
+    holder.innerHTML='<h3>Tugas Global & Campaign</h3><p class="mu">Memuat portofolio penugasan dari Supabase...</p>';root.appendChild(holder);
+    call('list',{type:'RUTIN'},true).then(rows=>{
+      if(!holder.isConnected)return;const active=rows.filter(r=>r.aktif!=='N'),
+        typeCount=x=>active.filter(r=>(r.jenisTugas||'Operasional')===x).length,
+        due=active.filter(r=>r.tenggat&&r.tenggat<S.meta.today).length;
+      holder.innerHTML='<div class="v6-section-head"><div><h3>Portofolio Tugas Global</h3><p>Template aktif untuk 12 toko • tugas selesai tetap dilacak di Assignment Checklist.</p></div><button class="btn s p" onclick="go(\'rutin\')">Kelola Tugas</button></div><div class="routine-stats"><div><span>Aktif</span><strong>'+active.length+'</strong></div><div><span>Campaign</span><strong>'+typeCount('Campaign')+'</strong></div><div><span>Project</span><strong>'+typeCount('Project')+'</strong></div><div><span>Kunjungan Sekolah</span><strong>'+typeCount('Kunjungan Sekolah')+'</strong></div><div><span>Tenggat lewat *</span><strong>'+due+'</strong></div></div><p class="mu">* Tenggat template, bukan jumlah tugas yang belum selesai. Progres per toko terlihat pada modul Assignment.</p>';
+    }).catch(e=>{if(holder.isConnected)holder.innerHTML='<h3>Tugas Global</h3><p class="mu">Tidak dapat memuat: '+esc(e.message||e)+'</p>';});
+  };
+})();
 </script>
 </body>
 </html>

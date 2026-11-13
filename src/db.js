@@ -94,8 +94,12 @@ export async function uploadPhoto(token, dataUrl, options = {}) {
           p_client_sha256: sha256, p_context: String(options.context || '').slice(0, 240)
         });
       } catch (e) {
-        throw new Error('Foto sudah diunggah tetapi bukti waktu server belum tercatat: ' + (e.message || String(e)) +
-          '. Jalankan SQL migrasi 20261113_010_dso_photo_audit.sql sebelum melanjutkan.');
+        const message = String(e && e.message || e);
+        const isAmbiguousTicket = /column reference [\"'`]?ticket[\"'`]? is ambiguous/i.test(message);
+        const hint = isAmbiguousTicket
+          ? ' Jalankan SQL hotfix 20261113_011_fix_photo_ticket_ambiguity.sql di Supabase SQL Editor (migrasi 010 saja belum cukup).'
+          : ' Periksa fungsi public.dco_photo_register dan migrasi 010-011 di Supabase.';
+        throw new Error('Foto sudah diunggah ke Storage tetapi pencatatan waktu server belum berhasil: ' + message + '.' + hint);
       }
       return { path, receipt };
     }
