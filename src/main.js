@@ -1,5 +1,5 @@
 // Titik masuk: memasang "server" (port Code.gs) di browser untuk UI referensi Apps Script.
-import { CONFIGURED, photoUrl } from './db.js';
+import { CONFIGURED, photoUrl, serverNow } from './db.js';
 import { api, logoutToken, ping, A } from './server/index.js';
 
 const token = () => (window.S && window.S.me && window.S.me.token) || '';
@@ -8,6 +8,9 @@ const toastSafe = (m, err) => { try { window.toast(m, err); } catch (e) { alert(
 // Sama seperti google.script.run: argumen diserialisasi (salinan), hasil berupa string JSON
 window.__dcoApi = (action, p, sesi) => api(action, JSON.parse(JSON.stringify(p == null ? {} : p)), sesi);
 window.__dcoFotoUrl = (id, w) => photoUrl(id, w);
+// A fresh Supabase server-time sync before each live camera session.
+window.__dcoServerNow = () => serverNow();
+window.__dcoSyncClock = () => ping();
 window.__dcoBackup = (id) => {
   toastSafe('Mengunduh backup…');
   A.downloadBackup(token(), id).then((nama) => toastSafe('Backup diunduh: ' + nama, 'ok'), (e) => toastSafe(e.message || String(e), true));

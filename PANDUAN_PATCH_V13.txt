@@ -1,0 +1,17 @@
+DAILY COMMERCIAL OPERATION v13 — PATCH DSO + TIMESTAMP KAMERA
+
+1) BACKUP kode GitHub, database dan Storage foto Supabase.
+2) Supabase > SQL Editor: jalankan supabase/migrations/20261113_010_dso_photo_audit.sql.
+   SQL 010 harus dijalankan SEBELUM kode baru di-deploy.
+3) Ekstrak Patch v13; upload isi subfolder ke repository GitHub
+   tigalapancommercial-netizen/Daily-Commercial-Operation sesuai lokasinya.
+4) GitHub > Actions: cek deploy sukses, kemudian refresh browser.
+5) Uji DSO: item pertama >1 foto dan item lain 1 foto, klik Kirim.
+6) Uji kamera langsung dan klik hasil foto untuk catatan waktu Supabase.
+
+Detail: docs/UPDATE_V13_DSO_TIMESTAMP.md.
+
+CATATAN:
+- SQL ini tidak menghapus data/foto lama.
+- Data produksi dan koneksi backend belum diuji langsung dari sesi ini.
+- Timestamp + checksum membantu audit, bukan bukti foto mustahil dimanipulasi.

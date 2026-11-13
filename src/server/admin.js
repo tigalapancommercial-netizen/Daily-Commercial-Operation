@@ -5,7 +5,8 @@ import { getCfg_ } from './core.js';
 import { buildXlsx, inspectXlsx, u8ToB64, b64ToU8, sha256Hex, downloadBytes } from '../xlsx.js';
 
 // ================= FOTO =================
-export async function uploadFoto_(ctx, dataUrl) { return { id: await uploadPhoto(ctx.token, dataUrl) }; }
+export async function uploadFoto_(ctx, dataUrl, options = {}) { const out = await uploadPhoto(ctx.token, dataUrl, options); return { id: out.path, receipt: out.receipt }; }
+export async function photoReceipt_(ctx, id) { return rpc('dco_photo_receipt', {p_token:ctx.token, p_path:String(id||'')}); }
 export async function fotoB64_(id) {
   id = String(id || '');
   if (!STORAGE_PATH_RE.test(id)) return '';   // ID Drive lama: tampil via thumbnail Drive; tidak bisa diambil dari browser

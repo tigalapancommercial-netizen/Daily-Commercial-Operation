@@ -1,6 +1,6 @@
 {
   "name": "daily-operation-commercial",
-  "version": "12.0.0",
+  "version": "14.0.0",
   "private": true,
   "type": "module",
   "description": "Assignment Checklist Store / Daily Operation Commercial — paritas Apps Script v6/v7 di atas Supabase",
@@ -12,7 +12,7 @@
     "check": "node scripts/check.mjs",
     "test:db": "bash tests/run_db_tests.sh",
     "test:e2e": "bash tests/run_e2e.sh",
-    "test:ui": "python3 tests/v12_before_after_smoke.py"
+    "test:ui": "python3 tests/v14_assignment_auto_smoke.py"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",

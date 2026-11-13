@@ -1,3 +1,13 @@
+# v14: Auto-check Assignment setelah upload foto
+
+Fitur baru: unggah bukti foto pada Assignment Checklist otomatis menyimpan status **Selesai** setelah server mengonfirmasi foto dan status. Jika gagal, tidak ada centang palsu. Panduan: `docs/UPDATE_V14_ASSIGNMENT_AUTO.md`.
+
+# **Update v13**
+
+Perbaikan DSO submit multi-foto, live watermark WITA, dan receipt server. Lihat `docs/UPDATE_V13_DSO_TIMESTAMP.md`. **Jalankan SQL 010 sebelum deploy frontend.**
+
+---
+
 # Daily Operation Commercial — Assignment Checklist Store (v12, Supabase)
 
 Aplikasi ini menggunakan **struktur/paritas UI v7 sebagai baseline** dari Apps Script v6/v7 (`Code.gs` + `Index.html`) ke **Supabase + GitHub Pages**.

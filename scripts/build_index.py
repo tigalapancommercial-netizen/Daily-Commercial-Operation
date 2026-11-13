@@ -191,6 +191,10 @@ from patch_v11_compact import patch_html as patch_v11
 out = patch_v11(out)
 from patch_v12_before_after import patch_html as patch_v12
 out = patch_v12(out)
+from patch_v13_dso_timestamp import patch_html as patch_v13
+out = patch_v13(out)
+from patch_v14_assignment_autocheck import patch_html as patch_v14
+out = patch_v14(out)
 target = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'index.html'
 target.write_text(out, encoding='utf-8')
 print(target.name, 'dibuat:', len(out), 'byte,', len(PATCHES), 'patch')

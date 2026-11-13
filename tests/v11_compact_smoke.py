@@ -56,7 +56,7 @@ async def main():
    await page.wait_for_function('()=>photoList(S.ckRows[0].fotoId).length===2',timeout=18000)
    assert await page.locator('#evidenceHubGallery .evidence-thumb').count()==2
    assert await page.evaluate("()=>__uploadTypes.every(x=>x.startsWith('data:image/webp;base64,'))")
-   assert await page.locator('#ckIsi .photo-chip').first.inner_text()=='📷 Foto2' or '2' in (await page.locator('#ckIsi .photo-chip').first.inner_text())
+   assert '2' in (await page.locator('#ck0 .photo-chip').inner_text()), 'Checklist auto-complete may reorder rows; target stable ID'
    # Remove photo from hub: only the selected one must be detached.
    await page.evaluate("()=>{window.confirm=()=>true;}")
    await page.locator('#evidenceHubGallery .evidence-remove').first.click()

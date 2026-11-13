@@ -1,0 +1,15 @@
+DAILY COMMERCIAL OPERATION v14 - AUTO CENTANG ASSIGNMENT
+
+1) Backup repository Github, database dan foto Supabase.
+2) Ekstrak ZIP Patch v14 dan unggah semua isi ke root repository
+   tigalapancommercial-netizen/Daily-Commercial-Operation.
+3) Jika SQL 010 (v13) belum pernah dijalankan, buka Supabase SQL Editor dan jalankan
+   supabase/migrations/20261113_010_dso_photo_audit.sql.
+   Tidak perlu SQL baru khusus Assignment v14.
+4) GitHub > Actions: pastikan build dan deploy berhasil, refresh browser.
+5) Uji Assignment: buka satu item Belum > Foto > ambil foto/galeri > tunggu.
+   Setelah semua foto berhasil disimpan, item otomatis Selesai dan tercentang.
+6) Cek data asli di Supabase, termasuk foto dan status CEKLIS.
+7) Jika salah satu foto gagal, status tidak otomatis selesai; ulangi unggahan.
+
+Penting: belum diuji pada database produksi milik Anda.

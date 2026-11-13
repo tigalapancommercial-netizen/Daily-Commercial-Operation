@@ -1,0 +1,38 @@
+{
+  "checks": 27,
+  "widths": [
+    390,
+    768,
+    1280
+  ],
+  "browser_errors": [],
+  "check_names": [
+    "390:initial_unchecked",
+    "390:opening_gallery_does_not_complete",
+    "390:auto_tick_and_one_backend_write",
+    "390:remove_photo_keeps_status",
+    "390:server_failure_never_ticks",
+    "390:retry_success",
+    "390:partial_upload_does_not_autocomplete",
+    "390:partial_retry_autocompletes",
+    "390:validated_store_locked",
+    "768:initial_unchecked",
+    "768:opening_gallery_does_not_complete",
+    "768:auto_tick_and_one_backend_write",
+    "768:remove_photo_keeps_status",
+    "768:server_failure_never_ticks",
+    "768:retry_success",
+    "768:partial_upload_does_not_autocomplete",
+    "768:partial_retry_autocompletes",
+    "768:validated_store_locked",
+    "1280:initial_unchecked",
+    "1280:opening_gallery_does_not_complete",
+    "1280:auto_tick_and_one_backend_write",
+    "1280:remove_photo_keeps_status",
+    "1280:server_failure_never_ticks",
+    "1280:retry_success",
+    "1280:partial_upload_does_not_autocomplete",
+    "1280:partial_retry_autocompletes",
+    "1280:validated_store_locked"
+  ]
+}

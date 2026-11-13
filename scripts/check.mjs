@@ -12,10 +12,10 @@ try {
   const same = fs.readFileSync('index.html', 'utf8') === fs.readFileSync(tmp, 'utf8');
   console.log((same ? 'OK   ' : 'INFO ') + 'index.html ' + (same ? 'identik dengan' : 'berbeda dari (sudah diedit manual)') + ' legacy/Index.reference.html + patch');
 } catch (e) { console.log('INFO python3 tidak tersedia, pemeriksaan index.html dilewati'); }
-const sql = fs.readFileSync('supabase/migrations/20261112_006_dco_parity.sql', 'utf8');
+const sql = fs.readdirSync('supabase/migrations').filter(f => f.endsWith('.sql')).map(f => fs.readFileSync('supabase/migrations/' + f, 'utf8')).join('\n');
 const src = ['src/db.js', 'src/server/index.js', 'src/server/ctx.js', 'src/server/core.js', 'src/server/admin.js'].map((f) => fs.readFileSync(f, 'utf8')).join('\n');
 const used = new Set([...src.matchAll(/'(dco_[a-z_]+)'/g)].map((m) => m[1]));
-for (const fn of used) ok(new RegExp('function public\\.' + fn + '\\(').test(sql), 'RPC ' + fn + ' ada di migrasi 006');
+for (const fn of used) ok(new RegExp('function public\\.' + fn + '\\(', 'i').test(sql), 'RPC ' + fn + ' ada di migrasi SQL');
 const html = fs.readFileSync('index.html', 'utf8');
 const actions = [...html.matchAll(/call\('([a-zA-Z]+)'/g)].map((m) => m[1]);
 const disp = fs.readFileSync('src/server/index.js', 'utf8');

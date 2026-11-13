@@ -76,13 +76,29 @@ function rand(n) {
   const a = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', u = new Uint8Array(n); crypto.getRandomValues(u);
   return Array.from(u, (x) => a[x % a.length]).join('');
 }
-export async function uploadPhoto(token, dataUrl) {
+export async function uploadPhoto(token, dataUrl, options = {}) {
   const { blob, ext } = dataUrlToBlob(dataUrl);
+  // Hash of the bytes actually sent to Storage; the Supabase receipt records
+  // the immutable server-side object creation time independently.
+  const digest = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
+  const sha256 = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
   for (let attempt = 0; attempt < 2; attempt++) {
     const t = await getTicket(token, attempt > 0);
     const path = t.bulan + '/' + t.ticket + '_' + rand(10) + '.' + ext;
     const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: blob.type, upsert: false, cacheControl: '31536000' });
-    if (!error) return path;
+    if (!error) {
+      let receipt;
+      try {
+        receipt = await rpc('dco_photo_register', {
+          p_token: token, p_path: path, p_source: String(options.source || 'galeri'),
+          p_client_sha256: sha256, p_context: String(options.context || '').slice(0, 240)
+        });
+      } catch (e) {
+        throw new Error('Foto sudah diunggah tetapi bukti waktu server belum tercatat: ' + (e.message || String(e)) +
+          '. Jalankan SQL migrasi 20261113_010_dso_photo_audit.sql sebelum melanjutkan.');
+      }
+      return { path, receipt };
+    }
     if (attempt === 1 || !/row-level security|Unauthorized|403|policy/i.test(String(error.message || error))) {
       throw new Error('Gagal mengunggah foto: ' + friendly(error));
     }
