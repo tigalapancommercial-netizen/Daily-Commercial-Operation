@@ -1,24 +1,9 @@
-# Daily Commercial Operation — v17 (Supabase native)
+# Patch DCO v19 — Hapus Permanen Campaign
 
-Web app for PT Tigalapan Sukses Indonesia, 12 stores. GitHub Pages hosts frontend; Supabase PostgreSQL and Storage handle data/photos. No Google Apps Script runtime.
+Patch aplikasi **v18**. Menambahkan tombol Edit Campaign yang jelas, Hapus ke Sampah, Pulihkan, Backup JSON lengkap, Hapus Permanen khusus Master, dan pembersihan foto yatim melalui Storage API dengan pengamanan referensi.
 
-## Instalasi
+Baca `docs/PANDUAN_V19_CAMPAIGN_HAPUS_PERMANEN.md` sebelum memasang. Untuk keamanan, backup terlebih dahulu dan lakukan uji staging.
 
-Lihat **[docs/UPDATE_V17_GLOBAL_TASKS.md](docs/UPDATE_V17_GLOBAL_TASKS.md)** untuk langkah sederhana. Jika memakai patch dari v15, jalankan migrasi SQL `012_periodic_reports.sql` lalu `013_global_tasks.sql` di Supabase, dan unggah source patch sesuai path ke GitHub.
+File runtime yang berubah: `index.html`, `src/v18_frontend.js`, `src/server/index.js`, `src/server/campaign.js`. Database tambahan: `supabase/migrations/20261113_015_campaign_trash_and_permanent_delete.sql`.
 
-## Modul
-
-Executive Dashboard, Assignment Checklist Store, Daily Store Operation, Weekly/Monthly Reporting, Rekap Masalah, Jadwal Visit, Visiting Check Point, Pending Matter, Tugas Global & Routine, Pengaturan, Export/Backup/Arsip.
-
-## Uji lokal
-
-```bash
-npm ci
-npm run check
-npm run build
-node tests/v17_routine_schedule.mjs
-python3 tests/v17_global_tasks_smoke.py
-python3 tests/v17_period_smoke.py
-```
-
-Jangan unggah environment secrets, foto atau CSV historis ke repository publik. Tidak ada klaim build produksi atau penyalinan data produksi yang telah dilaksanakan.
+Migrasi SQL ini **tidak menghapus data apa pun ketika dijalankan**; fungsi Hapus Permanen hanya bekerja setelah aksi eksplisit Master pada UI dan konfirmasi ketat.

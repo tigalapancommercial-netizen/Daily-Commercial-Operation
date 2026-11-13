@@ -245,5 +245,116 @@ const oldDash=renderDash;renderDash=function(ms,tr){oldDash(ms,tr);
  hold.innerHTML='<div class="cp-section"><div><h3>Campaign Management</h3><p class="mu">Target &amp; closing dari semua campaign aktif • tidak dicampur dengan Tugas Global</p></div><button class="btn p s" onclick="go(\'campaign\')">Buka Campaign</button></div><div class="cp-kpis">'+cpMetric('Campaign aktif',num(active.length),'Program berjalan')+cpMetric('Target revenue',money(target),'Seluruh toko')+cpMetric('Realisasi closing',money(revenue),'Order Lunas / Terkirim','revenue')+cpMetric('Achievement',target?Math.round(revenue/target*100)+'%':'—','Target campaign')+'</div>';
  }).catch(e=>{if(hold.isConnected)hold.innerHTML='<h3>Campaign Management</h3><p class="mu">Modul campaign belum aktif: '+cpEsc(e.message||e)+'</p>';});
 };
-Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampaign,cpEditRecord,cpArchive,cpLoadMore,cpExport});
+
+// === v19 Campaign lifecycle: Edit / Sampah / Pulihkan / Backup / Hapus Permanen ===
+const cpAdmin={trash:[],backupPrepared:new Set(),busy:false};
+function cpShowMasterControls(){
+ const show=!!(S.me&&isMaster());
+ ['cpTrashBtn','cpMoveTrashBtn','cpBackupBtn'].forEach(id=>{const el=by(id);if(el)el.classList.toggle('hid',!show);});
+ const edit=by('cpEditBtn');if(edit)edit.disabled=!cp.id;
+ const move=by('cpMoveTrashBtn');if(move)move.disabled=!cp.id;
+ const backup=by('cpBackupBtn');if(backup)backup.disabled=!cp.id;
+}
+const cpListBeforeAdmin=cpList;
+cpList=async function(){const out=await cpListBeforeAdmin.apply(this,arguments);cpShowMasterControls();return out;};
+function cpCloseTrash(){by('cpTrashModal')?.classList.remove('on');}
+async function cpMoveTrash(){
+ if(!isMaster())return toast('Hanya Master yang dapat menghapus Campaign',true);
+ const c=cpCurrent();if(!c)return toast('Pilih campaign terlebih dahulu',true);
+ const info=await call('campaignDeletePreview',{id:c.id},true).catch(e=>{toast(e.message||e,true);return null;});
+ if(!info)return;
+ const message='Pindahkan "'+info.name+'" ke Sampah?\n\n'+num(info.records)+' data, '+num(info.stores)+' target toko, '+num(info.audit)+' histori audit AKAN TETAP TERSIMPAN dan bisa dipulihkan.\n\nCampaign tidak lagi muncul di Dashboard / Store.';
+ if(!confirm(message))return;
+ try{await call('campaignManage',{id:c.id,action:'trash'},true);cp.id='';toast('Campaign dipindahkan ke Sampah. Data masih dapat dipulihkan.','ok');await cpList();await cpOpenTrash();}
+ catch(e){toast('Gagal memindahkan campaign: '+(e.message||e),true);}
+}
+async function cpOpenTrash(){
+ if(!isMaster())return toast('Sampah khusus Master',true);
+ const modal=by('cpTrashModal');if(!modal)return;
+ modal.classList.add('on');by('cpTrashBody').innerHTML='<div class="skel"></div>';
+ try{
+  const [items,cleanup]=await Promise.all([call('campaignTrashList',{},true),call('campaignCleanupCount',{},true)]);
+  cpAdmin.trash=items||[];
+  let h='<p class="mu">Campaign di Sampah tidak terlihat oleh Store/Dashboard. Hapus Permanen membersihkan data, target toko, dan audit terkait; tindakan tidak dapat dibatalkan.</p>';
+  if(!cpAdmin.trash.length)h+='<div class="cp-empty">Sampah Campaign kosong.</div>';
+  for(const c of cpAdmin.trash){
+   const id=cpEsc(c.id);
+   h+='<article class="cp-trash-card"><div class="cp-trash-head"><div><strong>'+cpEsc(c.name)+'</strong><div class="mu">Dihapus ke Sampah '+cpEsc(c.deleted_at?new Date(c.deleted_at).toLocaleString('id-ID',{timeZone:'Asia/Makassar'}):'-')+' WITA · oleh '+cpEsc(c.deleted_by||'-')+'</div></div><span class="bdg st-Pending">Sampah</span></div>'+
+    '<div class="cp-trash-count">'+num(c.records)+' data · '+num(c.stores)+' toko · '+num(c.audit_events)+' audit</div>'+
+    '<div class="cp-trash-actions"><button class="btn s g" data-id="'+id+'" onclick="cpRestoreCampaign(this.dataset.id)">↶ Pulihkan</button>'+
+    '<button class="btn s" data-id="'+id+'" onclick="cpBackupCampaign(this.dataset.id)">↓ Backup JSON</button>'+
+    '<button class="btn s r" data-id="'+id+'" onclick="cpPurgeCampaign(this.dataset.id)">🗑 Hapus Permanen</button></div>'+
+    '<label class="cp-trash-ack"><input type="checkbox" id="cpAck_'+id+'"> Saya sudah mengunduh dan memeriksa file backup JSON campaign ini</label></article>';
+  }
+  h+='<div class="cp-trash-foot"><div class="mu">Foto di Supabase Storage: '+num(cleanup.pending||0)+' menunggu pembersihan, '+num(cleanup.done||0)+' telah dibersihkan'+(cleanup.skipped_shared?' · '+num(cleanup.skipped_shared)+' foto masih dipakai modul lain':'')+'.</div>'+
+    '<button type="button" class="btn s" onclick="cpCleanupCampaignPhotos()">♻ Bersihkan Foto Tersisa</button></div>';
+  by('cpTrashBody').innerHTML=h;
+ }catch(e){by('cpTrashBody').innerHTML='<div class="cp-empty">Gagal membuka Sampah: '+cpEsc(e.message||e)+'</div>';}
+}
+async function cpRestoreCampaign(id){
+ if(!isMaster())return;
+ const c=cpAdmin.trash.find(x=>x.id===id);if(!c)return toast('Data Sampah berubah, buka ulang',true);
+ if(!confirm('Pulihkan campaign '+c.name+'? Campaign akan terlihat kembali pada toko yang ditugaskan.'))return;
+ try{await call('campaignManage',{id,action:'restore'},true);toast('Campaign berhasil dipulihkan','ok');cp.id=id;await cpList();await cpOpenTrash();}
+ catch(e){toast('Gagal memulihkan: '+(e.message||e),true);}
+}
+async function cpBackupCampaign(id){
+ if(!isMaster())return toast('Backup lengkap hanya untuk Master',true);
+ id=id||cp.id;if(!id)return toast('Pilih campaign',true);
+ if(cpAdmin.busy)return toast('Backup sebelumnya masih diproses',true);
+ cpAdmin.busy=true;
+ try{
+  const sections={};
+  for(const section of ['campaign','stores','records','audit']){
+   let offset=0,arr=[],pages=0;
+   do{
+    const r=await call('campaignBackupSection',{id,section,offset,limit:300},true);
+    arr.push(...(r.rows||[]));offset=arr.length;pages++;
+    if(!r.hasMore)break;
+    if(pages>1000||arr.length>300000)throw new Error('Data terlalu besar untuk backup browser; batasi lewat backend');
+   }while(true);
+   sections[section]=arr;
+  }
+  if(sections.campaign.length!==1)throw new Error('Data induk campaign tidak lengkap');
+  const c=sections.campaign[0];
+  const backup={format:'DCO_CAMPAIGN_BACKUP_V19',exported_at:new Date().toISOString(),
+   photo_bytes_included:false,description:'Data campaign lengkap; binary foto terpisah di Supabase Storage.',
+   campaign:c,stores:sections.stores,records:sections.records,audit:sections.audit};
+  const json=JSON.stringify(backup,null,2),url=URL.createObjectURL(new Blob([json],{type:'application/json;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;
+  a.download='BACKUP_CAMPAIGN_'+String(c.name).replace(/[^A-Za-z0-9_-]+/g,'_').slice(0,70)+'_'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),120000);
+  cpAdmin.backupPrepared.add(id);
+  toast('Backup JSON disiapkan ('+num(sections.records.length)+' data, '+num(sections.audit.length)+' audit). Periksa unduhan sebelum Hapus Permanen.','ok');
+ }catch(e){toast('Backup gagal: '+(e.message||e),true);}finally{cpAdmin.busy=false;}
+}
+async function cpPurgeCampaign(id){
+ if(!isMaster())return toast('Hapus Permanen khusus Master',true);
+ const c=cpAdmin.trash.find(x=>x.id===id);if(!c)return toast('Campaign tidak ditemukan di Sampah',true);
+ const checkbox=by('cpAck_'+id);
+ if(!cpAdmin.backupPrepared.has(id)||!checkbox?.checked){
+  return toast('Unduh Backup JSON dari daftar Sampah dan centang bahwa file sudah diperiksa.',true);
+ }
+ let detail;try{detail=await call('campaignDeletePreview',{id},true);}catch(e){return toast(e.message||e,true);}
+ const typed=prompt('PERINGATAN: Hapus Selamanya seluruh data Campaign termasuk '+num(detail.records)+' data, '+num(detail.stores)+' target toko dan '+num(detail.audit)+' audit.\n\nKetik nama campaign PERSIS untuk melanjutkan:',c.name);
+ if(typed===null)return;
+ if(typed!==c.name)return toast('Nama campaign tidak cocok. Penghapusan dibatalkan.',true);
+ if(!confirm('KONFIRMASI TERAKHIR: HAPUS PERMANEN "'+c.name+'"? Tidak ada fitur Pulihkan setelah langkah ini.'))return;
+ try{
+  const r=await call('campaignManage',{id,action:'purge',confirmName:typed,backupAck:true},true);
+  toast('Campaign dihapus permanen: '+num(r.records_deleted)+' data + '+num(r.audit_deleted)+' audit.','ok');
+  await cpList();await cpOpenTrash();
+  if(r.photos_queued)toast(num(r.photos_queued)+' foto kandidat perlu dibersihkan melalui tombol Bersihkan Foto Tersisa.');
+ }catch(e){toast('Gagal Hapus Permanen: '+(e.message||e),true);}
+}
+async function cpCleanupCampaignPhotos(){
+ if(!isMaster())return;
+ if(!confirm('Bersihkan file foto kandidat yang sudah tidak digunakan oleh campaign maupun modul lain?'))return;
+ try{const r=await call('campaignCleanup',{limit:30},true);
+  toast(num(r.removed)+' foto dibersihkan; '+num(r.pending)+' antre. '+(r.failed?r.message:''),!!r.failed);
+  await cpOpenTrash();
+ }catch(e){toast('Pembersihan foto belum berhasil: '+(e.message||e),true);}
+}
+
+Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampaign,cpEditRecord,cpArchive,cpLoadMore,cpExport,cpMoveTrash,cpOpenTrash,cpCloseTrash,cpRestoreCampaign,cpBackupCampaign,cpPurgeCampaign,cpCleanupCampaignPhotos});
 })();
