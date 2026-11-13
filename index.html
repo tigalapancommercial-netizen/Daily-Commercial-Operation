@@ -647,11 +647,79 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 .cp-trash-ack input{flex:0 0 17px;width:17px;min-width:17px;height:17px;min-height:17px;margin:0;accent-color:#4f46e5}
 .cp-trash-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid #e2e8f0;margin-top:16px;padding-top:12px}
 @media(max-width:650px){.cp-trash-modal{margin:0 6px;padding:14px}.cp-trash-actions>.btn{flex:1 1 130px;white-space:normal;min-width:0}.cp-trash-title h3{font-size:15px}.cp-trash-head{flex-wrap:wrap}}
+
+/* ===============================================================
+   v20: Desktop login as a bounded, centered two-column workspace.
+   Mobile stays a single focused login card. No auth/JS changes.
+   =============================================================== */
+#vLogin.login{
+ display:flex;flex-direction:row;align-items:center;justify-content:center;
+ min-height:100vh;min-height:100dvh;
+ padding:clamp(18px,3vw,40px);
+ background:
+  radial-gradient(circle at 0% 92%,rgba(14,165,233,.23),transparent 36%),
+  radial-gradient(circle at 92% 3%,rgba(236,72,153,.20),transparent 30%),
+  linear-gradient(135deg,#11132d 0%,#292263 54%,#51208c 100%);
+}
+#vLogin .lg-shell{
+ display:grid;grid-template-columns:minmax(0,1.07fr) minmax(0,.93fr);
+ width:min(100%,1120px);min-width:0;
+ min-height:min(650px,calc(100dvh - 70px));
+ border:1px solid rgba(255,255,255,.25);border-radius:26px;
+ overflow:hidden;background:#fff;
+ box-shadow:0 30px 90px rgba(6,10,39,.36);
+}
+#vLogin .lg-hero{
+ min-width:0;min-height:0;padding:clamp(28px,3.8vw,54px);
+ gap:14px;justify-content:center;
+ background:linear-gradient(145deg,#171138 0%,#302879 50%,#6940cf 100%);
+}
+#vLogin .lg-brand{margin-bottom:16px}
+#vLogin .lg-copy{max-width:510px;min-width:0}
+#vLogin .lg-copy h1{font-size:clamp(31px,2.6vw,42px);line-height:1.14;margin:12px 0 14px;max-width:490px}
+#vLogin .lg-copy p{font-size:13.5px;line-height:1.65;margin:0;max-width:430px}
+#vLogin .lg-eyebrow{font-size:10.5px;letter-spacing:.16em}
+#vLogin .lg-slim-steps{margin:6px 0 0;gap:7px}
+#vLogin .lg-slim-steps span{font-size:11px;padding:7px 9px}
+#vLogin .lg-side{
+ min-width:0;min-height:0;margin:0;padding:clamp(20px,3vw,34px);
+ gap:12px;background:linear-gradient(145deg,#f8f9ff,#fff 55%,#fcf7ff);
+}
+#vLogin .lg-card{
+ width:100%;max-width:402px;max-height:none;padding:28px 28px 23px;
+ border-radius:20px;box-shadow:0 15px 42px rgba(40,39,106,.09);
+}
+#vLogin .lg-foot{max-width:410px;line-height:1.5}
+@media(max-width:900px){
+ #vLogin.login{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:20px 16px;
+  background:radial-gradient(circle at 0 0,#7c3aed,transparent 54%),
+  linear-gradient(145deg,#161638,#4338ca 64%,#7c2bc1);
+ }
+ #vLogin .lg-shell{
+  display:block;width:100%;max-width:420px;min-height:0;
+  border:0;border-radius:0;overflow:visible;background:transparent;box-shadow:none;
+ }
+ #vLogin .lg-hero{display:none}
+ #vLogin .lg-side{width:100%;padding:0;margin:0;background:transparent;gap:12px}
+ #vLogin .lg-card{max-width:100%;padding:26px 22px;border-radius:22px;box-shadow:0 20px 56px rgba(10,10,35,.2)}
+ #vLogin .lg-foot{color:#dbe2ff}
+}
+@media(max-width:420px){
+ #vLogin.login{padding:16px 12px}
+ #vLogin .lg-card{padding:22px 19px}
+ #vLogin .lg-clock{font-size:10.5px}
+ #vLogin .lg-card h2{font-size:22px}
+}
+@media(prefers-reduced-motion:reduce){#vLogin *{animation:none!important;transition:none!important}}
+
 </style>
 </head>
 <body>
 <div id="load"></div><div id="toast"></div><div id="lb" class="lb" onclick="this.classList.remove('on')"><img id="lbimg"></div>
 <div id="vLogin" class="login">
+ <div class="lg-shell">
  <section class="lg-hero">
   <i class="lg-blob b1"></i><i class="lg-blob b2"></i><i class="lg-blob b3"></i><div class="lg-grid"></div>
   <div class="lg-brand"><span class="lg-logo">⚡</span><span><b>Daily Operation</b><small>Commercial</small></span></div>
@@ -681,6 +749,7 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
   </div>
   <p class="lg-foot">🔒 Sesi aman · Data tersimpan di cloud · Zona waktu WITA</p>
  </section>
+ </div><!-- /lg-shell -->
 </div>
 
 <div id="vApp" class="app hid">
