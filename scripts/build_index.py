@@ -187,6 +187,10 @@ if out.count('name="viewport"') > 1:
     out = out.replace('\n<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">', '', 1)
 from patch_v10_photo_nav import patch_html
 out = patch_html(out)
+from patch_v11_compact import patch_html as patch_v11
+out = patch_v11(out)
+from patch_v12_before_after import patch_html as patch_v12
+out = patch_v12(out)
 target = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'index.html'
 target.write_text(out, encoding='utf-8')
 print(target.name, 'dibuat:', len(out), 'byte,', len(PATCHES), 'patch')

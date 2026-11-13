@@ -1,8 +1,8 @@
-# Daily Operation Commercial — Assignment Checklist Store (v10, Supabase)
+# Daily Operation Commercial — Assignment Checklist Store (v12, Supabase)
 
 Aplikasi ini menggunakan **struktur/paritas UI v7 sebagai baseline** dari Apps Script v6/v7 (`Code.gs` + `Index.html`) ke **Supabase + GitHub Pages**.
 Fungsi asal diadaptasi ke Supabase (tidak membutuhkan Apps Script). Kesesuaian setiap alur produksi perlu diuji dengan pengguna nyata.
-Update v10 menambahkan kamera langsung/HP, bukti foto multi-file WebP, dan perbaikan navigasi.
+Update v12 mempertahankan perapian v11 (satu tombol foto per item; nama seksi A–E), sekaligus menambahkan galeri **Before/After**, foto hasil update visit dan catatan perbaikan di Issue Visit. Kamera langsung/HP dan kompresi multi-foto WebP tetap tersedia.
 
 | Bagian | Apps Script v6/v7 | v9 (repo ini) |
 |---|---|---|
@@ -23,13 +23,13 @@ Update v10 menambahkan kamera langsung/HP, bukti foto multi-file WebP, dan perba
 - `docs/` — panduan pemasangan, peta paritas, catatan reminder email.
 
 ## Mulai cepat
-1. Supabase → SQL Editor → jalankan `supabase/migrations/20261112_006_dco_parity.sql`, kemudian `supabase/migrations/20261112_008_multiphoto.sql` untuk mendukung banyak foto.
+1. Supabase → SQL Editor → jalankan `supabase/migrations/20261112_006_dco_parity.sql`, kemudian `supabase/migrations/20261112_008_multiphoto.sql` untuk mendukung banyak foto, kemudian `supabase/migrations/20261112_009_visit_before_after.sql` untuk dokumentasi foto update.
 2. (Data lama) jalankan file `20261112_007_import_data.sql` yang dikirim terpisah (**jangan diunggah ke GitHub**).
 3. GitHub → Settings → Secrets → Actions: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`.
 4. Push ke `main` → workflow GitHub Pages membangun & menerbitkan.
 5. Login `master` / `1234` → **segera Ganti PIN**, lalu ganti PIN semua user di Pengaturan → User.
 
-Langkah lengkap: [docs/INSTALL_SUPABASE_GITHUB.md](docs/INSTALL_SUPABASE_GITHUB.md). Untuk fitur baru, baca [docs/UPDATE_V10_KAMERA_NAVIGASI.md](docs/UPDATE_V10_KAMERA_NAVIGASI.md).
+Langkah lengkap: [docs/INSTALL_SUPABASE_GITHUB.md](docs/INSTALL_SUPABASE_GITHUB.md). Untuk perubahan terbaru, baca [docs/UPDATE_V12_BEFORE_AFTER.md](docs/UPDATE_V12_BEFORE_AFTER.md), [docs/UPDATE_V11_UI_RINGKAS.md](docs/UPDATE_V11_UI_RINGKAS.md) dan [docs/UPDATE_V10_KAMERA_NAVIGASI.md](docs/UPDATE_V10_KAMERA_NAVIGASI.md).
 
 ## Pengembangan lokal
 ```bash

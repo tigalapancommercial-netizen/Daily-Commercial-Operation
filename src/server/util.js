@@ -46,7 +46,8 @@ export const SCHEMA = {
   VISIT_ISSUE: [['id', 'Issue ID'], ['visitId', 'Visit ID'], ['tanggal', 'Tanggal Visit'], ['toko', 'Toko'], ['pointId', 'Kode Point'], ['seksi', 'Seksi'],
     ['issue', 'Temuan / Issue'], ['akar', 'Akar Penyebab'], ['action', 'Action Plan'], ['pic', 'PIC'], ['dueDate', 'Due Date'],
     ['prioritas', 'Prioritas'], ['status', 'Status'], ['progress', 'Progress (%)'], ['fotoId', 'Foto Bukti'], ['validasi', 'Validasi SPV'],
-    ['validasiOleh', 'Divalidasi Oleh'], ['validasiTgl', 'Tanggal Validasi'], ['updateTgl', 'Update Terakhir'], ['updateOleh', 'Update Oleh']],
+    ['validasiOleh', 'Divalidasi Oleh'], ['validasiTgl', 'Tanggal Validasi'], ['updateTgl', 'Update Terakhir'], ['updateOleh', 'Update Oleh'],
+    ['fotoAfter', 'Foto Sesudah (Update)'], ['updateNote', 'Catatan Perbaikan']],
 };
 
 export const STORE_EDIT = {

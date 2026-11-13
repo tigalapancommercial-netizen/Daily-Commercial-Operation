@@ -237,7 +237,10 @@ async function syncVisitIssues_(ctx, visit, issues) {
     const item = { id: prev ? prev.id : '', visitId: visit.id, tanggal: visit.tanggal, toko: visit.toko,
       pointId: input.pointId || '', seksi: input.seksi || '', issue: String(input.issue || '').trim(), akar: input.akar || '', action: input.action || '',
       pic: input.pic || '', dueDate: input.dueDate || '', prioritas: input.prioritas || 'Sedang', status: input.status || 'Open',
-      progress: input.status === 'Selesai' ? 100 : Math.min(99, Math.max(0, Number(input.progress) || 0)), fotoId: input.fotoId || (prev && prev.fotoId) || '',
+      progress: input.status === 'Selesai' ? 100 : Math.min(99, Math.max(0, Number(input.progress) || 0)),
+      fotoId: input.fotoId || (prev && prev.fotoId) || (parseJ_(visit.foto)[input.pointId] || ''),
+      fotoAfter: input.fotoAfter !== undefined ? input.fotoAfter : (prev && prev.fotoAfter) || '',
+      updateNote: input.updateNote !== undefined ? input.updateNote : (prev && prev.updateNote) || '',
       validasi: prev ? prev.validasi : '', validasiOleh: prev ? prev.validasiOleh : '', validasiTgl: prev ? prev.validasiTgl : '', updateTgl: now_(), updateOleh: me.nama };
     (prev ? upd : adds).push(item);
   });
@@ -261,7 +264,7 @@ export async function issueUpdate_(ctx, d) {
   const me = ctx.me; mustMgr_(me); if (!d || !d.id) throw new Error('Issue ID wajib');
   const cur = (await ctx.read('VISIT_ISSUE', { ids: [d.id] }))[0]; if (!cur) throw new Error('Issue tidak ditemukan');
   if (cur.validasi === 'Y' && !me.isMaster) throw new Error('Issue sudah divalidasi; hubungi Master');
-  ['akar', 'action', 'pic', 'dueDate', 'prioritas', 'status', 'progress', 'fotoId'].forEach((k) => { if (d[k] !== undefined) cur[k] = d[k]; });
+  ['akar', 'action', 'pic', 'dueDate', 'prioritas', 'status', 'progress', 'fotoId', 'fotoAfter', 'updateNote'].forEach((k) => { if (d[k] !== undefined) cur[k] = d[k]; });
   if (!String(cur.pic || '').trim() || !String(cur.action || '').trim() || !/^\d{4}-\d{2}-\d{2}$/.test(String(cur.dueDate || ''))) throw new Error('PIC, action dan due date wajib');
   if (d.validasi !== undefined) { if (cur.status !== 'Selesai' && d.validasi === 'Y') throw new Error('Selesaikan issue sebelum validasi'); cur.validasi = d.validasi === 'Y' ? 'Y' : ''; cur.validasiOleh = cur.validasi ? me.nama : ''; cur.validasiTgl = cur.validasi ? now_() : ''; }
   cur.progress = cur.status === 'Selesai' ? 100 : Math.max(0, Math.min(99, Number(cur.progress) || 0)); cur.updateTgl = now_(); cur.updateOleh = me.nama;

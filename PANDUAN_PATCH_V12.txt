@@ -1,0 +1,14 @@
+PATCH v12 -- FOTO BEFORE / AFTER (tanpa Google Apps Script)
+
+1. Backup database Supabase dan kode repository GitHub terlebih dahulu.
+2. Supabase > SQL Editor: jalankan migrasi 008_multiphoto.sql (jika belum pernah), lalu 009_visit_before_after.sql.
+   SQL 009 menambah kolom foto_after + update_note tanpa menghapus baris historis.
+3. Ekstrak ZIP patch lalu upload file/folder dengan struktur yang SAMA ke root repository GitHub Daily-Commercial-Operation. Replace file lama.
+4. GitHub > Actions: cek build dan deploy selesai sukses. Refresh browser Ctrl+Shift+R.
+5. Login Master/SPV. Visit -> Edit -> Issue -> Before/After -> tambah foto SESUDAH -> Simpan Visit.
+   Atau Issue Visit -> Update -> Before/After -> upload SESUDAH -> isi catatan -> Simpan.
+6. Periksa ulang issue setelah reload: foto SEBELUM dan SESUDAH tetap terpisah, bisa diperbesar. Test kamera HP di HTTPS.
+
+JANGAN UPLOAD data export privat, .env, atau secret key ke GitHub.
+Tidak ada penghapusan data produksi otomatis dalam patch ini.
+Untuk detail baca docs/UPDATE_V12_BEFORE_AFTER.md.
