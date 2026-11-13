@@ -6,6 +6,7 @@ import * as C from './core.js';
 import * as R from './report.js';
 import * as A from './admin.js';
 import * as P from './period.js';
+import * as CP from './campaign.js';
 
 async function login_(username, pin) {
   const r = await rpc('dco_login', { p_username: String(username || ''), p_pin: String(pin == null ? '' : pin) });
@@ -20,6 +21,11 @@ export async function api(action, p, sesi) {
     const me = await auth_(sesi), ctx = new Ctx(me, sesi);
     const fn = {
       meta: () => C.meta_(ctx),
+      campaignList: () => CP.list_(ctx),
+      campaignDetail: () => CP.detail_(ctx,p),
+      campaignRecords: () => CP.records_(ctx,p),
+      campaignSave: () => CP.save_(ctx,p),
+      campaignRecordSave: () => CP.recordSave_(ctx,p),
       periodList: () => P.list_(ctx, p),
       periodSubmit: () => P.submit_(ctx, p),
       periodValidate: () => P.validate_(ctx, p),

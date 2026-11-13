@@ -1,9 +1,9 @@
 {
   "name": "daily-operation-commercial",
-  "version": "17.0.0",
+  "version": "18.0.0",
   "private": true,
   "type": "module",
-  "description": "Daily Commercial Operations v17 — Weekly/Monthly + Global Tasks on Supabase",
+  "description": "Daily Commercial Operations v18 — Weekly/Monthly + Global Tasks on Supabase",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
