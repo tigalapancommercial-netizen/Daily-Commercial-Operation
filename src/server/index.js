@@ -46,6 +46,7 @@ export async function api(action, p, sesi) {
       add: () => C.add_(ctx, p.type, p.data, p.tokoList),
       update: () => C.update_(ctx, p.type, p.id, p.data),
       bulk: () => C.bulk_(ctx, p.type, p.ids, p.op, p.value),
+      validationUndo: () => C.validationUndo_(ctx, p),
       ceklisHari: () => C.ceklisHari_(ctx, p.tanggal, p.toko),
       ceklisSet: () => C.ceklisSet_(ctx, p),
       rutinSave: () => C.rutinSave_(ctx, p.data),
