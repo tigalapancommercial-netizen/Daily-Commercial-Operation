@@ -20,7 +20,22 @@ window.__dcoBackup = (id) => {
 // Keluar: cabut sesi di server juga
 if (typeof window.logout === 'function') {
   const orig = window.logout;
-  window.logout = function () { const t = token(); if (t) logoutToken(t); const pin = document.getElementById('lPin'); if (pin) { pin.value = ''; pin.type = 'password'; } return orig.apply(this, arguments); };
+  window.logout = async function () {
+    const t = token();
+    // Finish the current local draft before clearing account state.
+    try { await window.__dcoDraft?.captureNow(); } catch (e) { console.warn('Draft logout', e); }
+    if (t) logoutToken(t).catch(() => {});
+    document.querySelectorAll('.modal.on').forEach(modal => modal.classList.remove('on'));
+    const state = window.S;
+    if (state) {
+      for (const k of ['dsJaw','dsPrev','periodDraft']) state[k] = {};
+      for (const k of ['ckRows','rows','visits']) state[k] = [];
+      for (const k of ['vis','rt','editId','issueEditingItem']) state[k] = null;
+      for (const k of ['fotoTmp','issueFotoTemp','issueAfterTemp']) state[k] = '';
+    }
+    const pin = document.getElementById('lPin'); if (pin) { pin.value = ''; pin.type = 'password'; }
+    return orig.apply(this, arguments);
+  };
 }
 
 if (!CONFIGURED) {

@@ -15,10 +15,10 @@ button,input,select,textarea{font:inherit}
 .btn.o{color:var(--p);border-color:var(--p)}.btn.s{padding:5px 10px;font-size:12px;border-radius:8px}.btn.ic{padding:7px 9px;position:relative}.btn.w{width:100%}.btn:disabled{opacity:.5;cursor:default;transform:none}
 input,select,textarea{border:1.5px solid var(--bd);border-radius:10px;padding:9px 11px;width:100%;background:#fff;color:var(--tx);font-size:14px;transition:.15s}input:focus,select:focus,textarea:focus{outline:0;border-color:var(--p);box-shadow:0 0 0 3px var(--pl)}textarea{min-height:64px;resize:vertical}
 .app{display:grid;grid-template-columns:var(--sbw) 1fr;min-height:100vh;transition:grid-template-columns .2s}.app.col{--sbw:66px}
-aside{background:linear-gradient(180deg,#111827,#1e1b4b);color:#c7d2fe;padding:14px 10px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+aside{background:linear-gradient(180deg,#111827,#1e1b4b);color:#c7d2fe;padding:14px 10px max(12px,env(safe-area-inset-bottom));position:sticky;top:0;height:100vh;height:100dvh;display:flex;flex-direction:column;gap:5px;overflow:hidden;min-height:0}
 aside .logo{color:#fff;font-weight:800;font-size:14px;padding:4px 6px 14px;display:flex;align-items:center;gap:10px;white-space:nowrap;line-height:1.15}aside .logo i{width:38px;height:38px;flex:0 0 38px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#ec4899);display:grid;place-items:center;font-style:normal;font-size:18px;box-shadow:0 6px 14px rgba(99,102,241,.4)}aside .logo small{display:block;font-weight:500;opacity:.6;font-size:11px}
 aside button{all:unset;display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;cursor:pointer;color:#c7d2fe;font-weight:600;white-space:nowrap;transition:.15s}aside button:hover{background:rgba(255,255,255,.08);color:#fff}aside button.on{background:linear-gradient(135deg,var(--ac,#4f46e5),var(--ac2,#7c3aed));color:#fff;box-shadow:0 6px 14px rgba(79,70,229,.35)}aside button svg{width:18px;height:18px;flex:0 0 18px}
-aside .me{margin-top:auto;background:rgba(255,255,255,.06);border-radius:12px;padding:10px;font-size:12px;white-space:nowrap;overflow:hidden}aside .me b{color:#fff;display:block;font-size:13px}
+aside .me{margin-top:7px;background:rgba(255,255,255,.07);border-radius:13px;padding:12px 11px;font-size:12px;white-space:normal;overflow:visible;flex:0 0 auto;min-width:0;max-width:100%;line-height:1.4}aside .me b{color:#fff;display:block;font-size:13px;overflow-wrap:anywhere;line-height:1.35;margin-bottom:3px}aside .me #meRole{display:block;overflow-wrap:anywhere;font-size:11.5px;color:#c7d2fe;line-height:1.35}aside .me .me-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px!important}aside .me .me-actions a{display:inline-block;padding:3px 0}aside .logo{flex-shrink:0}#sideNav{display:flex;flex:1 1 auto;min-height:0;flex-direction:column;gap:3px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#67649a transparent;padding:0 1px 6px 0}#sideNav>button{flex:0 0 auto;min-height:39px}#sideNav::-webkit-scrollbar{width:5px}#sideNav::-webkit-scrollbar-thumb{background:#67649a;border-radius:8px}
 .app.col aside .logo span,.app.col aside button span,.app.col aside .me{display:none}.app.col aside button{justify-content:center;padding:10px}
 .top{background:linear-gradient(90deg,#4f46e5,#7c3aed 60%,#db2777);color:#fff;padding:9px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:6;box-shadow:0 4px 14px rgba(79,70,229,.3)}.top h1{font-size:17px;margin:0;flex:1;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.top .date{font-size:12px;opacity:.85}
 .top .btn{background:rgba(255,255,255,.16);border-color:transparent;color:#fff}.top .btn:hover{background:rgba(255,255,255,.28)}
@@ -765,8 +765,8 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 </div>
 
 <div id="vApp" class="app hid">
-<aside><div class="logo"><i>⚡</i><span>Daily Operation<small>Commercial</small></span></div><div id="sideNav" style="display:contents"></div>
-  <div class="me"><b id="meNama"></b><span id="meRole"></span><div style="margin-top:6px"><a style="cursor:pointer;color:#93c5fd" onclick="openPin()">Ganti PIN</a> · <a style="cursor:pointer;color:#fca5a5" onclick="logout()">Keluar</a></div></div></aside>
+<aside><div class="logo"><i>⚡</i><span>Daily Operation<small>Commercial</small></span></div><nav id="sideNav" aria-label="Navigasi utama"></nav>
+  <div class="me"><b id="meNama"></b><span id="meRole"></span><div class="me-actions"><a role="button" tabindex="0" style="cursor:pointer;color:#93c5fd" onclick="openPin()">Ganti PIN</a><a role="button" tabindex="0" style="cursor:pointer;color:#fca5a5" onclick="logout()">Keluar</a></div></div></aside>
 <div style="min-width:0">
   <div class="top"><button class="btn ic" id="btnSide" onclick="toggleSide()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
     <h1 id="pageTitle">Dashboard</h1><span class="date" id="topDate"></span>
@@ -975,7 +975,7 @@ function boot(){$('vLogin').classList.add('hid');$('vApp').classList.remove('hid
   $('sideNav').innerHTML=nav.map(function(n){var c=n[4].split(',');return '<button data-t="'+n[0]+'" style="--ac:'+c[0]+';--ac2:'+c[1]+'" onclick="go(\''+n[0]+'\')" title="'+n[1]+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+n[2]+'</svg><span>'+n[1]+'</span></button>';}).join('');
   $('bnav').innerHTML=nav.map(function(n){return '<button data-t="'+n[0]+'" onclick="go(\''+n[0]+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+n[2]+'</svg>'+SHORT[n[0]]+'</button>';}).join('');
   document.querySelectorAll('.mgr').forEach(function(e){e.classList.toggle('hid',!isMgr());});
-  call('meta').then(function(m){S.meta=m;$('topDate').textContent=fmtTgl(m.today);fillFilters();go(isMgr()?'dash':'ceklis');loadNotif();});}
+  return call('meta').then(async function(m){S.meta=m;$('topDate').textContent=fmtTgl(m.today);fillFilters();await go(isMgr()?'dash':'ceklis');loadNotif();if(window.__dcoDraft)await window.__dcoDraft.onLoginReady();});}
 function fillFilters(){var m=S.meta,opt=function(el,arr,first){el.innerHTML=(first||'')+arr.map(function(o){return '<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join('');};
   opt($('fToko'),m.toko,'<option value="SEMUA">Semua toko</option>');opt($('ckToko'),m.toko,isMgr()?'<option value="SEMUA">Semua toko (monitoring)</option>':'');opt($('dsToko'),m.toko,isMgr()?'<option value="SEMUA">Semua toko (matriks status)</option>':'');
   if($('isToko'))opt($('isToko'),m.toko,'<option value="SEMUA">Semua toko</option>');if($('jdStore'))opt($('jdStore'),m.toko,'<option value="SEMUA">Semua toko</option>');if(isMgr())$('jdPic').value='SEMUA';
@@ -994,7 +994,7 @@ function goWith(tab,f){f=f||{};
   if(f.tambah)S.afterLoad=function(){openForm();};$('notifBox').classList.remove('on');go(tab);}
 function go(t){if(S.me&&!isMgr()&&STORE_TABS.indexOf(t)<0)t='ceklis';S.tab=t;S.sel={};$('pageTitle').textContent=TITLE[t];document.querySelectorAll('[data-t]').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
   var show=function(id,on){$(id).classList.toggle('hid',!on);};show('pDash',t==='dash');show('pPeriod',t==='period');show('pCeklis',t==='ceklis');show('pDso',t==='dso');show('pList',t==='MASALAH');show('pVisit',t==='visit');show('pIssues',t==='issues');show('pJadwal',t==='jadwal');show('pRutin',t==='rutin');show('pCampaign',t==='campaign');show('pSet',t==='set');
-  show('filterCard',t==='dash'||t==='MASALAH'||t==='visit');document.querySelectorAll('.onlyMs').forEach(function(e){e.classList.toggle('hid',t!=='MASALAH');});window.scrollTo(0,0);refresh();}
+  show('filterCard',t==='dash'||t==='MASALAH'||t==='visit');document.querySelectorAll('.onlyMs').forEach(function(e){e.classList.toggle('hid',t!=='MASALAH');});window.scrollTo(0,0);return refresh();}
 function refresh(manual){
  var t=S.tab, seq=S.refreshSeq=(S.refreshSeq||0)+1,ic=$('refIc');ic.classList.add('spin');
  var active=function(){return seq===S.refreshSeq&&S.tab===t;},p;
@@ -1018,6 +1018,7 @@ function refresh(manual){
     if(!active())return;
     ic.classList.remove('spin');if(manual){toast('Data terbaru berhasil dimuat','ok');loadNotif();}
     if(S.afterLoad){var f=S.afterLoad;S.afterLoad=null;f();}
+    if(window.__dcoDraft)window.__dcoDraft.onFormReady().catch(function(e){console.warn('DCO draft recovery',e);});
     return true;
  },function(e){if(active())ic.classList.remove('spin');return false;});
 }
@@ -1758,7 +1759,7 @@ async function processEvidenceFiles(kind,key,files){key=String(key);var k=kind+'
     if(!sent||!validId(sent.id))throw new Error('ID foto tidak valid');if(result.indexOf(sent.id)<0)result.push(sent.id);
    }catch(e){failed++;reason=e&&e.message||String(e);}
   }
-  if(result.length>old.length){await evidenceStateSave(kind,key,photoPack(result),failed===0);toast((result.length-old.length)+' foto '+(window.__dcoDraft&&window.__dcoDraft.containsPending(result)?'aman sebagai DRAFT LOKAL (belum terkirim).':(['form','issue','issueAfter','point','seksi','visitIssue','visitIssueAfter','visitUpdate'].indexOf(kind)>=0?'siap. Simpan formulir untuk mencatatnya.':'tersimpan'))+(failed?(kind==='ck'?' · '+failed+' gagal; status checklist tidak berubah':' · '+failed+' gagal'):''),'ok');}
+  if(result.length>old.length){await evidenceStateSave(kind,key,photoPack(result),failed===0);if(window.__dcoDraft)await window.__dcoDraft.captureNow();toast((result.length-old.length)+' foto '+(window.__dcoDraft&&window.__dcoDraft.containsPending(result)?'aman sebagai DRAFT LOKAL (belum terkirim).':(['form','issue','issueAfter','point','seksi','visitIssue','visitIssueAfter','visitUpdate'].indexOf(kind)>=0?'siap. Simpan formulir untuk mencatatnya.':'tersimpan'))+(failed?(kind==='ck'?' · '+failed+' gagal; status checklist tidak berubah':' · '+failed+' gagal'):''),'ok');}
   else toast(reason||'Upload foto gagal',true);
  }catch(e){toast('Foto belum tersimpan: '+(e&&e.message||e),true);}finally{delete evidenceBusy[k];updateEvidencePanel(kind,key);}
 }

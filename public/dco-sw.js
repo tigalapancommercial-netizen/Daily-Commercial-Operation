@@ -1,7 +1,7 @@
 /* DCO v25: cache only the public app shell for offline reopening.
  * Never cache Supabase calls, cross-origin responses or user-uploaded media.
  */
-const CACHE = 'dco-app-shell-v25-20261114';
+const CACHE = 'dco-app-shell-v27-20261114';
 const APP = self.registration.scope;
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.add(APP)).catch(() => undefined));
