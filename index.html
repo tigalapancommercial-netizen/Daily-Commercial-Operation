@@ -1758,7 +1758,7 @@ async function processEvidenceFiles(kind,key,files){key=String(key);var k=kind+'
     if(!sent||!validId(sent.id))throw new Error('ID foto tidak valid');if(result.indexOf(sent.id)<0)result.push(sent.id);
    }catch(e){failed++;reason=e&&e.message||String(e);}
   }
-  if(result.length>old.length){await evidenceStateSave(kind,key,photoPack(result),failed===0);toast((result.length-old.length)+' foto '+(['form','issue','issueAfter','point','seksi','visitIssue','visitIssueAfter','visitUpdate'].indexOf(kind)>=0?'siap. Simpan formulir untuk mencatatnya.':'tersimpan')+(failed?(kind==='ck'?' · '+failed+' gagal; status checklist tidak berubah':' · '+failed+' gagal'):''),'ok');}
+  if(result.length>old.length){await evidenceStateSave(kind,key,photoPack(result),failed===0);toast((result.length-old.length)+' foto '+(window.__dcoDraft&&window.__dcoDraft.containsPending(result)?'aman sebagai DRAFT LOKAL (belum terkirim).':(['form','issue','issueAfter','point','seksi','visitIssue','visitIssueAfter','visitUpdate'].indexOf(kind)>=0?'siap. Simpan formulir untuk mencatatnya.':'tersimpan'))+(failed?(kind==='ck'?' · '+failed+' gagal; status checklist tidak berubah':' · '+failed+' gagal'):''),'ok');}
   else toast(reason||'Upload foto gagal',true);
  }catch(e){toast('Foto belum tersimpan: '+(e&&e.message||e),true);}finally{delete evidenceBusy[k];updateEvidencePanel(kind,key);}
 }
@@ -2156,6 +2156,7 @@ renderIssues=function(){
         if(same>=0)S.dsRows[same]=data;else S.dsRows.push(data);
       }
       toast('Laporan '+formById(data.form).nama+' tersimpan · '+data.slaSubmit,'ok');
+      if(window.__dcoDraft)await window.__dcoDraft.clearCurrent();
       S.dsJaw={};renderDso();await loadDso();loadNotif();
     }catch(err){
       var m=errorText(err);if(/Foto wajib belum lengkap|ID foto/i.test(m)){
@@ -2197,7 +2198,7 @@ renderIssues=function(){
     var pad=Math.max(12,Math.round(w*.02)),lh=Math.round(px*1.5),height=lh+Math.round(small*1.5)+pad*2;
     ctx.fillStyle='rgba(8,20,34,0.82)';ctx.fillRect(0,h-height,w,height);
     ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.font='bold '+px+'px system-ui, sans-serif';
-    var stamp='KAMERA LIVE  •  '+formatWita(defNow())+' WITA';
+    var stamp='KAMERA LIVE  •  '+(navigator.onLine===false?'OFFLINE · JAM HP (BELUM TERVERIFIKASI) · ':'')+formatWita(defNow())+' WITA';
     ctx.fillText(stamp,pad,h-height+pad,w-2*pad);
     ctx.fillStyle='#d9e9fc';ctx.font=small+'px system-ui, sans-serif';
     var store=S.me&&S.me.toko&&S.me.toko!=='SEMUA'?S.me.toko:'SPV / MASTER';
@@ -2214,6 +2215,7 @@ renderIssues=function(){
       if(!blob)return toast('Gagal mengambil foto',true);
       var file=new File([blob],'dco_live_'+Date.now()+'.webp',{type:'image/webp'});file.__dcoCaptureSource='kamera_live';
       cameraEvidence.files.push(file);
+      if(window.__dcoDraft)window.__dcoDraft.stageCamera(file,cameraEvidence.kind,cameraEvidence.key).catch(function(e){toast('Foto kamera belum bisa disimpan sebagai draft: '+(e.message||e),true);});
       var u=URL.createObjectURL(file);cameraEvidence.urls.push(u);
       $('evidenceCameraPreview').insertAdjacentHTML('beforeend','<img alt="Foto kamera berstempel waktu WITA" src="'+u+'">');
       $('evidenceCameraSave').textContent='✔ Gunakan '+cameraEvidence.files.length+' foto';
@@ -2223,7 +2225,7 @@ renderIssues=function(){
   startEvidenceHubCamera=async function(){
     if(window.__dcoSyncClock){
       try{await window.__dcoSyncClock();}catch(err){
-        toast('Waktu server tidak dapat diverifikasi. Pastikan internet aktif sebelum foto langsung.',true);return;
+        if(navigator.onLine===false){toast('Kamera offline: waktu memakai jam HP dan belum diverifikasi server.',true);}else{toast('Waktu server belum terverifikasi; foto akan ditandai sebagai draft saat offline.',true);}
       }
     }
     return originalStartHub.apply(this,arguments);
@@ -2534,6 +2536,7 @@ renderIssues=function(){
   $('prMessage').textContent='Foto terunggah ke Storage; klik Kirim laporan untuk mencatat bukti pada report.';}};
  // Export functions for onclick handlers in classic-script generated HTML.
  Object.assign(window,{prField,loadPeriodReports,submitPeriodReport,validatePeriodRow,editPeriodRow,periodNextPage,exportPeriodCsv,periodJump,loadPeriodDashboard,loadPeriodicOverview});
+ window.__dcoRenderPeriodDraft=function(){if($('prContent'))$('prContent').innerHTML=prForm();};
 })();
 
 </script>
@@ -2881,7 +2884,7 @@ async function cpEditCampaign(edit){if(!isMgr())return toast('Menu khusus Master
 }
 function cpEditRecord(i){if(!cp.id)return toast('Pilih campaign',true);const kind=cp.kind;if(kind==='overview')return;const rec=i===undefined?null:cp.rows[i],st=cpStore();
  if(!rec&&st==='SEMUA')return toast('Pilih satu toko sebelum membuat input',true);
- cp.photo=rec?rec.photo_id||'':'';const f=[],add=(k,l,v,t='text',full=false,o=null)=>f.push({k,l,v:v===null||v===undefined?'':v,t,full,o});
+ cp.photo=rec?rec.photo_id||'':'';window.__dcoCampaignLastRecordId=rec?rec.id:null;const f=[],add=(k,l,v,t='text',full=false,o=null)=>f.push({k,l,v:v===null||v===undefined?'':v,t,full,o});
  add('event_date',kind==='plan'?'Tanggal rencana':'Tanggal aktivitas',rec?rec.event_date:S.meta.today,'date');
  if(isMgr())add('toko','Toko',rec?rec.toko:st,'sel',false,(cp.detail.stores||[]).map(s=>s.toko));
  add('title',kind==='prospect'?'Nama prospek / mitra':kind==='order'?'Order / customer':kind==='daily'?'Catatan singkat':'Judul aktivitas',rec?rec.title:kind==='daily'?'Monitoring harian':'','text',true);
@@ -3159,6 +3162,7 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
    var year=+seen.tanggal.slice(0,4),mon=+seen.tanggal.slice(5,7),last=('0'+new Date(year,mon,0).getDate()).slice(-2);
    $('fFrom').value=seen.tanggal.slice(0,7)+'-01';$('fTo').value=seen.tanggal.slice(0,7)+'-'+last;
    $('fPeriode').value='custom';$('fQ').value='';$('fStatus').value='SEMUA';$('fVal').value='';$('fKhusus').value='';$('fToko').value='SEMUA';
+   if(window.__dcoDraft)await window.__dcoDraft.clearCurrent();
    closeM('mVisit');S.tab='visit';
    await loadVisitsV22();
    toast('Visit '+savedId+' berhasil disimpan dan tampil di riwayat','ok');
@@ -3389,6 +3393,121 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
   };
   // Attach a visible and testable request indicator without claiming the DB has finished early.
   window.dcoStatusPending=busy;
+})();
+</script>
+
+<script>
+/* DCO v25 - universal local draft UI and offline photo protection.
+   Server actions remain authoritative; draft references must never be submitted as real evidence. */
+(function(){
+  var evidenceSaveCloud=evidenceStateSave;
+  evidenceStateSave=function(kind,key,packed,allUploadsSucceeded){
+    var draft=window.__dcoDraft;
+    if(!draft||!draft.containsPending(packed))return evidenceSaveCloud.apply(this,arguments);
+    // Offline/pending photos stay local: no false auto-check, no unverified DSO patch.
+    if(kind==='ck'){
+      var row=S.ckRows&&S.ckRows[+key];if(!row)return Promise.reject(new Error('Checklist tidak ditemukan'));
+      row.fotoId=packed;row._draftPhotoPending=true;
+      renderCeklis();draft.captureNow();toast('Foto tersimpan sebagai draft. Checklist belum dikirim ke server.','ok');
+      return Promise.resolve({draft:true});
+    }
+    if(kind==='dso'){
+      S.dsJaw[key]=packed;updateEvidencePanel(kind,key);draft.captureNow();
+      toast('Foto DSO dalam draft lokal. Kirim laporan setelah online.','ok');
+      return Promise.resolve({draft:true});
+    }
+    return Promise.resolve(evidenceSaveCloud.apply(this,arguments)).then(function(res){draft.captureNow();return res;});
+  };
+  var evidenceCompactCloud=evidencePanel;
+  evidencePanel=function(kind,key,small){
+    var result=evidenceCompactCloud.apply(this,arguments);
+    if(window.__dcoDraft&&window.__dcoDraft.containsPending(evidenceId(kind,key))){
+      result=result.replace('<span>Foto</span>','<span>Draft Foto</span>');
+    }
+    return result;
+  };
+  var renderChecklistOriginal=renderCeklis;
+  renderCeklis=function(){
+    renderChecklistOriginal.apply(this,arguments);
+    (S.ckRows||[]).forEach(function(row,i){
+      if(!row._draftPhotoPending)return;
+      var parent=$('ck'+i);if(!parent)return;
+      var controls=parent.querySelector('.ck-evidence')||parent;
+      controls.insertAdjacentHTML('beforeend','<button class="btn s p" style="margin:6px" type="button" onclick="dcoSubmitChecklistDraft('+i+')">⇧ Kirim Draft Foto</button>');
+    });
+  };
+  window.dcoSubmitChecklistDraft=async function(index){
+    var row=S.ckRows&&S.ckRows[index],draft=window.__dcoDraft;
+    if(!row||!row._draftPhotoPending||!draft)return;
+    if(navigator.onLine===false)return toast('Offline. Draft aman di perangkat.',true);
+    try{
+      if(draft.containsPending(row.fotoId)){
+        await draft.syncPhotos();
+        // A completed synchronization remaps the current row in window.S.
+        if(draft.containsPending(row.fotoId))return toast('Foto masih menunggu upload. Coba sinkronkan kembali.',true);
+      }
+      var saved=await call('ceklisSet',{id:row.id||'',rutinId:row.rutinId,judul:row.judul,tanggal:$('ckTgl').value,toko:$('ckToko').value,fotoId:row.fotoId,status:true},true);
+      if(!saved||saved.status!=='Selesai'||!photoList(saved.fotoId).length)throw new Error('Server belum memastikan checklist dan foto tersimpan');
+      ['id','status','jam','catatan','fotoId','validasi','validasiOleh'].forEach(function(k){if(Object.prototype.hasOwnProperty.call(saved,k))row[k]=saved[k];});
+      row._draftPhotoPending=false;renderCeklis();await draft.captureNow();toast('Foto draft terkirim dan checklist otomatis tercentang.','ok');
+    }catch(e){toast('Draft masih tersimpan: '+(e.message||e),true);}
+  };
+  var originalOpenHub=openEvidenceHub;
+  openEvidenceHub=function(kind,key){
+    var r=originalOpenHub.apply(this,arguments),draft=window.__dcoDraft;
+    if(draft)draft.getStagedFiles(kind,key).then(function(files){
+      if(!files.length||cameraEvidence.kind!==String(kind)||cameraEvidence.key!==String(key)||!$('dcoCameraModal').classList.contains('on'))return;
+      if(cameraEvidence.files.length)return;
+      cameraEvidence.files=files;
+      cameraEvidence.urls=files.map(function(f){return URL.createObjectURL(f);});
+      $('evidenceCameraPreview').innerHTML=files.map(function(f,i){return '<img alt="Foto kamera tersimpan sebagai draft" src="'+cameraEvidence.urls[i]+'">';}).join('');
+      $('evidenceCameraStage').hidden=false;
+      $('evidenceCameraSave').textContent='✔ Gunakan '+files.length+' foto dari draft';
+      toast(files.length+' foto kamera belum digunakan berhasil dipulihkan.','ok');
+    }).catch(function(e){toast('Foto kamera belum bisa dipulihkan: '+e.message,true);});
+    return r;
+  };
+  var originalSaveHubCamera=saveEvidenceCamera;
+  saveEvidenceCamera=async function(){
+    var kind=cameraEvidence.kind,key=cameraEvidence.key,count=cameraEvidence.files.length,before=photoList(evidenceId(kind,key)).length;
+    var result=await originalSaveHubCamera.apply(this,arguments);
+    if(window.__dcoDraft&&photoList(evidenceId(kind,key)).length>=before+count)
+      await window.__dcoDraft.clearStaged(kind,key).catch(function(){});
+    return result;
+  };
+  window.__dcoCampaignDraftContext=function(){
+    return typeof cp==='undefined'?null:{id:cp.id,kind:cp.kind,store:typeof cpStore==='function'?cpStore():null,photo:cp.photo,recordId:window.__dcoCampaignLastRecordId||null};
+  };
+  window.__dcoRemapCampaignPhoto=function(mapRef){if(typeof cp!=='undefined')cp.photo=mapRef(cp.photo||'');};
+  window.__dcoOpenCampaignDraft=async function(d){
+    var ctx=d.model&&d.model.campaign;
+    if(!ctx||typeof cp==='undefined')return;
+    if(!cp.items.length)await cpList();
+    cp.id=ctx.id||cp.id;cp.kind=ctx.kind||cp.kind;cp.photo=ctx.photo||'';
+    await cpReload();
+    if(ctx.store&&$('cpStore')&&Array.from($('cpStore').options).some(function(o){return o.value===ctx.store;}))$('cpStore').value=ctx.store;
+    if(d.title.indexOf('Campaign')>=0&&(/^(Edit|Buat) Campaign/.test(d.title)))await cpEditCampaign(d.title.indexOf('Edit')===0);
+    else if(/^(Edit|Input) /.test(d.title)){
+      var index=ctx.recordId?(cp.rows||[]).findIndex(function(x){return x.id===ctx.recordId;}):-1;
+      cpEditRecord(index>=0?index:undefined);
+    }
+    if($('mGen').classList.contains('on')){
+      window.__dcoDraft.applyFields($('mGen'),d.fields);
+      if(d.model.campaign?.photo)cp.photo=d.model.campaign.photo;
+    }
+  };
+  // A non-campaign generated form is restored after its matching editor reopens.
+  var genOld=gen;
+  gen=function(title,fields,callback,readonly){
+    var ret=genOld.apply(this,arguments),pending=window.__dcoDraftPendingModal;
+    if(pending&&pending.title===title){
+      setTimeout(function(){if(window.__dcoDraft){window.__dcoDraft.applyFields($('mGen'),pending.fields);S.issueFotoTemp=pending.model.issueFotoTemp||S.issueFotoTemp;S.issueAfterTemp=pending.model.issueAfterTemp||S.issueAfterTemp;window.__dcoDraftPendingModal=null;toast('Draft formulir '+title+' dipulihkan','ok');}},0);
+    }
+    return ret;
+  };
+  window.__dcoRestoreGen=function(d){
+    toast('Draft disiapkan. Buka kembali formulir '+d.title+' untuk mengisi otomatis.','ok');
+  };
 })();
 </script>
 </body>
