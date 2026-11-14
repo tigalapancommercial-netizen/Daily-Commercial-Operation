@@ -1,5 +1,5 @@
 // Port Code.gs v6: CRUD, Daily Routine, Checklist, DSO, Visiting, Issue, Jadwal
-import { removePhotos, toCamel } from '../db.js';
+import { removePhotos, toCamel, toSnake } from '../db.js';
 import { DEFAULT_CFG, STORE_EDIT, keys_, today_, now_, hm_, addDays_, daysBetween_, isoWeekYmd_, pad_, parseJ_, mustMgr_, mustMaster_ } from './util.js';
 
 // ================= CONFIG =================
@@ -28,6 +28,8 @@ export async function list_(ctx, type, f) {
   if (type === 'RUTIN') { mustMgr_(me); return ctx.read('RUTIN'); }
   if (type === 'VISIT') mustMgr_(me);
   const sf = {}; if (f.from) sf.from = f.from; if (f.to) sf.to = f.to; if (me.isMgr && f.toko && f.toko !== 'SEMUA') sf.toko = f.toko;
+  // v22: verify newly saved Visit using its database ID, independent of date filter.
+  if (type === 'VISIT' && Array.isArray(f.ids) && f.ids.length) sf.ids = f.ids.slice(0, 30).map(String);
   let rows = await ctx.read(type, sf);
   if (type === 'VISIT') rows.forEach((r) => { ['jawaban', 'catatan', 'foto', 'skor', 'updateTemuan'].forEach((k) => { r[k] = parseJ_(r[k]); }); });
   if (type === 'DSO') rows.forEach((r) => { r.jawaban = parseJ_(r.jawaban); });
@@ -107,6 +109,23 @@ export async function bulk_(ctx, type, ids, op, value) {
   });
   await ctx.save(type, out, 'update');
   return { jumlah: out.length };
+}
+
+// v21: gunakan satu RPC pembatalan yang mengaudit alasan dan menegakkan hak akses.
+// Tidak mengubah foto, status pekerjaan, atau isian laporan.
+export async function validationUndo_(ctx, p) {
+  const module = String(p && p.module || '').trim().toUpperCase();
+  const id = String(p && p.id || '').trim();
+  const reason = String(p && p.reason || '').trim();
+  mustMgr_(ctx.me);
+  if (!id || reason.length < 5 || reason.length > 500) throw new Error('ID dan alasan pembatalan (5-500 karakter) wajib');
+  const allowed = ['MASALAH','TUGAS','CEKLIS','DSO','VISIT','VISIT_ISSUE','PERIOD'];
+  if (!allowed.includes(module)) throw new Error('Modul validasi tidak dikenal');
+  const result = await ctx.call('dco_validation_undo', {
+    p_module: module, p_id: id, p_reason: reason,
+  });
+  if (module !== 'PERIOD') ctx.invalidate(module);
+  return result;
 }
 
 // ================= DAILY ROUTINE & CHECKLIST HARIAN STORE =================
@@ -279,10 +298,39 @@ export async function visitSave_(ctx, d) {
     finalScore: h.finalScore, rating: h.rating, totalPass: h.totalPass, totalDinilai: h.totalDinilai,
     validasi: cur.validasi || '', validasiOleh: cur.validasiOleh || '', validasiTgl: cur.validasiTgl || '',
     updateTemuan: JSON.stringify(d.updateTemuan || parseJ_(cur.updateTemuan)), keterangan: d.keterangan != null ? d.keterangan : cur.keterangan || '', updateTgl: now_(), updateOleh: me.nama };
-  const saved = (await ctx.save('VISIT', [r], 'upsert'))[0];
-  r.id = saved.id; r.updateTgl = saved.updateTgl; r.updateOleh = saved.updateOleh;
-  if (proposed !== null) await syncVisitIssues_(ctx, r, proposed);
-  return r;
+  // v22: Visit + normalized issues are committed atomically by one SQL RPC.
+  // Previously VISIT could be persisted while VISIT_ISSUE failed, leaving the UI
+  // claiming the submit had failed despite a partially persisted report.
+  const existing = proposed !== null && proposed.length && cur.id ? await ctx.read('VISIT_ISSUE') : []; 
+  const linked = existing.filter((x) => x.visitId === (cur.id || d.id));
+  const issues = proposed === null ? [] : proposed.map((input) => {
+    const prev = input.id ? linked.find((x) => x.id === input.id) :
+      linked.find((x) => x.pointId === (input.pointId || '') && x.issue === String(input.issue || '').trim());
+    if (input.id && !prev) throw new Error('Issue ' + input.id + ' tidak ada dalam visit ini');
+    if (prev && prev.validasi === 'Y' && !me.isMaster) throw new Error('Issue sudah divalidasi, hubungi Master');
+    return {
+      id: prev ? prev.id : '', point_id: input.pointId || '', seksi: input.seksi || '',
+      issue: String(input.issue || '').trim(), akar: input.akar || '', action: input.action || '',
+      pic: input.pic || '', due_date: input.dueDate || '', prioritas: input.prioritas || 'Sedang',
+      status: input.status || 'Open',
+      progress: input.status === 'Selesai' ? 100 : Math.min(99, Math.max(0, Number(input.progress) || 0)),
+      foto_id: input.fotoId || (prev && prev.fotoId) || (parseJ_(d.foto)[input.pointId] || ''),
+      foto_after: input.fotoAfter !== undefined ? input.fotoAfter : (prev && prev.fotoAfter) || '',
+      update_note: input.updateNote !== undefined ? input.updateNote : (prev && prev.updateNote) || '',
+    };
+  });
+  let result;
+  try {
+    result = await ctx.call('dco_visit_submit', { p_visit: toSnake(r), p_issues: issues });
+  } catch (e) {
+    const msg = String(e && e.message || e);
+    if (/dco_visit_submit|database belum terpasang|could not find the function|PGRST202/i.test(msg))
+      throw new Error('Fitur simpan Visit memerlukan SQL v22: jalankan supabase/migrations/20261114_017_visit_submit_visibility.sql. ' + msg);
+    throw e;
+  }
+  if (!result || !result.atomic || !result.visit || !result.visit.id || result.issues_saved !== issues.length)
+    throw new Error('Konfirmasi transaksi Visit tidak lengkap. Periksa database sebelum mengirim ulang.');
+  return Object.assign({}, toCamel(result.visit), { id: result.visit.id, issueCount: result.issues_saved });
 }
 async function syncVisitIssues_(ctx, visit, issues) {
   const me = ctx.me, existing = (await ctx.read('VISIT_ISSUE')).filter((i) => i.visitId === visit.id);

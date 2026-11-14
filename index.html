@@ -401,6 +401,7 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 .ckrow .ck-evidence{margin:0;justify-self:end}
 .ckrow>button:last-child{min-width:34px;justify-self:end}
 .ckrow .more{flex-wrap:wrap}
+.ckrow .ck-undo-action{display:inline-flex;align-items:center;max-width:100%;margin-top:7px;padding:5px 9px;min-height:30px;font-size:11px;line-height:1.2;white-space:normal}
 .dsoit{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px}
 .dsoit>.ph{display:none!important}
 .dsoit>.evidence-panel{flex:0 0 auto;min-width:0;margin:0!important}
@@ -714,6 +715,17 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 }
 @media(prefers-reduced-motion:reduce){#vLogin *{animation:none!important;transition:none!important}}
 
+
+/* v22 — visit persistence, visible filter diagnostics and read-after-write status. */
+.visit-tools-v22{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:9px 0 10px}
+.visit-tools-v22 small{color:#64748b;font-size:11px}
+.visit-signal-v22{display:flex;flex-wrap:wrap;align-items:center;gap:7px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:12px}
+.visit-signal-v22.ok{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+.visit-signal-v22.warn{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+.visit-signal-v22.err{background:#fff1f2;border-color:#fecdd3;color:#9f1239}
+.visit-signal-v22 .btn{margin-left:auto}
+#visitTbl tr.visit-just-saved td{background:#dcfce7!important;transition:background .4s}
+@media(max-width:500px){.visit-tools-v22 .btn{flex:1 1 auto}.visit-tools-v22 small{flex-basis:100%}.visit-signal-v22 .btn{margin-left:0}}
 </style>
 </head>
 <body>
@@ -809,7 +821,7 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
     <section id="pList" class="hid"><div id="listMini"></div><div class="row" style="margin-bottom:8px;align-items:center"><div style="flex:1"><b id="listTitle" style="font-size:14px"></b> <span class="mu" id="listCount"></span></div><div style="flex:0"><button class="btn g" id="btnAdd" onclick="openForm()">+ Tambah</button></div><div style="flex:0"><button class="btn" onclick="exportCsv(false)">⬇ CSV</button></div></div>
       <div class="bulk" id="bulk"><b id="bulkN"></b>&nbsp;dipilih <button class="btn s g mgr" onclick="bulk('validasi')">✔ Validasi</button><button class="btn s mgr" onclick="bulk('batalValidasi')">Batal validasi</button><span id="bulkStWrap"><select id="bulkStatus" style="width:auto;padding:4px 8px"><option value="">Set status…</option></select> <button class="btn s" onclick="bulkStatus()">Terapkan</button></span><button class="btn s" onclick="exportCsv(true)">⬇ Terpilih</button><button class="btn s r" onclick="bulk('hapus')">🗑 Hapus</button><button class="btn s" onclick="selAll(false)">Batal</button></div>
       <div class="card tbl" id="tblWrap" style="padding:0"></div></section>
-    <section id="pVisit" class="hid"><div class="tabs"><button class="on" onclick="go('visit')">Riwayat & Validasi Visit</button><button onclick="goIssues('pending')">Pending Matter</button><button onclick="goIssues('all')">Semua Issue Visit</button></div><div id="visitMini"></div><div class="row" style="margin-bottom:8px;align-items:center"><div style="flex:1"><b style="font-size:14px">Visiting Check Point Control</b> <span class="mu" id="visitCount"></span></div><div style="flex:0"><button class="btn g" onclick="openVisit()">+ Visit baru</button></div><div style="flex:0"><button class="btn" onclick="exportVisit()">⬇ CSV</button></div></div><div class="card tbl" id="visitTbl" style="padding:0"></div></section>
+    <section id="pVisit" class="hid"><div class="tabs"><button class="on" onclick="go('visit')">Riwayat & Validasi Visit</button><button onclick="goIssues('pending')">Pending Matter</button><button onclick="goIssues('all')">Semua Issue Visit</button></div><div class="visit-tools-v22"><button type="button" class="btn s" onclick="visitShowAllV22()">📚 Semua riwayat Visit</button><button type="button" class="btn s" onclick="refresh(true)">↻ Periksa data tersimpan</button><small>Filter tanggal, toko, dan pencarian berada di bagian atas halaman.</small></div><div id="visitStatusV22" role="status" aria-live="polite"></div><div id="visitMini"></div><div class="row" style="margin-bottom:8px;align-items:center"><div style="flex:1"><b style="font-size:14px">Visiting Check Point Control</b> <span class="mu" id="visitCount"></span></div><div style="flex:0"><button class="btn g" onclick="openVisit()">+ Visit baru</button></div><div style="flex:0"><button class="btn" onclick="exportVisit()">⬇ CSV</button></div></div><div class="card tbl" id="visitTbl" style="padding:0"></div></section>
     <section id="pIssues" class="hid">
       <div class="tabs"><button onclick="go('visit')">Riwayat Visit</button><button id="isTabPending" class="on" onclick="issueTab('pending')">Pending Matter</button><button id="isTabAll" onclick="issueTab('all')">Semua Issue</button></div>
       <div class="card" style="margin-bottom:12px"><div class="row issue-filters">
@@ -1033,9 +1045,9 @@ function renderTracking(tr){var td=S.meta.today,forms=tr.forms,m=S.trkMode,past=
   return h+'</table></div></div>';}
 // ===== CHECKLIST HARIAN STORE =====
 function ckMode(m){S.ckMode=m;loadCeklis();}
-function loadCeklis(){$('ckModeA').classList.toggle('on',S.ckMode==='isi');$('ckModeB').classList.toggle('on',S.ckMode!=='isi');
-  if(S.ckMode==='riwayat'){$('pList').classList.remove('hid');$('ckIsi').classList.add('hid');return call('list',{type:'CEKLIS',filter:Object.assign({},histRange(),{toko:isMgr()?$('ckToko').value:''})}).then(function(rows){S.rows=rows;S.sel={};renderList('CEKLIS');});}
-  $('pList').classList.add('hid');$('ckIsi').classList.remove('hid');$('ckIsi').innerHTML='<div class="skel"></div><div class="skel"></div>';return call('ceklisHari',{tanggal:$('ckTgl').value,toko:$('ckToko').value}).then(function(rows){S.ckRows=rows;renderCeklis();});}
+function loadCeklis(){var ckSeq=S.ckFetchSeq=(S.ckFetchSeq||0)+1;$('ckModeA').classList.toggle('on',S.ckMode==='isi');$('ckModeB').classList.toggle('on',S.ckMode!=='isi');
+  if(S.ckMode==='riwayat'){$('pList').classList.remove('hid');$('ckIsi').classList.add('hid');return call('list',{type:'CEKLIS',filter:Object.assign({},histRange(),{toko:isMgr()?$('ckToko').value:''})}).then(function(rows){if(ckSeq!==S.ckFetchSeq)return;S.rows=rows;S.sel={};renderList('CEKLIS');});}
+  $('pList').classList.add('hid');$('ckIsi').classList.remove('hid');$('ckIsi').innerHTML='<div class="skel"></div><div class="skel"></div>';return call('ceklisHari',{tanggal:$('ckTgl').value,toko:$('ckToko').value}).then(function(rows){if(ckSeq!==S.ckFetchSeq)return;S.ckRows=rows;renderCeklis();});}
 function renderCeklis(){var rows=S.ckRows,done=rows.filter(function(r){return r.status==='Selesai';}).length,pct=rows.length?Math.round(done*100/rows.length):0,val=rows.filter(function(r){return r.validasi==='Y';}).length,all=rows.length&&done===rows.length;
   var h='<div class="card" style="background:'+(all?'linear-gradient(135deg,#dcfce7,#fff)':'linear-gradient(135deg,#e0e7ff,#fff)')+'"><div class="ckhead"><div class="big" style="color:'+(all?'var(--g)':'var(--p)')+'">'+done+'<span class="mu" style="font-size:16px">/'+rows.length+'</span></div><div style="flex:1;min-width:0"><b>'+(all?'🎉 Semua checklist selesai!':'Checklist '+fmtTgl($('ckTgl').value)+(isMgr()?' · '+esc($('ckToko').value):''))+'</b><div class="bar" style="height:12px;margin-top:6px"><i style="width:'+pct+'%"></i></div><div class="mu" style="margin-top:4px">'+(rows.length-done)+' belum · '+done+' selesai · '+val+' divalidasi SPV</div></div><b style="font-size:20px">'+pct+'%</b></div>'
     +'<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center"><div class="seg">'+[['semua','Semua'],['belum','Belum'],['selesai','Selesai']].map(function(x){return '<button class="'+(S.ckFilter===x[0]?'on':'')+'" onclick="S.ckFilter=\''+x[0]+'\';renderCeklis()">'+x[1]+'</button>';}).join('')+'</div>'+(rows.length&&!all?'<button class="btn s g" onclick="ckAll()">✔ Tandai semua selesai</button>':'')+'</div></div>';
@@ -1044,8 +1056,9 @@ function renderCeklis(){var rows=S.ckRows,done=rows.filter(function(r){return r.
   order.forEach(function(i){var r=rows[i],lock=r.validasi==='Y'&&!isMgr(),d=r.status==='Selesai';
     h+='<div class="ckrow '+(d?'done':'')+(lock?' lock':'')+'" id="ck'+i+'"><div class="cb" onclick="'+(lock?'toast(\'Sudah divalidasi SPV, tidak bisa diubah\',true)':'ckToggle('+i+')')+'">'+(d?'✓':'')+'</div><div style="flex:1;min-width:0"><div class="t">'+esc(r.judul)+'</div>'
       +'<div class="m">'+(r.prioritas?'<span class="bdg pr-'+esc(r.prioritas)+'">'+esc(r.prioritas)+'</span> ':'')+esc(r.frekuensi)+(r.kategori?' · '+esc(r.kategori):'')+(r.pic?' · PIC '+esc(r.pic):'')+(r.jam?' · ✔ '+r.jam:'')+(r.validasi==='Y'?' · <span class="ok">Validasi '+esc(r.validasiOleh)+'</span>':'')+(r.catatan?' · 📝':'')+(r.fotoId?' · 📷':'')+'</div>'+(r.deskripsi?'<div class="m">'+esc(r.deskripsi)+'</div>':'')
+      +(r.id&&r.validasi==='Y'&&canUndoValidation(r,'CEKLIS')?'<button class="btn s ck-undo-action" onclick="validationUndo(\'CEKLIS\',\''+esc(r.id)+'\',\'ck\')">↶ Batal validasi</button>':'')
       +'<div class="more"><input placeholder="catatan (opsional)…" value="'+esc(r.catatan)+'" '+(lock?'disabled':'onchange="ckNote('+i+',this.value)"')+'>'+thumbs([r.fotoId],36)+(r.fotoId&&!lock?'<button class="btn s" onclick="ckSend('+i+',{fotoId:\'\'})">✕ foto</button>':'')+(lock?'':'<label class="btn s">📷 Foto<input type="file" accept="image/*" capture="environment" style="display:none" onchange="ckFoto('+i+',this)"></label>')
-      +(isMgr()&&r.id?(r.validasi==='Y'?'<button class="btn s" onclick="ckValid('+i+',\'batalValidasi\')">Batal validasi</button>':'<button class="btn s g" onclick="ckValid('+i+',\'validasi\')">✔ Validasi</button>'):'')+'</div></div><button class="btn s" onclick="$(\'ck'+i+'\').classList.toggle(\'open\')" title="Catatan / foto">⋯</button></div>';});
+      +(isMgr()&&r.id&&r.validasi!=='Y'?'<button class="btn s g" onclick="ckValid('+i+',\'validasi\')">✔ Validasi</button>':'')+'</div></div><button class="btn s" onclick="$(\'ck'+i+'\').classList.toggle(\'open\')" title="Catatan / foto">⋯</button></div>';});
   $('ckIsi').innerHTML=h;}
 function ckSend(i,p){var r=S.ckRows[i],bak=JSON.stringify(r);p.rutinId=r.rutinId;p.judul=r.judul;p.id=r.id;p.tanggal=$('ckTgl').value;p.toko=$('ckToko').value;
   if(p.status!=null){r.status=p.status?'Selesai':'Belum';r.jam=p.status?witaClock():'';}if(p.catatan!=null)r.catatan=p.catatan;if(p.fotoId!=null)r.fotoId=p.fotoId;renderCeklis();
@@ -1053,7 +1066,65 @@ function ckSend(i,p){var r=S.ckRows[i],bak=JSON.stringify(r);p.rutinId=r.rutinId
 function ckToggle(i){ckSend(i,{status:S.ckRows[i].status!=='Selesai'});}function ckNote(i,v){ckSend(i,{catatan:v}).then(function(){toast('Catatan tersimpan','ok');});}
 function ckAll(){var idx=S.ckRows.map(function(r,i){return i;}).filter(function(i){return S.ckRows[i].status!=='Selesai'&&!(S.ckRows[i].validasi==='Y'&&!isMgr());});if(!idx.length)return;if(!confirm('Tandai '+idx.length+' item sebagai selesai?'))return;(function next(k){if(k>=idx.length){toast('Semua selesai 🎉','ok');return;}ckSend(idx[k],{status:true}).then(function(){next(k+1);},function(){next(k+1);});})(0);}
 function ckFoto(i,inp){compress(inp.files[0],function(data){toast('Mengunggah…');call('uploadFoto',{dataUrl:data,nama:'CK_'+$('ckTgl').value},true).then(function(r){return ckSend(i,{fotoId:r.id});}).then(function(){toast('Foto tersimpan','ok');});});}
-function ckValid(i,op){var r=S.ckRows[i],bak=JSON.stringify(r);r.validasi=op==='validasi'?'Y':'';r.validasiOleh=op==='validasi'?S.me.nama:'';renderCeklis();call('bulk',{type:'CEKLIS',ids:[r.id],op:op},true).then(null,function(){S.ckRows[i]=JSON.parse(bak);renderCeklis();});}
+// v21: hanya Master atau validator SPV yang dapat membatalkan; cek lagi di Supabase.
+function canUndoValidation(r,module){
+  if(!r||!isMgr())return false;
+  if(isMaster())return true;
+  if(module==='VISIT')return false;
+  return module==='PERIOD'
+    ? String(r.validated_by||r.validatedBy||'')===String(S.me.username||'')
+    : String(r.validasiOleh||'')===String(S.me.nama||'');
+}
+var validationUndoBusy=false;
+async function validationUndo(module,id,source,preconfirmedReason){
+  if(!isMgr())return toast('Hanya SPV atau Master yang dapat membatalkan validasi',true);
+  if(validationUndoBusy)return toast('Masih memproses pembatalan sebelumnya',true);
+  var reason=preconfirmedReason==null?prompt('Alasan pembatalan validasi ('+module+' · '+id+') — wajib, minimal 5 karakter:',''):preconfirmedReason;
+  if(reason===null)return false;
+  reason=String(reason).trim();
+  if(reason.length<5||reason.length>500)return toast('Isi alasan pembatalan 5–500 karakter',true);
+  if(preconfirmedReason==null&&!confirm('Batalkan validasi '+id+'? Status kembali menunggu validasi dan form dapat diedit kembali. Foto dan isian tetap tersimpan.'))return false;
+  validationUndoBusy=true;
+  try{
+    await call('validationUndo',{module:module,id:id,reason:reason},true);
+    toast('Validasi dibatalkan · data dapat diperbaiki kembali','ok');
+    if(source==='ck') await loadCeklis();
+    else if(source==='dso'){closeM('mDetail');await loadDso();}
+    else if(source==='visit'){closeM('mVisit');await refresh();}
+    else if(source==='issue') await loadIssues();
+    else if(source==='period') await loadPeriodReports();
+    else await refresh();
+    if(typeof loadNotif==='function')loadNotif();
+    return true;
+  }catch(e){toast('Pembatalan gagal: '+String(e.message||e),true);return false;}
+  finally{validationUndoBusy=false;}
+}
+function ckValid(i,op){
+  var r=S.ckRows[i];if(!r||!r.id)return toast('Simpan checklist sebelum melakukan validasi',true);
+  if(op==='batalValidasi')return validationUndo('CEKLIS',r.id,'ck');
+  if(!isMgr())return toast('Validasi hanya untuk SPV / Master',true);
+  call('bulk',{type:'CEKLIS',ids:[r.id],op:'validasi'},true).then(function(res){
+    toast('Checklist berhasil divalidasi','ok');loadCeklis();if(typeof loadNotif==='function')loadNotif();
+  },function(e){toast('Gagal validasi: '+String(e.message||e),true);loadCeklis();});
+}
+async function bulkUndoValidations(ids){
+  var module=curType();
+  var eligible=(S.rows||[]).filter(function(r){return ids.indexOf(r.id)>=0&&r.validasi==='Y'&&canUndoValidation(r,module);});
+  if(!eligible.length)return toast('Pilih data yang sudah divalidasi oleh Anda (atau login Master).',true);
+  if(eligible.length>30)return toast('Batalkan maksimal 30 validasi sekaligus agar koneksi tetap stabil.',true);
+  var reason=prompt('Alasan pembatalan untuk '+eligible.length+' data (wajib, min. 5 karakter):','');
+  if(reason===null)return;
+  reason=String(reason).trim();if(reason.length<5||reason.length>500)return toast('Isi alasan 5–500 karakter',true);
+  if(!confirm('Batalkan validasi '+eligible.length+' data terpilih? Foto dan isian tidak akan dihapus.'))return;
+  var ok=0,failed=[];
+  for(var r of eligible){
+    try{await call('validationUndo',{module:module,id:r.id,reason:reason},true);ok++;}
+    catch(e){failed.push(r.id+': '+String(e.message||e));}
+  }
+  S.sel={};await refresh();if(typeof loadNotif==='function')loadNotif();
+  toast(ok+' validasi dibatalkan'+(failed.length?' · '+failed.length+' gagal; periksa kembali.':''),failed.length?true:'ok');
+}
+
 
 // ===== DAILY STORE OPERATION =====
 function dsMode(m){S.dsMode=m;loadDso();}
@@ -1078,7 +1149,7 @@ function renderDso(){var forms=cfg().dsoForms,toko=isMgr()?$('dsToko').value:S.m
     +'<div style="flex:1;min-width:0"><div class="t">'+(i+1)+'. '+esc(d.label)+(d.wajib==='N'?' <span class="mu">(opsional)</span>':'')+'</div><div class="m">'+esc(d.deskripsi)+'</div>'+(id&&!up?'<div class="ok" style="font-size:12px">✔ foto tersimpan · ketuk foto untuk perbesar, ketuk ✕ untuk hapus/ganti</div>':up?'<div class="mu">mengunggah…</div>':'<div class="mu">'+(d.multi==='Y'?'ketuk kotak → pilih beberapa foto':'ketuk kotak → ambil foto')+'</div>')+'</div>'+(id&&!up&&!locked?'<button class="btn s r" onclick="dsoHapusFoto(\''+d.id+'\')">✕</button>':'')+'</div>';});
   h+='<div class="card"><div class="grid"><div><span class="lbl">Nama pengisi</span><input id="dsOleh" value="'+esc(r?r.oleh:S.me.nama)+'" '+(locked?'disabled':(r?'onchange="dsoPatch({oleh:this.value})"':''))+'></div><div class="full"><span class="lbl">Keterangan (opsional)</span><textarea id="dsKet" '+(locked?'disabled':(r?'onchange="dsoPatch({keterangan:this.value})"':''))+'>'+esc(r?r.keterangan:'')+'</textarea></div></div>'
     +(locked?'<p class="ok">Laporan sudah di-approve SPV.</p>':r?'<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn p" onclick="dsoKirim()">🔄 Kirim ulang (reset SLA & validasi)</button><button class="btn r" onclick="dsoHapus(\''+r.id+'\')">🗑 Hapus laporan</button></div>':'<button class="btn p w" style="margin-top:10px;padding:13px;font-size:15px" onclick="dsoKirim()">📤 Kirim laporan '+esc(f.nama)+'</button>');
-  if(isMgr()&&r)h+='<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--bd)"><span class="lbl">Validasi SPV</span><input id="dsKetSpv" placeholder="keterangan SPV (wajib bila ditolak)" value="'+esc(r.ketSpv)+'"><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn g" onclick="dsoVal(\''+r.id+'\',\'Approved\')">✔ Approve</button><button class="btn r" onclick="dsoVal(\''+r.id+'\',\'Rejected\')">✕ Tolak</button>'+(r.validasi?'<button class="btn" onclick="dsoVal(\''+r.id+'\',\'\')">Batal validasi</button>':'')+'</div></div>';
+  if(isMgr()&&r)h+='<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--bd)"><span class="lbl">Validasi SPV</span><input id="dsKetSpv" placeholder="keterangan SPV (wajib bila ditolak)" value="'+esc(r.ketSpv)+'"><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn g" onclick="dsoVal(\''+r.id+'\',\'Approved\')">✔ Approve</button><button class="btn r" onclick="dsoVal(\''+r.id+'\',\'Rejected\')">✕ Tolak</button>'+(r.validasi&&canUndoValidation(r,'DSO')?'<button class="btn" onclick="dsoVal(\''+r.id+'\',\'\')">↶ Batal validasi</button>':'')+'</div></div>';
   $('dsBody').innerHTML=h+'</div>';}
 function dsoCur(){return S.dsRows.filter(function(x){return x.form===S.dsForm;})[0];}
 function dsoFoto(itemId,inp){if(!inp.files.length)return;toast('Memproses foto…');collage(inp.files,function(data){S.dsPrev[itemId]=data;S.dsJaw[itemId]='…';renderDso();call('uploadFoto',{dataUrl:data,nama:'DSO_'+S.dsForm+'_'+$('dsTgl').value},true).then(function(r){S.dsJaw[itemId]=r.id;var cur=dsoCur();if(cur)return call('dsoPatch',{id:cur.id,itemId:itemId,fotoId:r.id},true).then(function(c){cur.jawaban=c.jawaban;});}).then(function(){renderDso();toast('Foto tersimpan ('+kb(data)+')','ok');},function(){delete S.dsJaw[itemId];delete S.dsPrev[itemId];renderDso();});});}
@@ -1087,17 +1158,17 @@ function dsoPatch(p){var cur=dsoCur();if(!cur)return;p.id=cur.id;call('dsoPatch'
 function dsoKirim(){var jaw={};Object.keys(S.dsJaw).forEach(function(k){if(k!=='_key'&&S.dsJaw[k]&&S.dsJaw[k]!=='…')jaw[k]=S.dsJaw[k];});if(Object.keys(S.dsJaw).some(function(k){return S.dsJaw[k]==='…';}))return toast('Tunggu foto selesai diunggah',true);
   call('dsoSubmit',{form:S.dsForm,tanggal:$('dsTgl').value,toko:$('dsToko').value,jawaban:jaw,oleh:$('dsOleh').value,keterangan:$('dsKet').value}).then(function(r){toast('Laporan '+formById(r.form).nama+' terkirim · '+r.slaSubmit,'ok');S.dsJaw={};loadDso();loadNotif();});}
 function dsoHapus(id){if(!confirm('Hapus laporan ini beserta fotonya? Anda bisa mengisi ulang dari awal.'))return;call('dsoHapus',{id:id}).then(function(){toast('Laporan dihapus');S.dsJaw={};loadDso();loadNotif();});}
-function dsoVal(id,v){var ket=$('dsKetSpv')?$('dsKetSpv').value:'';if(v==='Rejected'&&!ket)return toast('Isi keterangan alasan penolakan',true);call('dsoValidasi',{id:id,validasi:v,ketSpv:ket}).then(function(){toast(v?'Tersimpan: '+v:'Validasi dibatalkan','ok');S.dsJaw={};loadDso();closeM('mDetail');loadNotif();});}
+function dsoVal(id,v){if(v==='')return validationUndo('DSO',id,'dso');var ket=$('dsKetSpv')?$('dsKetSpv').value:'';if(v==='Rejected'&&!ket)return toast('Isi keterangan alasan penolakan',true);call('dsoValidasi',{id:id,validasi:v,ketSpv:ket}).then(function(){toast(v?'Tersimpan: '+v:'Validasi dibatalkan','ok');S.dsJaw={};loadDso();closeM('mDetail');loadNotif();});}
 function renderDsoRiwayat(){var rows=S.rows,pend=rows.filter(function(r){return !r.validasi;}).length;
   var h='<div class="mini"><div style="--ac:#0891b2"><span>Laporan 30 hari</span><b>'+rows.length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+pend+'</b></div><div style="--ac:#16a34a"><span>Approved</span><b>'+rows.filter(function(r){return r.validasi==='Approved';}).length+'</b></div><div style="--ac:#dc2626"><span>Submit terlambat</span><b>'+rows.filter(function(r){return r.slaSubmit==='Terlambat';}).length+'</b></div></div>';
   h+='<div class="card tbl" style="padding:0"><table><thead><tr><th>Tanggal</th>'+(isMgr()?'<th>Toko</th>':'')+'<th>Form</th><th>Submit</th><th>Pengisi</th><th>SLA submit</th><th>Validasi</th><th>SLA validasi</th><th></th></tr></thead><tbody>';
-  rows.forEach(function(r,i){h+='<tr><td style="white-space:nowrap">'+fmtTgl(r.tanggal)+'</td>'+(isMgr()?'<td>'+esc(r.toko)+'</td>':'')+'<td>'+esc(formById(r.form).nama)+'</td><td>'+esc(r.waktuSubmit.slice(11))+'</td><td>'+esc(r.oleh)+'</td><td>'+bdg(r.slaSubmit)+'</td><td>'+bdg(dsoStatus(r))+(r.validasiOleh?'<div class="mu">'+esc(r.validasiOleh)+'</div>':'')+'</td><td>'+(r.slaValidasi?bdg(r.slaValidasi):'')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="dsoDetail('+i+')">Lihat</button> '+(isMgr()||r.validasi!=='Approved'?'<button class="btn s r" onclick="dsoHapus(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
+  rows.forEach(function(r,i){h+='<tr><td style="white-space:nowrap">'+fmtTgl(r.tanggal)+'</td>'+(isMgr()?'<td>'+esc(r.toko)+'</td>':'')+'<td>'+esc(formById(r.form).nama)+'</td><td>'+esc(r.waktuSubmit.slice(11))+'</td><td>'+esc(r.oleh)+'</td><td>'+bdg(r.slaSubmit)+'</td><td>'+bdg(dsoStatus(r))+(r.validasiOleh?'<div class="mu">'+esc(r.validasiOleh)+'</div>':'')+'</td><td>'+(r.slaValidasi?bdg(r.slaValidasi):'')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="dsoDetail('+i+')">Lihat</button> '+(r.validasi&&canUndoValidation(r,'DSO')?'<button class="btn s" onclick="validationUndo(\'DSO\',\''+esc(r.id)+'\',\'dso\')">↶ Batal</button> ':'')+(isMgr()||r.validasi!=='Approved'?'<button class="btn s r" onclick="dsoHapus(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
   if(!rows.length)h+='<tr><td colspan="9" class="empty">Belum ada laporan 30 hari terakhir</td></tr>';$('dsBody').innerHTML=h+'</tbody></table></div>';}
 function dsoDetail(i){var r=S.rows[i],def=S.meta.formDef.filter(function(d){return d.form===r.form;});$('dTitle').textContent=formById(r.form).nama+' · '+r.toko+' · '+fmtTgl(r.tanggal);
   var h='<div class="mu">Dikirim '+r.waktuSubmit+' oleh '+esc(r.oleh)+' · '+bdg(r.slaSubmit)+' · '+bdg(dsoStatus(r))+(r.validasiOleh?' oleh '+esc(r.validasiOleh)+' '+r.validasiTgl+' '+bdg(r.slaValidasi):'')+'</div>'+(r.keterangan?'<p>Keterangan: '+esc(r.keterangan)+'</p>':'')+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:10px">';
   def.forEach(function(d){var id=r.jawaban[d.id];h+='<div style="border:1px solid var(--bd);border-radius:10px;padding:6px;font-size:11px">'+(validId(id)?'<img class="thumb" style="width:100%;height:120px" src="'+fotoUrl(id,400)+'" data-id="'+id+'" onclick="lightbox(this)" onerror="fotoFallback(this)">':'<div style="height:120px;display:grid;place-items:center;color:var(--mu)">tidak ada</div>')+'<div style="margin-top:4px;font-weight:600">'+esc(d.label)+'</div></div>';});
   h+='</div>';if(isMgr())h+='<div style="margin-top:12px"><span class="lbl">Keterangan SPV</span><input id="dsKetSpv" value="'+esc(r.ketSpv)+'"></div>';$('dBody').innerHTML=h;
-  $('dBtn').innerHTML='<button class="btn" onclick="closeM(\'mDetail\')">Tutup</button>'+(isMgr()?'<button class="btn g" onclick="dsoVal(\''+r.id+'\',\'Approved\')">✔ Approve</button><button class="btn r" onclick="dsoVal(\''+r.id+'\',\'Rejected\')">✕ Tolak</button>'+(r.validasi?'<button class="btn" onclick="dsoVal(\''+r.id+'\',\'\')">Batal validasi</button>':''):'');$('mDetail').classList.add('on');}
+  $('dBtn').innerHTML='<button class="btn" onclick="closeM(\'mDetail\')">Tutup</button>'+(isMgr()?'<button class="btn g" onclick="dsoVal(\''+r.id+'\',\'Approved\')">✔ Approve</button><button class="btn r" onclick="dsoVal(\''+r.id+'\',\'Rejected\')">✕ Tolak</button>'+(r.validasi&&canUndoValidation(r,'DSO')?'<button class="btn" onclick="dsoVal(\''+r.id+'\',\'\')">↶ Batal validasi</button>':''):'');$('mDetail').classList.add('on');}
 
 // ===== LIST (MASALAH / CEKLIS riwayat) =====
 function curType(){return S.tab==='ceklis'?'CEKLIS':S.tab;}
@@ -1112,14 +1183,14 @@ function renderList(t){var cols=COLS[t].filter(function(c){return !(c==='toko'&&
       else if(c==='fotoId')cell=v?thumbs([v]):(r.linkBukti?'<a href="'+esc(r.linkBukti)+'" target="_blank">link</a>':'');else if(c==='dueDate')cell='<span class="'+(isLate(r)?'late':'')+'" style="white-space:nowrap">'+fmtTgl(v)+(isLate(r)?' ⚠':'')+'</span>';
       else if(c==='tanggal'||c==='tglSelesai')cell='<span style="white-space:nowrap">'+fmtTgl(v)+'</span>';else if(c==='toko')cell='<span style="font-size:12px;font-weight:600">'+esc(v)+'</span>';else cell=esc(v);
       h+=CLAMP.test(c)?'<td class="clamp"><div onclick="openDetail('+idx+')">'+cell+'</div></td>':'<td>'+cell+'</td>';});
-    var canEdit=isMgr()||r.validasi!=='Y';h+='<td style="white-space:nowrap"><button class="btn s" onclick="openDetail('+idx+')">👁</button> '+(canEdit?'<button class="btn s o" onclick="openForm(\''+r.id+'\')">Edit</button> ':'🔒 ')+(isMgr()&&r.validasi!=='Y'?'<button class="btn s g" onclick="quick(\''+r.id+'\',\'validasi\')">✔</button> ':'')+(canEdit?'<button class="btn s r" onclick="quick(\''+r.id+'\',\'hapus\')">🗑</button>':'')+'</td></tr>';});
+    var canEdit=isMgr()||r.validasi!=='Y';h+='<td style="white-space:nowrap"><button class="btn s" onclick="openDetail('+idx+')">👁</button> '+(canEdit?'<button class="btn s o" onclick="openForm(\''+r.id+'\')">Edit</button> ':'🔒 ')+(isMgr()&&r.validasi!=='Y'?'<button class="btn s g" onclick="quick(\''+r.id+'\',\'validasi\')">✔</button> ':'')+(r.validasi==='Y'&&canUndoValidation(r,t)?'<button class="btn s" onclick="validationUndo(\''+t+'\',\''+esc(r.id)+'\',\'list\')">↶ Batal validasi</button> ':'')+(canEdit?'<button class="btn s r" onclick="quick(\''+r.id+'\',\'hapus\')">🗑</button>':'')+'</td></tr>';});
   if(!rows.length)h+='<tr><td colspan="'+(cols.length+2)+'" class="empty">Tidak ada data pada filter ini</td></tr>';$('tblWrap').innerHTML=h+'</tbody></table>';updBulk();}
 function openDetail(idx){var r=S.rows[idx];$('dTitle').textContent=(r.judul||r.masalah||r.id).slice(0,60)+' · '+r.toko;
   $('dBody').innerHTML='<dl>'+Object.keys(r).filter(function(k){return r[k]!==''&&k!=='fotoId';}).map(function(k){var v=r[k];if(k==='status')v=bdg(v);else if(k==='prioritas')v='<span class="bdg pr-'+esc(v)+'">'+esc(v)+'</span>';else if(/tanggal|dueDate|tglSelesai/.test(k))v=fmtTgl(v);else if(k==='validasi')v=v==='Y'?'✔ Sudah':'Belum';else v=esc(v);return '<dt>'+(LABEL[k]||k)+'</dt><dd>'+v+'</dd>';}).join('')+(r.fotoId?'<dt>Foto</dt><dd>'+thumbs([r.fotoId],140)+'</dd>':'')+'</dl>';
-  var canEdit=isMgr()||r.validasi!=='Y';$('dBtn').innerHTML='<button class="btn" onclick="closeM(\'mDetail\')">Tutup</button>'+(canEdit?'<button class="btn p" onclick="closeM(\'mDetail\');openForm(\''+r.id+'\')">Edit</button>':'');$('mDetail').classList.add('on');}
+  var canEdit=isMgr()||r.validasi!=='Y';$('dBtn').innerHTML='<button class="btn" onclick="closeM(\'mDetail\')">Tutup</button>'+(canEdit?'<button class="btn p" onclick="closeM(\'mDetail\');openForm(\''+r.id+'\')">Edit</button>':'')+(r.validasi==='Y'&&canUndoValidation(r,curType())?'<button class="btn" onclick="closeM(\'mDetail\');validationUndo(\''+curType()+'\',\''+esc(r.id)+'\',\'list\')">↶ Batal validasi</button>':'');$('mDetail').classList.add('on');}
 function selAll(on){S.rows.forEach(function(r){if(on)S.sel[r.id]=1;else delete S.sel[r.id];});document.querySelectorAll('#tblWrap input[data-id]').forEach(function(c){c.checked=on;});updBulk();}
 function selOne(c){if(c.checked)S.sel[c.dataset.id]=1;else delete S.sel[c.dataset.id];updBulk();}function selIds(){return Object.keys(S.sel);}function updBulk(){var n=selIds().length;$('bulk').classList.toggle('on',n>0);$('bulkN').textContent=n;}
-function bulk(op,ids,value){ids=ids||selIds();if(!ids.length)return;var msg={batalValidasi:'Batalkan validasi '+ids.length+' data?',hapus:'HAPUS PERMANEN '+ids.length+' data?',status:'Ubah status '+ids.length+' data menjadi '+value+'?'}[op];if(op!=='validasi'&&!confirm(msg))return;
+function bulk(op,ids,value){ids=ids||selIds();if(!ids.length)return;if(op==='batalValidasi')return bulkUndoValidations(ids);var msg={batalValidasi:'Batalkan validasi '+ids.length+' data?',hapus:'HAPUS PERMANEN '+ids.length+' data?',status:'Ubah status '+ids.length+' data menjadi '+value+'?'}[op];if(op!=='validasi'&&!confirm(msg))return;
   if(op==='validasi'||op==='batalValidasi'){S.rows.forEach(function(r){if(ids.indexOf(r.id)>=0){r.validasi=op==='validasi'?'Y':'';r.validasiOleh=op==='validasi'?S.me.nama:'';}});S.sel={};renderList(curType());}
   call('bulk',{type:curType(),ids:ids,op:op,value:value},op==='validasi').then(function(r){toast(r.jumlah+' data diproses','ok');S.sel={};if(op!=='validasi')refresh();loadNotif();},function(){refresh();});}
 function bulkStatus(){var v=$('bulkStatus').value;if(!v)return toast('Pilih status dulu',true);bulk('status',null,v);}function quick(id,op){bulk(op,[id]);}
@@ -1160,7 +1231,7 @@ function seksiList(){return cfg().visitSeksi;}function visitItems(k){return S.me
 function renderVisits(){var rows=S.visits;$('visitCount').textContent='('+rows.length+' visit)';var avg=rows.length?Math.round(rows.reduce(function(a,r){return a+(+r.finalScore||0);},0)/rows.length):null;
   $('visitMini').innerHTML='<div class="mini"><div style="--ac:#7c3aed"><span>Visit</span><b>'+rows.length+'</b></div><div style="--ac:#16a34a"><span>Rata-rata skor</span><b>'+(avg==null?'–':avg+'%')+'</b></div><div style="--ac:#059669"><span>Excellent</span><b>'+rows.filter(function(r){return r.rating==='Excellent';}).length+'</b></div><div style="--ac:#dc2626"><span>Critical / NI</span><b>'+rows.filter(function(r){return /Critical|Need/.test(r.rating);}).length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+rows.filter(function(r){return !r.validasi;}).length+'</b></div><div style="--ac:#0891b2"><span>Total temuan</span><b>'+rows.reduce(function(a,r){return a+((+r.totalDinilai||0)-(+r.totalPass||0));},0)+'</b></div></div>';
   var h='<table><thead><tr><th>Tanggal</th><th>Wk</th><th>Toko</th><th>Leader</th><th>Evaluator</th><th>Tipe</th>'+seksiList().map(function(s){return '<th class="visit-seksi-head" title="'+esc(s.kode+' - '+s.nama)+'"><b>'+esc(s.kode)+'</b><small>'+esc(visitSeksiSingkat(s))+'</small></th>';}).join('')+'<th>Final</th><th>Rating</th><th>Validasi</th><th></th></tr></thead><tbody>';
-  rows.forEach(function(r,i){var canDel=!r.validasi||isMaster();h+='<tr><td style="white-space:nowrap">'+fmtTgl(r.tanggal)+'</td><td>'+r.minggu+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(r.leader)+'</td><td>'+esc(r.evaluator)+'</td><td>'+esc(r.tipe)+'</td>'+seksiList().map(function(s){var x=r.skor[s.kode];return '<td>'+(x&&x.score!=null?sc(Math.round(x.score)):'–')+'</td>';}).join('')+'<td>'+sc(Math.round(+r.finalScore))+'</td><td>'+bdg(r.rating)+'</td><td>'+(r.validasi?'<span class="ok">✔ '+esc(r.validasiOleh)+'</span>':'<span class="mu">belum</span>')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="openVisit('+i+',true)">Lihat</button> '+(canDel?'<button class="btn s" onclick="openVisit('+i+')">Edit</button> <button class="btn s r" onclick="hapusVisit(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
+  rows.forEach(function(r,i){var canDel=!r.validasi||isMaster();h+='<tr><td style="white-space:nowrap">'+fmtTgl(r.tanggal)+'</td><td>'+r.minggu+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(r.leader)+'</td><td>'+esc(r.evaluator)+'</td><td>'+esc(r.tipe)+'</td>'+seksiList().map(function(s){var x=r.skor[s.kode];return '<td>'+(x&&x.score!=null?sc(Math.round(x.score)):'–')+'</td>';}).join('')+'<td>'+sc(Math.round(+r.finalScore))+'</td><td>'+bdg(r.rating)+'</td><td>'+(r.validasi?'<span class="ok">✔ '+esc(r.validasiOleh)+'</span>':'<span class="mu">belum</span>')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="openVisit('+i+',true)">Lihat</button> '+(r.validasi&&isMaster()?'<button class="btn s" onclick="validationUndo(\'VISIT\',\''+esc(r.id)+'\',\'visit\')">↶ Batal validasi</button> ':'')+(canDel?'<button class="btn s" onclick="openVisit('+i+')">Edit</button> <button class="btn s r" onclick="hapusVisit(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
   if(!rows.length)h+='<tr><td colspan="15" class="empty">Belum ada visit pada periode ini</td></tr>';$('visitTbl').innerHTML=h+'</tbody></table>';}
 function hapusVisit(id){if(!confirm('Hapus data visit ini beserta fotonya?'))return;call('visitHapus',{id:id}).then(function(){toast('Visit dihapus');refresh();});}
 function openVisit(i,view){var r=i!=null?S.visits[i]:{tanggal:S.meta.today,toko:'',leader:'',evaluator:S.me.nama,tipe:'Offline Visit',jawaban:{},catatan:{},foto:{},issues:'',updateTemuan:{},keterangan:''};S.vis=JSON.parse(JSON.stringify(r));S.vis._view=!!view;renderVisit();$('mVisit').classList.add('on');}
@@ -1180,7 +1251,7 @@ function renderVisit(){var v=S.vis,ro=v._view,s=vScore(),h='';$('vTitle').textCo
   $('vBtn').innerHTML='<button class="btn" onclick="closeM(\'mVisit\')">Tutup</button>'+(v.id&&isMaster()?(v.validasi?'<button class="btn" onclick="visitVal(false)">Batal validasi</button>':'<button class="btn g" onclick="visitVal(true)">✔ Approve</button>'):'')+(ro?((v.id&&!v.validasi)||isMaster()?'<button class="btn o" onclick="S.vis._view=false;renderVisit()">Edit</button>':''):'<button class="btn p" id="btnVisitSave" onclick="saveVisit()">Simpan Visit</button>');}
 function visitFoto(k,inp){if(!inp.files.length)return;toast('Memproses foto…');collage(inp.files,function(data){call('uploadFoto',{dataUrl:data,nama:'VISIT_'+k+'_'+S.vis.tanggal},true).then(function(r){S.vis.foto[k]=r.id;renderVisit();toast('Foto terunggah ('+kb(data)+')','ok');});});}
 function saveVisit(){var v=S.vis;if(!v.toko)return toast('Pilih toko',true);var s=vScore();if(!s.td)return toast('Isi minimal satu item penilaian',true);call('visitSave',{data:v}).then(function(r){toast('Visit tersimpan · '+r.finalScore+'% '+r.rating,'ok');closeM('mVisit');refresh();});}
-function visitVal(on){call('visitValidasi',{id:S.vis.id,validasi:on,keterangan:$('vKet')?$('vKet').value:''}).then(function(){toast(on?'Visit di-approve':'Validasi dibatalkan','ok');closeM('mVisit');refresh();loadNotif();});}
+function visitVal(on){if(!on)return validationUndo('VISIT',S.vis.id,'visit');call('visitValidasi',{id:S.vis.id,validasi:on,keterangan:$('vKet')?$('vKet').value:''}).then(function(){toast(on?'Visit di-approve':'Validasi dibatalkan','ok');closeM('mVisit');refresh();loadNotif();});}
 function exportVisit(){var rows=S.visits;if(!rows.length)return toast('Tidak ada data',true);var q=function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';},defs=S.meta.visitDef;
   var head=['ID','Tanggal','Week','Toko','Leader','Evaluator','Tipe'].concat(defs.map(function(d){return d.kode;})).concat(seksiList().map(function(s){return 'Catatan '+s.kode;})).concat(seksiList().map(function(s){return 'Score '+s.kode;})).concat(['Total Pass','Total Dinilai','Final Score','Rating','List Issue','Validasi','Keterangan']);
   var csv='﻿'+head.join(';')+'\n'+rows.map(function(r){return [r.id,r.tanggal,r.minggu,r.toko,r.leader,r.evaluator,r.tipe].concat(defs.map(function(d){return r.jawaban[d.id]||'';})).concat(seksiList().map(function(s){return r.catatan[s.kode]||'';})).concat(seksiList().map(function(s){return r.skor[s.kode]?r.skor[s.kode].score:'';})).concat([r.totalPass,r.totalDinilai,r.finalScore,r.rating,r.issues,r.validasi,r.keterangan]).map(q).join(';');}).join('\n');
@@ -1329,8 +1400,9 @@ refresh=function(manual){if(S.tab!=='dash')return refreshBeforeV6(manual);
 // All-store Assignment Checklist monitoring, with one-click jump to each store.
 var loadCeklisBeforeV6=loadCeklis;
 loadCeklis=function(){if(!S.meta||!isMgr()||S.ckMode!=='isi'||$('ckToko').value!=='SEMUA')return loadCeklisBeforeV6();
+ var ckSeq=S.ckFetchSeq=(S.ckFetchSeq||0)+1;
  $('pList').classList.add('hid');$('ckIsi').classList.remove('hid');$('ckIsi').innerHTML='<div class="skel"></div>';
- return call('storeSummary',{tanggal:$('ckTgl').value},true).then(function(rows){var h='<div class="card">'+v6Header('Assignment Checklist • 12 Toko','Pilih toko untuk mengisi, memeriksa riwayat, atau melakukan validasi');
+ return call('storeSummary',{tanggal:$('ckTgl').value},true).then(function(rows){if(ckSeq!==S.ckFetchSeq||$('ckToko').value!=='SEMUA')return;var h='<div class="card">'+v6Header('Assignment Checklist • 12 Toko','Pilih toko untuk mengisi, memeriksa riwayat, atau melakukan validasi');
   h+='<div class="tbl" style="max-height:none"><table><thead><tr><th>Toko</th><th>Item Rutin</th><th>Selesai</th><th>Validasi</th><th>Status</th><th>Detail</th></tr></thead><tbody>';
   rows.forEach(function(r){h+='<tr><td><b>'+esc(r.toko)+'</b></td><td>'+r.checklist.total+'</td><td>'+r.checklist.done+'</td><td>'+r.checklist.valid+'</td><td>'+statusPill(r.checklist.done,r.checklist.total)+'</td><td><button class="btn s o" onclick="$(\'ckToko\').value=\''+esc(r.toko)+'\';loadCeklis()">Buka</button></td></tr>';});
   $('ckIsi').innerHTML=h+'</tbody></table></div></div>';});};
@@ -1342,7 +1414,7 @@ function loadIssues(){if(!isMgr())return Promise.resolve();$('issueTbl').innerHT
 function renderIssues(){var rows=S.issues||[],today=S.meta.today,pending=rows.filter(function(x){return x.status!=='Dibatalkan'&&(x.status!=='Selesai'||x.validasi!=='Y');}),over=rows.filter(function(x){return x.dueDate&&x.dueDate<today&&x.status!=='Selesai'&&x.status!=='Dibatalkan';});
  $('issueMini').innerHTML='<div class="v6-overview" style="margin-bottom:12px">'+v6Stat('Issue ditampilkan',rows.length,'#6366f1')+v6Stat('Masih terbuka',pending.length,'#f59e0b')+v6Stat('Overdue',over.length,'#dc2626')+v6Stat('Selesai',rows.filter(function(x){return x.status==='Selesai';}).length,'#10b981')+'</div>';
  var h='<table><thead><tr><th>Visit / Tgl</th><th>Toko</th><th>Point</th><th>Temuan / Action</th><th>PIC</th><th>Due date</th><th>Prioritas</th><th>Status</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
- rows.slice(0,200).forEach(function(x,i){h+='<tr><td><b>'+esc(x.visitId)+'</b><div class="mu">'+fmtTgl(x.tanggal)+'</div></td><td>'+esc(x.toko)+'</td><td>'+esc(x.pointId||'Umum')+'</td><td style="min-width:270px"><b>'+esc(x.issue)+'</b><div class="mu">'+esc(x.action||'Belum ada action')+'</div>'+thumbs([x.fotoId],32)+'</td><td>'+esc(x.pic||'—')+'</td><td class="'+(x.dueDate&&x.dueDate<today&&x.status!=='Selesai'?'late':'')+'">'+fmtTgl(x.dueDate)+'</td><td>'+bdg(x.prioritas)+'</td><td>'+bdg(x.status)+'</td><td>'+(x.validasi==='Y'?pill('Valid','g'):x.status==='Selesai'?pill('Menunggu SPV','y'):pill('Belum','n'))+'</td><td><button class="btn s o" onclick="editVisitIssue('+i+')">Update</button>'+(x.status==='Selesai'&&x.validasi!=='Y'?'<button class="btn s g" onclick="issueValidate('+i+')">✔ Validasi</button>':'')+'</td></tr>';});
+ rows.slice(0,200).forEach(function(x,i){h+='<tr><td><b>'+esc(x.visitId)+'</b><div class="mu">'+fmtTgl(x.tanggal)+'</div></td><td>'+esc(x.toko)+'</td><td>'+esc(x.pointId||'Umum')+'</td><td style="min-width:270px"><b>'+esc(x.issue)+'</b><div class="mu">'+esc(x.action||'Belum ada action')+'</div>'+thumbs([x.fotoId],32)+'</td><td>'+esc(x.pic||'—')+'</td><td class="'+(x.dueDate&&x.dueDate<today&&x.status!=='Selesai'?'late':'')+'">'+fmtTgl(x.dueDate)+'</td><td>'+bdg(x.prioritas)+'</td><td>'+bdg(x.status)+'</td><td>'+(x.validasi==='Y'?pill('Valid','g'):x.status==='Selesai'?pill('Menunggu SPV','y'):pill('Belum','n'))+'</td><td><button class="btn s o" onclick="editVisitIssue('+i+')">Update</button>'+(x.status==='Selesai'&&x.validasi!=='Y'?'<button class="btn s g" onclick="issueValidate('+i+')">✔ Validasi</button>':'')+(x.validasi==='Y'&&canUndoValidation(x,'VISIT_ISSUE')?'<button class="btn s" onclick="validationUndo(\'VISIT_ISSUE\',\''+esc(x.id)+'\',\'issue\')">↶ Batal validasi</button>':'')+'</td></tr>';});
  if(rows.length>200)h+='<tr><td colspan="10" class="mu">Menampilkan 200 issue pertama; gunakan filter untuk mempersempit, atau export semua CSV.</td></tr>';
  if(!rows.length)h+='<tr><td colspan="10" class="empty">Belum ada issue yang sesuai filter.</td></tr>';
  $('issueTbl').innerHTML=h+'</tbody></table>';}
@@ -2260,7 +2332,7 @@ renderIssues=function(){
   let html='<div class="card"><div class="pr-history-header"><h3>Riwayat & validasi</h3><button class="btn s" onclick="exportPeriodCsv()">↓ Export CSV Lengkap</button></div><p class="mu">'+total+' laporan, '+rows.length+' tampil. Data mengikuti hak akses pengguna.</p><div class="tbl"><table><thead><tr><th>Periode</th><th>Toko</th><th>Form</th><th>Dikirim</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
   rows.forEach((r,i)=>{
     const st=r.validation_status==='Approved'?'Selesai':r.validation_status==='Rejected'?'Perlu Revisi':'Menunggu Validasi';
-    html+='<tr><td>'+esc(r.period_key||'')+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td>'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td>'+prStatus(st)+'</td><td><button class="btn s" onclick="editPeriodRow('+i+')">Buka</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button class="btn s g" onclick="validatePeriodRow('+i+',\'Approved\')">✔ Approve</button><button class="btn s r" onclick="validatePeriodRow('+i+',\'Rejected\')">✕ Revisi</button>':'')+'</td></tr>';
+    html+='<tr><td>'+esc(r.period_key||'')+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td>'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td>'+prStatus(st)+'</td><td><button class="btn s" onclick="editPeriodRow('+i+')">Buka</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button class="btn s g" onclick="validatePeriodRow('+i+',\'Approved\')">✔ Approve</button><button class="btn s r" onclick="validatePeriodRow('+i+',\'Rejected\')">✕ Revisi</button>':'')+(r.validation_status!=='Pending'&&canUndoValidation(r,'PERIOD')?'<button class="btn s" onclick="validationUndo(\'PERIOD\',\''+esc(r.id)+'\',\'period\')">↶ Batal validasi</button>':'')+'</td></tr>';
   });
   if(!rows.length)html+='<tr><td colspan="6" class="empty">Belum ada laporan yang dikirim pada filter ini</td></tr>';
   html+='</tbody></table></div>';
@@ -2935,6 +3007,106 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
 })();
 
 
+</script>
+
+<script>
+/* DCO_V22_VISITING_VISIBLE_AND_ATOMIC */
+(function(){
+ var visitSeqV22=0, visitSavingV22=false, visitLastResultV22=null;
+ function visitStatusV22(text,kind,action){
+  var el=$('visitStatusV22');if(!el)return;
+  el.innerHTML=text?'<div class="visit-signal-v22 '+(kind||'')+'"><span>'+esc(text)+'</span>'+(action?'<button type="button" class="btn s" onclick="visitShowAllV22()">Lihat semua tanggal</button>':'')+'</div>':'';
+ }
+ window.visitShowAllV22=function(){
+  if(!S.meta)return;
+  setPeriode('semua');$('fToko').value='SEMUA';$('fQ').value='';$('fStatus').value='SEMUA';$('fVal').value='';$('fKhusus').value='';
+  visitStatusV22('Menampilkan seluruh riwayat Visiting dari semua tanggal dan toko.','');
+  return refresh(true);
+ };
+ // Avoid a stale API response replacing a newer table or a different tab.
+ window.loadVisitsV22=function(manual){
+  var seq=++visitSeqV22,filters=filter(),ref=$('refIc');if(ref)ref.classList.add('spin');
+  visitStatusV22('Membaca laporan Visiting dari database...','');
+  return call('list',{type:'VISIT',filter:filters},true).then(function(rows){
+   if(seq!==visitSeqV22||S.tab!=='visit')return rows;
+   if(!Array.isArray(rows))throw new Error('Format riwayat Visiting tidak valid');
+   S.visits=rows;renderVisits();
+   if(rows.length){
+    var justSaved=visitLastResultV22&&rows.find(function(x){return x.id===visitLastResultV22.id;});
+    if(justSaved){visitStatusV22('✓ Visit '+justSaved.id+' · '+fmtTgl(justSaved.tanggal)+' · '+justSaved.toko+' ditemukan di riwayat.','ok');
+      var trs=Array.from(document.querySelectorAll('#visitTbl tbody tr'));var ix=rows.indexOf(justSaved);if(trs[ix]){trs[ix].classList.add('visit-just-saved');trs[ix].scrollIntoView({block:'nearest',behavior:'smooth'});}
+    }else visitStatusV22(rows.length+' laporan Visiting ditemukan pada filter yang dipilih.','ok');
+   }else{
+    var active=!!(filters.from||filters.to||(filters.toko&&filters.toko!=='SEMUA')||filters.q||filters.validasi||filters.khusus);
+    visitStatusV22(active?'Tidak ada Visit yang cocok dengan filter ini. Data di luar rentang tanggal tetap ada di database.':'Belum ada Visit tersimpan pada akun dan cakupan toko ini.','warn',active);
+   }
+   if(manual&&typeof loadNotif==='function')loadNotif();
+   if(S.afterLoad){var cb=S.afterLoad;S.afterLoad=null;cb();}
+   return rows;
+  }).catch(function(e){
+    if(seq===visitSeqV22&&S.tab==='visit')visitStatusV22('Gagal mengambil riwayat Visit: '+String(e&&e.message||e),'err',true);
+    throw e;
+  }).finally(function(){if(seq===visitSeqV22&&ref)ref.classList.remove('spin');});
+ };
+ var refreshV21=refresh;
+ refresh=function(manual){if(S.tab==='visit')return loadVisitsV22(manual);return refreshV21(manual);};
+ var goV21=go,goWithV21=goWith,explicitJumpV22=false,firstVisitV22=true;
+ goWith=function(tab,opts){if(tab!=='visit')return goWithV21(tab,opts);explicitJumpV22=true;
+  try{return goWithV21(tab,opts);}finally{explicitJumpV22=false;}};
+ go=function(tab){
+   if(tab==='visit'&&firstVisitV22){
+    firstVisitV22=false;
+    var expected=S.meta&&S.meta.today?S.meta.today.slice(0,7)+'-01':'';
+    if(!explicitJumpV22&&$('fPeriode').value==='bulan'&&$('fFrom').value===expected&&$('fQ').value==='')setPeriode('semua');
+   }
+   return goV21(tab);
+ };
+ // Save only if every photo upload is complete; verify the actual database ID.
+ saveVisit=async function(){
+  if(visitSavingV22)return toast('Simpan Visit sebelumnya masih berlangsung',true);
+  var v=S.vis;if(!v||!v.toko)return toast('Pilih toko Visit',true);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(v.tanggal||'')))return toast('Tanggal Visit belum valid',true);
+  if(Object.keys(evidenceBusy||{}).some(function(k){return /^(point|seksi|visitIssue|visitIssueAfter|visitUpdate):/.test(k)&&evidenceBusy[k];}))return toast('Tunggu sampai seluruh foto Visit selesai diunggah sebelum submit',true);
+  var rating=vScore();if(!rating.td)return toast('Isi minimal satu point penilaian',true);
+  ensureVisitIssueRows(v);
+  v.issuesList=v.issuesList.filter(function(x){return String(x.issue||'').trim();});
+  var bad=v.issuesList.find(function(x){return !String(x.action||'').trim()||!String(x.pic||'').trim()||!/^\d{4}-\d{2}-\d{2}$/.test(String(x.dueDate||''));});
+  if(bad)return toast('Lengkapi Action Plan, PIC, dan Due Date seluruh issue',true);
+  var btn=$('btnVisitSave');visitSavingV22=true;
+  if(btn){btn.disabled=true;btn.textContent='⏳ Menyimpan Visit...';}
+  var savedId='';
+  try{
+   var result=await call('visitSave',{data:v},true);
+   if(!result||!/^VS-[0-9]+$/.test(String(result.id||'')))throw new Error('ID laporan tidak dikembalikan. Jangan mengirim ulang sebelum memeriksa database.');
+   savedId=result.id;
+   // Keep ID immediately: retrying after a read/network failure will UPDATE rather than DUPLICATE.
+   v.id=savedId;v.updateTgl=result.updateTgl||v.updateTgl;
+   var fetched=await call('list',{type:'VISIT',filter:{ids:[savedId]}},true);
+   if(!Array.isArray(fetched)||!fetched.some(function(x){return x.id===savedId;}))throw new Error('Visit '+savedId+' tersimpan tetapi belum terbaca dari riwayat. Periksa koneksi/SQL sebelum mengirim ulang.');
+   var seen=fetched.find(function(x){return x.id===savedId;});
+   visitLastResultV22={id:savedId,tanggal:seen.tanggal,toko:seen.toko};
+   // Expand filter to the visit month and store; clear filters that hide the saved row.
+   var year=+seen.tanggal.slice(0,4),mon=+seen.tanggal.slice(5,7),last=('0'+new Date(year,mon,0).getDate()).slice(-2);
+   $('fFrom').value=seen.tanggal.slice(0,7)+'-01';$('fTo').value=seen.tanggal.slice(0,7)+'-'+last;
+   $('fPeriode').value='custom';$('fQ').value='';$('fStatus').value='SEMUA';$('fVal').value='';$('fKhusus').value='';$('fToko').value='SEMUA';
+   closeM('mVisit');S.tab='visit';
+   await loadVisitsV22();
+   toast('Visit '+savedId+' berhasil disimpan dan tampil di riwayat','ok');
+   if(typeof loadNotif==='function')loadNotif();
+  }catch(e){
+   var message=String(e&&e.message||e);
+   // A failed read after a successful write MUST NOT cause a new duplicate Visit.
+   if(savedId){
+     visitLastResultV22={id:savedId,tanggal:v.tanggal,toko:v.toko};
+     visitStatusV22('Visit '+savedId+' sudah menerima ID server, tetapi verifikasi tampilan belum berhasil: '+message,'warn',true);
+     toast('Visit '+savedId+' sudah tersimpan; buka semua riwayat, jangan buat duplikat',true);
+   }else{
+     toast('Gagal menyimpan Visit: '+message,true);
+     if($('vBtn'))$('vBtn').insertAdjacentHTML('beforeend','<div class="visit-signal-v22 err" style="width:100%">'+esc(message)+'</div>');
+   }
+  }finally{visitSavingV22=false;if(btn){btn.disabled=false;btn.textContent='Simpan Visit';}}
+ };
+})();
 </script>
 </body>
 </html>
