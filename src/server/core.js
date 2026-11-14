@@ -107,8 +107,8 @@ export async function bulk_(ctx, type, ids, op, value) {
     } else return;
     u.updateTgl = now; u.updateOleh = me.nama; out.push(u);
   });
-  await ctx.save(type, out, 'update');
-  return { jumlah: out.length };
+  const saved = await ctx.save(type, out, 'update');
+  return { jumlah: saved.length, rows: saved };
 }
 
 // v21: gunakan satu RPC pembatalan yang mengaudit alasan dan menegakkan hak akses.
@@ -125,6 +125,9 @@ export async function validationUndo_(ctx, p) {
     p_module: module, p_id: id, p_reason: reason,
   });
   if (module !== 'PERIOD') ctx.invalidate(module);
+  // Return the committed DB row so the UI can update immediately after ACK.
+  // Period reports deliberately keep snake_case API fields.
+  if (result && result.record && module !== 'PERIOD') result.record = toCamel(result.record);
   return result;
 }
 
@@ -382,7 +385,9 @@ export async function visitValidasi_(ctx, p) {
   const cur = (await ctx.read('VISIT', { ids: [p.id] }))[0]; if (!cur) throw new Error('Data tidak ditemukan');
   const u = { id: p.id, validasi: p.validasi ? 'Approved' : '', validasiOleh: p.validasi ? me.nama : '', validasiTgl: p.validasi ? now_() : '', updateTgl: now_(), updateOleh: me.nama };
   if (p.keterangan != null) u.keterangan = p.keterangan;
-  await ctx.save('VISIT', [u], 'update'); return { ok: true };
+  const saved = await ctx.save('VISIT', [u], 'update');
+  if (!saved[0]) throw new Error('Respons server tidak mengonfirmasi validasi Visit');
+  return saved[0];
 }
 export async function visitHapus_(ctx, id) { mustMgr_(ctx.me); const r = await ctx.del('VISIT', [id]); return { ok: true, linkedIssues: r.linkedIssues || 0 }; }
 

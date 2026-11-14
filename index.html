@@ -908,7 +908,20 @@ var S={me:null,meta:null,tab:'dash',rows:[],sel:{},editId:null,fotoTmp:'',ckMode
 var BULAN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'],HARI=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
 var $=function(id){return document.getElementById(id);},esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
 function toast(m,err){var t=$('toast');t.textContent=m;t.className='on'+(err===true?' err':err==='ok'?' okk':'');clearTimeout(t._t);t._t=setTimeout(function(){t.className='';},2800);}
-function call(a,p,silent){if(!silent)$('load').style.display='block';return new Promise(function(res,rej){google.script.run.withSuccessHandler(function(r){$('load').style.display='none';r=JSON.parse(r);if(r.ok)res(r.data);else{toast(r.error,true);if(/login ulang/.test(r.error))logout();rej(r.error);}}).withFailureHandler(function(e){$('load').style.display='none';toast(e.message||String(e),true);rej(e);}).api(a,p||{},S.me&&S.me.token);});}
+var dcoInFlightVisible=0;
+function call(a,p,silent){
+ if(!silent){dcoInFlightVisible++;$('load').style.display='block';}
+ return new Promise(function(res,rej){
+  var settled=false;
+  function finish(){if(settled)return false;settled=true;if(!silent){dcoInFlightVisible=Math.max(0,dcoInFlightVisible-1);if(!dcoInFlightVisible)$('load').style.display='none';}return true;}
+  function failed(error){if(!finish())return;var message=String(error&&error.message||error||'Permintaan gagal');toast(message,true);if(/login ulang/i.test(message))logout();rej(new Error(message));}
+  try{google.script.run.withSuccessHandler(function(raw){
+   var parsed;try{parsed=typeof raw==='string'?JSON.parse(raw):raw;}catch(e){return failed('Respons server tidak dapat dibaca: '+e.message);}
+   if(!parsed||!parsed.ok)return failed(parsed&&parsed.error||'Server tidak mengonfirmasi permintaan');
+   if(finish())res(parsed.data);
+  }).withFailureHandler(failed).api(a,p||{},S.me&&S.me.token);}catch(e){failed(e);}
+ });
+}
 function fmtTgl(s){if(!s)return '';var p=String(s).split(' ')[0].split('-');return p.length===3?(+p[2])+' '+BULAN[+p[1]-1].slice(0,3)+' '+p[0]:s;}
 function fmtD(s){var d=new Date(s+'T00:00:00');return HARI[d.getDay()]+'<br>'+(+s.slice(8))+'/'+(+s.slice(5,7));}
 function addDays(s,n){var d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
@@ -982,17 +995,35 @@ function goWith(tab,f){f=f||{};
 function go(t){if(S.me&&!isMgr()&&STORE_TABS.indexOf(t)<0)t='ceklis';S.tab=t;S.sel={};$('pageTitle').textContent=TITLE[t];document.querySelectorAll('[data-t]').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
   var show=function(id,on){$(id).classList.toggle('hid',!on);};show('pDash',t==='dash');show('pPeriod',t==='period');show('pCeklis',t==='ceklis');show('pDso',t==='dso');show('pList',t==='MASALAH');show('pVisit',t==='visit');show('pIssues',t==='issues');show('pJadwal',t==='jadwal');show('pRutin',t==='rutin');show('pCampaign',t==='campaign');show('pSet',t==='set');
   show('filterCard',t==='dash'||t==='MASALAH'||t==='visit');document.querySelectorAll('.onlyMs').forEach(function(e){e.classList.toggle('hid',t!=='MASALAH');});window.scrollTo(0,0);refresh();}
-function refresh(manual){var t=S.tab,ic=$('refIc');ic.classList.add('spin');var done=function(){ic.classList.remove('spin');if(manual){toast('Data diperbarui','ok');loadNotif();}if(S.afterLoad){var f=S.afterLoad;S.afterLoad=null;f();}};var p;
-  if(t==='dash')p=Promise.all([call('list',{type:'MASALAH',filter:filter()}),call('tracking',{to:S.meta.today,from:addDays(S.meta.today,-(S.trkDays-1)),toko:$('fToko').value}),call('notif')]).then(function(r){S.notif=r[2];S.tr=r[1];renderNotif();renderDash(r[0],r[1]);});
-  else if(t==='MASALAH')p=call('list',{type:t,filter:filter()}).then(function(rows){S.rows=rows;renderList(t);});
-  else if(t==='ceklis')p=loadCeklis();else if(t==='dso')p=loadDso();else if(t==='period')p=loadPeriodReports();else if(t==='jadwal')p=loadJadwal();
-  else if(t==='campaign')p=loadCampaignUI();
-  else if(t==='visit')p=call('list',{type:'VISIT',filter:filter()}).then(function(r){S.visits=r;renderVisits();});
-  else if(t==='issues')p=loadIssues();else if(t==='rutin')p=call('list',{type:'RUTIN'}).then(function(r){S.rutin=r;renderRutin();});
-  else if(t==='set')p=call('meta').then(function(m){S.meta=m;renderSet();});else p=Promise.resolve();p.then(done,done);}
+function refresh(manual){
+ var t=S.tab, seq=S.refreshSeq=(S.refreshSeq||0)+1,ic=$('refIc');ic.classList.add('spin');
+ var active=function(){return seq===S.refreshSeq&&S.tab===t;},p;
+ if(t==='dash')p=Promise.all([
+    call('list',{type:'MASALAH',filter:filter()}),
+    call('tracking',{to:S.meta.today,from:addDays(S.meta.today,-(S.trkDays-1)),toko:$('fToko').value}),
+    call('notif')
+ ]).then(function(r){if(!active())return;S.notif=r[2];S.tr=r[1];renderNotif();renderDash(r[0],r[1]);});
+ else if(t==='MASALAH')p=call('list',{type:t,filter:filter()}).then(function(rows){if(!active())return;S.rows=rows;renderList(t);});
+ else if(t==='ceklis')p=loadCeklis();
+ else if(t==='dso')p=loadDso();
+ else if(t==='period')p=loadPeriodReports();
+ else if(t==='jadwal')p=loadJadwal();
+ else if(t==='campaign')p=loadCampaignUI();
+ else if(t==='visit')p=call('list',{type:'VISIT',filter:filter()}).then(function(rows){if(!active())return;S.visits=rows;renderVisits();});
+ else if(t==='issues')p=loadIssues();
+ else if(t==='rutin')p=call('list',{type:'RUTIN'}).then(function(rows){if(!active())return;S.rutin=rows;renderRutin();});
+ else if(t==='set')p=call('meta').then(function(m){if(!active())return;S.meta=m;renderSet();});
+ else p=Promise.resolve();
+ return Promise.resolve(p).then(function(){
+    if(!active())return;
+    ic.classList.remove('spin');if(manual){toast('Data terbaru berhasil dimuat','ok');loadNotif();}
+    if(S.afterLoad){var f=S.afterLoad;S.afterLoad=null;f();}
+    return true;
+ },function(e){if(active())ic.classList.remove('spin');return false;});
+}
 
 // ===== NOTIF =====
-function loadNotif(){call('notif',{},true).then(function(n){S.notif=n;renderNotif();});}
+function loadNotif(){var seq=S.notifSeq=(S.notifSeq||0)+1;return call('notif',{},true).then(function(n){if(seq!==S.notifSeq)return;S.notif=n;renderNotif();}).catch(function(){/* Toast sudah ditampilkan oleh call(). */});}
 function renderNotif(){var n=S.notif;if(!n)return;$('nBadge').textContent=n.total;$('nBadge').classList.toggle('hid',!n.total);$('nTgl').textContent=fmtTgl(n.today);
   $('nList').innerHTML=n.items.length?n.items.map(function(i,idx){return '<div class="it" onclick="notifGo('+idx+')"><div class="n lv-'+i.lvl+'">'+i.n+'</div><div style="flex:1;font-size:13px">'+esc(i.teks)+'</div><span class="mu">›</span></div>';}).join(''):'<div class="empty">✅ Semua beres hari ini</div>';}
 function notifGo(idx){var i=S.notif.items[idx],f=Object.assign({},i.f);if(i.tab==='MASALAH'){f.periode='semua';f.toko='SEMUA';}goWith(i.tab,f);}
@@ -1047,7 +1078,14 @@ function renderTracking(tr){var td=S.meta.today,forms=tr.forms,m=S.trkMode,past=
 function ckMode(m){S.ckMode=m;loadCeklis();}
 function loadCeklis(){var ckSeq=S.ckFetchSeq=(S.ckFetchSeq||0)+1;$('ckModeA').classList.toggle('on',S.ckMode==='isi');$('ckModeB').classList.toggle('on',S.ckMode!=='isi');
   if(S.ckMode==='riwayat'){$('pList').classList.remove('hid');$('ckIsi').classList.add('hid');return call('list',{type:'CEKLIS',filter:Object.assign({},histRange(),{toko:isMgr()?$('ckToko').value:''})}).then(function(rows){if(ckSeq!==S.ckFetchSeq)return;S.rows=rows;S.sel={};renderList('CEKLIS');});}
-  $('pList').classList.add('hid');$('ckIsi').classList.remove('hid');$('ckIsi').innerHTML='<div class="skel"></div><div class="skel"></div>';return call('ceklisHari',{tanggal:$('ckTgl').value,toko:$('ckToko').value}).then(function(rows){if(ckSeq!==S.ckFetchSeq)return;S.ckRows=rows;renderCeklis();});}
+  $('pList').classList.add('hid');$('ckIsi').classList.remove('hid');
+  var date=$('ckTgl').value,store=$('ckToko').value,viewKey=date+'|'+store;
+  if(S.ckViewKey!==viewKey){S.ckViewKey=viewKey;S.ckRows=[];}
+  if(!S.ckRows.length)$('ckIsi').innerHTML='<div class="skel"></div><div class="skel"></div>';
+  return call('ceklisHari',{tanggal:date,toko:store}).then(function(rows){
+   if(ckSeq!==S.ckFetchSeq||S.tab!=='ceklis'||S.ckMode!=='isi'||viewKey!==S.ckViewKey)return;
+   S.ckRows=rows;renderCeklis();
+  });}
 function renderCeklis(){var rows=S.ckRows,done=rows.filter(function(r){return r.status==='Selesai';}).length,pct=rows.length?Math.round(done*100/rows.length):0,val=rows.filter(function(r){return r.validasi==='Y';}).length,all=rows.length&&done===rows.length;
   var h='<div class="card" style="background:'+(all?'linear-gradient(135deg,#dcfce7,#fff)':'linear-gradient(135deg,#e0e7ff,#fff)')+'"><div class="ckhead"><div class="big" style="color:'+(all?'var(--g)':'var(--p)')+'">'+done+'<span class="mu" style="font-size:16px">/'+rows.length+'</span></div><div style="flex:1;min-width:0"><b>'+(all?'🎉 Semua checklist selesai!':'Checklist '+fmtTgl($('ckTgl').value)+(isMgr()?' · '+esc($('ckToko').value):''))+'</b><div class="bar" style="height:12px;margin-top:6px"><i style="width:'+pct+'%"></i></div><div class="mu" style="margin-top:4px">'+(rows.length-done)+' belum · '+done+' selesai · '+val+' divalidasi SPV</div></div><b style="font-size:20px">'+pct+'%</b></div>'
     +'<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center"><div class="seg">'+[['semua','Semua'],['belum','Belum'],['selesai','Selesai']].map(function(x){return '<button class="'+(S.ckFilter===x[0]?'on':'')+'" onclick="S.ckFilter=\''+x[0]+'\';renderCeklis()">'+x[1]+'</button>';}).join('')+'</div>'+(rows.length&&!all?'<button class="btn s g" onclick="ckAll()">✔ Tandai semua selesai</button>':'')+'</div></div>';
@@ -1128,9 +1166,20 @@ async function bulkUndoValidations(ids){
 
 // ===== DAILY STORE OPERATION =====
 function dsMode(m){S.dsMode=m;loadDso();}
-function loadDso(){$('dsModeA').classList.toggle('on',S.dsMode==='isi');$('dsModeB').classList.toggle('on',S.dsMode!=='isi');$('pList').classList.add('hid');
-  if(S.dsMode==='riwayat'){return call('list',{type:'DSO',filter:Object.assign({},histRange(),{toko:isMgr()?$('dsToko').value:''})}).then(function(rows){S.rows=rows;renderDsoRiwayat();});}
-  return call('dsoHari',{tanggal:$('dsTgl').value,toko:$('dsToko').value}).then(function(rows){S.dsRows=rows;if(!S.dsForm)S.dsForm=cfg().dsoForms[0].id;renderDso();});}
+function loadDso(){
+ var seq=S.dsoFetchSeq=(S.dsoFetchSeq||0)+1;
+ $('dsModeA').classList.toggle('on',S.dsMode==='isi');$('dsModeB').classList.toggle('on',S.dsMode!=='isi');$('pList').classList.add('hid');
+ if(S.dsMode==='riwayat')return call('list',{type:'DSO',filter:Object.assign({},histRange(),{toko:isMgr()?$('dsToko').value:''})}).then(function(rows){
+   if(seq!==S.dsoFetchSeq||S.tab!=='dso'||S.dsMode!=='riwayat')return;
+   S.rows=rows;renderDsoRiwayat();
+ });
+ var tanggal=$('dsTgl').value,toko=$('dsToko').value,viewKey=tanggal+'|'+toko;
+ if(S.dsoViewKey!==viewKey){S.dsoViewKey=viewKey;S.dsRows=[];}
+ return call('dsoHari',{tanggal:tanggal,toko:toko}).then(function(rows){
+   if(seq!==S.dsoFetchSeq||S.tab!=='dso'||S.dsMode!=='isi'||tanggal!==$('dsTgl').value||toko!==$('dsToko').value)return;
+   S.dsRows=rows;if(!S.dsForm)S.dsForm=cfg().dsoForms[0].id;renderDso();
+ });
+}
 function dsoStatus(r){return !r?'Belum':(r.validasi==='Approved'?'Approved':r.validasi==='Rejected'?'Rejected':'Terkirim');}
 function renderDso(){var forms=cfg().dsoForms,toko=isMgr()?$('dsToko').value:S.me.toko,h='';
   if(isMgr()&&toko==='SEMUA'){var tot=S.meta.toko.length*forms.length,sent=S.dsRows.length,ap=S.dsRows.filter(function(x){return x.validasi==='Approved';}).length,pend=S.dsRows.filter(function(x){return !x.validasi;}).length,late=S.dsRows.filter(function(x){return x.slaSubmit==='Terlambat';}).length;
@@ -1409,8 +1458,15 @@ loadCeklis=function(){if(!S.meta||!isMgr()||S.ckMode!=='isi'||$('ckToko').value!
 function goIssues(mode){S.issueMode=mode;var target=$('isStatus');if(target)target.value=mode==='pending'?'Pending':'SEMUA';go('issues');}
 function issueTab(mode){S.issueMode=mode;$('isStatus').value=mode==='pending'?'Pending':'SEMUA';$('isTabPending').classList.toggle('on',mode==='pending');$('isTabAll').classList.toggle('on',mode!=='pending');loadIssues();}
 function issueFilter(){return {toko:$('isToko').value,status:$('isStatus').value,prioritas:$('isPrioritas').value,khusus:$('isKhusus').value,q:$('isQ').value.trim()};}
-function loadIssues(){if(!isMgr())return Promise.resolve();$('issueTbl').innerHTML='<div class="skel"></div>';
- return call('issueList',{filter:issueFilter()},true).then(function(rows){S.issues=rows;renderIssues();});}
+function loadIssues(){
+ if(!isMgr())return Promise.resolve();
+ var seq=S.issueFetchSeq=(S.issueFetchSeq||0)+1,selected=issueFilter();
+ if(!S.issues||!S.issues.length)$('issueTbl').innerHTML='<div class="skel"></div>';
+ return call('issueList',{filter:selected},true).then(function(rows){
+  if(seq!==S.issueFetchSeq||S.tab!=='issues')return;
+  S.issues=rows;renderIssues();
+ });
+}
 function renderIssues(){var rows=S.issues||[],today=S.meta.today,pending=rows.filter(function(x){return x.status!=='Dibatalkan'&&(x.status!=='Selesai'||x.validasi!=='Y');}),over=rows.filter(function(x){return x.dueDate&&x.dueDate<today&&x.status!=='Selesai'&&x.status!=='Dibatalkan';});
  $('issueMini').innerHTML='<div class="v6-overview" style="margin-bottom:12px">'+v6Stat('Issue ditampilkan',rows.length,'#6366f1')+v6Stat('Masih terbuka',pending.length,'#f59e0b')+v6Stat('Overdue',over.length,'#dc2626')+v6Stat('Selesai',rows.filter(function(x){return x.status==='Selesai';}).length,'#10b981')+'</div>';
  var h='<table><thead><tr><th>Visit / Tgl</th><th>Toko</th><th>Point</th><th>Temuan / Action</th><th>PIC</th><th>Due date</th><th>Prioritas</th><th>Status</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
@@ -2094,7 +2150,13 @@ renderIssues=function(){
     try{
       var data=await call('dsoSubmit',{form:S.dsForm,tanggal:$('dsTgl').value,toko:$('dsToko').value,
         jawaban:jaw,oleh:$('dsOleh').value,keterangan:$('dsKet').value});
-      toast('Laporan '+formById(data.form).nama+' tersimpan · '+data.slaSubmit,'ok');S.dsJaw={};await loadDso();loadNotif();
+      if(data&&data.id){
+        S.dsoFetchSeq=(S.dsoFetchSeq||0)+1; // invalidate an older pending read
+        var same=(S.dsRows||[]).findIndex(function(x){return x.id===data.id||(x.form===data.form&&x.tanggal===data.tanggal&&x.toko===data.toko);});
+        if(same>=0)S.dsRows[same]=data;else S.dsRows.push(data);
+      }
+      toast('Laporan '+formById(data.form).nama+' tersimpan · '+data.slaSubmit,'ok');
+      S.dsJaw={};renderDso();await loadDso();loadNotif();
     }catch(err){
       var m=errorText(err);if(/Foto wajib belum lengkap|ID foto/i.test(m)){
         inlineNotice(m+' — Jika foto sudah muncul semua, kemungkinan SQL validasi multi-foto belum diperbarui. Jalankan migrasi 010.',true);
@@ -2350,7 +2412,7 @@ renderIssues=function(){
   if(!isMgr())sel.value=S.me.toko;
   const key=prType()+'|'+prStore()+'|'+prStart(),seq=S.periodLoadSeq=(S.periodLoadSeq||0)+1;
   if(S.periodKey!==key){S.periodKey=key;S.periodDraft={payload:{},evidence:{}};S.periodCurrent=null;}
-  $('prContent').innerHTML='<div class="skel"></div>';
+  if(!S.periodCurrent && (!S.periodRows||!S.periodRows.length))$('prContent').innerHTML='<div class="skel"></div>';
   try{
     const [listing,overview,currentReport]=await Promise.all([
       call('periodList',Object.assign({type:prType(),toko:prStore(),limit:100,offset:0},histRange()),true),
@@ -2403,6 +2465,13 @@ renderIssues=function(){
    try{
      const rec=await call('periodSubmit',{type:prType(),toko:prStore(),date:prDate(),payload:prState().payload,evidence:prState().evidence},true);
      if(!rec||!rec.id)throw new Error('Server tidak mengembalikan bukti penyimpanan');
+     if(rec&&rec.id){
+       S.periodLoadSeq=(S.periodLoadSeq||0)+1;
+       var oldIndex=(S.periodRows||[]).findIndex(x=>x.id===rec.id);
+       if(oldIndex>=0)S.periodRows[oldIndex]=rec;else S.periodRows=[rec].concat(S.periodRows||[]);
+       S.periodCurrent=rec;S.periodDraft={payload:rec.payload||{},evidence:rec.evidence||{}};
+       $('prContent').innerHTML=prForm();prRenderHistory();
+     }
      note.textContent='✓ Laporan berhasil diterima server';toast('Laporan tersimpan dan menunggu validasi SPV','ok');
      await loadPeriodReports();
    }catch(e){note.textContent='Gagal mengirim: '+prError(e);note.classList.add('late');toast(prError(e),true);}
@@ -3024,6 +3093,7 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
   return refresh(true);
  };
  // Avoid a stale API response replacing a newer table or a different tab.
+ window.dcoInvalidateVisitsV22=function(){visitSeqV22++;};
  window.loadVisitsV22=function(manual){
   var seq=++visitSeqV22,filters=filter(),ref=$('refIc');if(ref)ref.classList.add('spin');
   visitStatusV22('Membaca laporan Visiting dari database...','');
@@ -3106,6 +3176,219 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
    }
   }finally{visitSavingV22=false;if(btn){btn.disabled=false;btn.textContent='Simpan Visit';}}
  };
+})();
+</script>
+<script>
+/* DCO v24 · fast, server-confirmed status synchronization. No database changes. */
+(function(){
+  const busy=new Set();
+  function waitKey(kind,id){return kind+':'+String(id||'');}
+  function localMerge(array,id,patch){
+    if(!Array.isArray(array)||!id||!patch)return false;
+    const row=array.find(x=>String(x.id)===String(id));
+    if(!row)return false;Object.assign(row,patch);return true;
+  }
+  function invalidateReads(kind){
+    S.refreshSeq=(S.refreshSeq||0)+1;
+    if(kind==='CEKLIS')S.ckFetchSeq=(S.ckFetchSeq||0)+1;
+    if(kind==='DSO')S.dsoFetchSeq=(S.dsoFetchSeq||0)+1;
+    if(kind==='VISIT_ISSUE')S.issueFetchSeq=(S.issueFetchSeq||0)+1;
+    if(kind==='PERIOD')S.periodLoadSeq=(S.periodLoadSeq||0)+1;
+    if(kind==='VISIT'&&typeof window.dcoInvalidateVisitsV22==='function')window.dcoInvalidateVisitsV22();
+  }
+  function paint(kind,id,row){
+    if(!row||!id)return;
+    invalidateReads(kind);
+    if(kind==='CEKLIS'){
+      localMerge(S.ckRows,id,row);
+      if(S.tab==='ceklis'&&S.ckMode==='riwayat')localMerge(S.rows,id,row);
+      if(S.tab==='ceklis'){
+        if(S.ckMode==='riwayat')renderList('CEKLIS');else renderCeklis();
+      }
+    }else if(kind==='DSO'){
+      localMerge(S.dsRows,id,row);if(S.tab==='dso'&&S.dsMode==='riwayat')localMerge(S.rows,id,row);
+      if(S.tab==='dso'){
+        if(S.dsMode==='riwayat')renderDsoRiwayat();else{renderDso();if(typeof renderEvidenceInDso==='function')renderEvidenceInDso();}
+      }
+    }else if(kind==='VISIT'){
+      localMerge(S.visits,id,row);if(S.vis&&S.vis.id===id)Object.assign(S.vis,row);
+      if(S.tab==='visit')renderVisits();
+    }else if(kind==='VISIT_ISSUE'){
+      localMerge(S.issues,id,row);
+      if(S.tab==='issues')renderIssues();
+    }else if(kind==='PERIOD'){
+      localMerge(S.periodRows,id,row);
+      if(S.periodCurrent&&S.periodCurrent.id===id)Object.assign(S.periodCurrent,row);
+      if(S.tab==='period'){
+        prRenderHistory();
+        if(S.periodCurrent&&S.periodCurrent.id===id){const n=$('prContent');if(n)n.innerHTML=prForm();}
+      }
+    }else{
+      if(S.tab==='MASALAH' || (S.tab==='ceklis'&&S.ckMode==='riwayat')){
+        localMerge(S.rows,id,row);
+        if(S.tab==='MASALAH')renderList('MASALAH');
+      }
+    }
+  }
+  function updateAfterAck(kind,id,response){
+    if(kind==='PERIOD'){
+      const row=response&&response.record?response.record:response;
+      const status=response&&response.status==='Pending'?'Pending':(row&&row.validation_status||'Pending');
+      paint(kind,id,Object.assign({validation_status:status,validated_by:status==='Pending'?'':'',validated_at:status==='Pending'?null:null},row&&row.id?row:{}));
+      return;
+    }
+    const row=response&&response.record?response.record:response;
+    if(row&&row.id)paint(kind,id,row);
+  }
+  function deferVerify(kind){
+    // Never block the visible confirmation on a full list/dashboard download.
+    const tab=S.tab,day=kind==='CEKLIS'&&$('ckTgl')?$('ckTgl').value:null;
+    setTimeout(function(){
+      if(S.tab!==tab)return;
+      let work;
+      if(kind==='CEKLIS'&&tab==='ceklis'&&day===$('ckTgl').value)work=loadCeklis();
+      else if(kind==='DSO'&&tab==='dso')work=loadDso();
+      else if(kind==='VISIT'&&tab==='visit')work=loadVisitsV22();
+      else if(kind==='VISIT_ISSUE'&&tab==='issues')work=loadIssues();
+      else if(kind==='PERIOD'&&tab==='period')work=loadPeriodReports();
+      else if((kind==='MASALAH'||kind==='TUGAS')&&tab==='MASALAH')work=refresh();
+      if(work&&typeof work.catch==='function')work.catch(function(e){toast('Status tersimpan; pembacaan ulang gagal: '+String(e.message||e),true);});
+    },350);
+    // Notification counts are re-read independently, and never block the status.
+    if(typeof loadNotif==='function')setTimeout(loadNotif,700);
+  }
+  function focusedButton(){
+    const a=document.activeElement;
+    return a&&a.closest?a.closest('button'):null;
+  }
+  async function execute(kind,id,action,payload,message,callback){
+    const key=waitKey(kind,id);if(busy.has(key)){toast('Status sedang disimpan, hindari klik berulang',true);return false;}
+    const button=focusedButton(),label=button&&button.textContent;
+    busy.add(key);if(button){button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='⏳ Menyimpan…';}
+    let serverCommitted=false;
+    try{
+      const result=await call(action,payload,true); // server acknowledgement is authoritative
+      serverCommitted=true;
+      if(typeof callback==='function')callback(result);
+      else updateAfterAck(kind,id,result);
+      toast(message||'Perubahan status tersimpan di server','ok');
+      deferVerify(kind);
+      return true;
+    }catch(e){
+      if(serverCommitted){
+        toast('Server menerima perubahan, tetapi status perlu dibaca ulang: '+String(e&&e.message||e),true);
+        deferVerify(kind);
+      }else toast('Perubahan gagal, status tidak diubah: '+String(e&&e.message||e),true);
+      return false;
+    }
+    finally{busy.delete(key);if(button&&button.isConnected){button.disabled=false;button.removeAttribute('aria-busy');button.textContent=label;}}
+  }
+  validationUndo=async function(module,id,source,preconfirmedReason){
+    if(!isMgr())return toast('Hanya SPV atau Master yang dapat membatalkan validasi',true);
+    const currentKey=waitKey(module,id);if(busy.has(currentKey))return toast('Masih memproses validasi ini',true);
+    let reason=preconfirmedReason==null?prompt('Alasan pembatalan validasi ('+module+' · '+id+'), minimal 5 karakter:',''):preconfirmedReason;
+    if(reason===null)return false;reason=String(reason).trim();
+    if(reason.length<5||reason.length>500)return toast('Alasan wajib 5–500 karakter',true);
+    if(preconfirmedReason==null&&!confirm('Batalkan validasi '+id+'? Data dan foto tetap tersimpan.'))return false;
+    const res=await execute(module,id,'validationUndo',{module:module,id:id,reason:reason},'Validasi dibatalkan, data dapat dikoreksi',function(r){
+      if(r&&r.record)updateAfterAck(module,id,r);
+      else if(module==='PERIOD')paint(module,id,{id:id,validation_status:'Pending',validated_by:'',validated_at:null,validation_note:''});
+      else paint(module,id,{id:id,validasi:'',validasiOleh:'',validasiTgl:''});
+    });
+    if(res){if(source==='dso')closeM('mDetail');if(source==='visit')closeM('mVisit');}
+    return res;
+  };
+  bulkUndoValidations=async function(ids){
+    const module=curType(),candidates=(S.rows||[]).filter(r=>ids.includes(r.id)&&r.validasi==='Y'&&canUndoValidation(r,module));
+    if(!candidates.length)return toast('Tidak ada data tervalidasi yang dapat Anda batalkan.',true);
+    if(candidates.length>30)return toast('Maksimal 30 pembatalan per proses',true);
+    let reason=prompt('Alasan pembatalan '+candidates.length+' data, minimal 5 karakter:','');
+    if(reason===null)return false;reason=String(reason).trim();
+    if(reason.length<5||reason.length>500)return toast('Alasan wajib 5–500 karakter',true);
+    if(!confirm('Batalkan '+candidates.length+' validasi? Data dan foto tidak dihapus.'))return false;
+    const key='undo-bulk:'+module;
+    if(busy.has(key))return toast('Pembatalan sebelumnya belum selesai',true);
+    busy.add(key);
+    let index=0,success=0,failures=[];
+    async function worker(){
+      while(index<candidates.length){
+        const item=candidates[index++];
+        try{
+          const res=await call('validationUndo',{module:module,id:item.id,reason:reason},true);
+          if(!res||res.ok!==true)throw new Error('Server belum mengonfirmasi pembatalan');
+          success++;
+          paint(module,item.id,res.record||{id:item.id,validasi:'',validasiOleh:'',validasiTgl:''});
+        }catch(e){failures.push(item.id+': '+String(e&&e.message||e));}
+      }
+    }
+    try{
+      await Promise.all(Array.from({length:Math.min(3,candidates.length)},worker));
+      S.sel={};
+      toast(success+' validasi berhasil dibatalkan'+(failures.length?' · '+failures.length+' gagal':''),failures.length?true:'ok');
+      deferVerify(module);
+      return !failures.length;
+    }finally{busy.delete(key);}
+  };
+  ckValid=function(i,op){
+    const row=S.ckRows&&S.ckRows[i];if(!row||!row.id)return toast('Checklist belum tersimpan',true);
+    if(op==='batalValidasi')return validationUndo('CEKLIS',row.id,'ck');
+    if(!isMgr())return toast('Validasi hanya untuk SPV/Master',true);
+    return execute('CEKLIS',row.id,'bulk',{type:'CEKLIS',ids:[row.id],op:'validasi'},'Checklist berhasil divalidasi',function(r){
+      if(!r||!Array.isArray(r.rows)||!r.rows.some(x=>x.id===row.id))throw new Error('Konfirmasi baris validasi dari server tidak lengkap');
+      paint('CEKLIS',row.id,r.rows.find(x=>x.id===row.id));
+    });
+  };
+  bulk=function(op,ids,value){
+    ids=ids||selIds();if(!ids.length)return false;
+    if(op==='batalValidasi')return bulkUndoValidations(ids);
+    const type=curType(),key=type+'-bulk-'+ids.slice().sort().join(',');
+    if(op!=='validasi'&&!confirm((op==='hapus'?'Hapus ':op==='status'?'Ubah status ':'Ubah ')+ids.length+' data?'))return false;
+    return execute(type,key,'bulk',{type:type,ids:ids,op:op,value:value},'Perubahan '+ids.length+' data tersimpan',function(r){
+      if(!r||!Number.isFinite(+r.jumlah))throw new Error('Respons server tidak lengkap');
+      if(op==='validasi'&&(!Array.isArray(r.rows)||r.rows.length!==ids.length))throw new Error('Sebagian baris belum dikonfirmasi server');
+      if(Array.isArray(r.rows))r.rows.forEach(x=>localMerge(S.rows,x.id,x));
+      if(op==='hapus')S.rows=(S.rows||[]).filter(x=>!ids.includes(x.id));
+      S.sel={};if(S.tab==='MASALAH'||(S.tab==='ceklis'&&S.ckMode==='riwayat'))renderList(type);
+      invalidateReads(type);
+    });
+  };
+  dsoVal=function(id,validasi){
+    if(validasi==='')return validationUndo('DSO',id,'dso');
+    const ket=$('dsKetSpv')?$('dsKetSpv').value:'';
+    if(validasi==='Rejected'&&!ket.trim())return toast('Isi alasan penolakan',true);
+    return execute('DSO',id,'dsoValidasi',{id:id,validasi:validasi,ketSpv:ket},'DSO '+validasi+' tersimpan',function(r){
+      if(!r||r.id!==id||r.validasi!==validasi)throw new Error('Respons validasi DSO belum sesuai');
+      paint('DSO',id,r);closeM('mDetail');
+    });
+  };
+  visitVal=function(approve){
+    if(!S.vis||!S.vis.id)return toast('Visit belum tersimpan',true);
+    if(!approve)return validationUndo('VISIT',S.vis.id,'visit');
+    const id=S.vis.id,ket=$('vKet')?$('vKet').value:'';
+    return execute('VISIT',id,'visitValidasi',{id:id,validasi:true,keterangan:ket},'Visit berhasil diapprove',function(r){
+      if(!r||r.id!==id||r.validasi!=='Approved')throw new Error('Respons validasi Visit belum sesuai');
+      paint('VISIT',id,r);closeM('mVisit');
+    });
+  };
+  issueValidate=function(i){
+    const r=S.issues&&S.issues[i];if(!r||r.status!=='Selesai')return toast('Selesaikan issue sebelum validasi',true);
+    if(!confirm('Validasi penyelesaian '+r.id+'?'))return false;
+    return execute('VISIT_ISSUE',r.id,'issueUpdate',{data:{id:r.id,validasi:'Y'}},'Issue selesai divalidasi',function(saved){
+      if(!saved||saved.id!==r.id||saved.validasi!=='Y')throw new Error('Respons validasi Issue belum sesuai');
+      paint('VISIT_ISSUE',r.id,saved);
+    });
+  };
+  validatePeriodRow=async function(i,action){
+    const r=S.periodRows&&S.periodRows[i];if(!r||!isMgr())return false;
+    const note=action==='Rejected'?prompt('Jelaskan perbaikan yang diperlukan (wajib):',''):prompt('Catatan validasi (opsional):','');
+    if(note===null)return false;if(action==='Rejected'&&!String(note).trim())return toast('Catatan revisi wajib diisi',true);
+    return execute('PERIOD',r.id,'periodValidate',{id:r.id,action:action,note:note||''},'Laporan '+action+' tersimpan',function(saved){
+      if(!saved||saved.id!==r.id||saved.validation_status!==action)throw new Error('Respons validasi periodik belum sesuai');
+      paint('PERIOD',r.id,saved);
+    });
+  };
+  // Attach a visible and testable request indicator without claiming the DB has finished early.
+  window.dcoStatusPending=busy;
 })();
 </script>
 </body>
