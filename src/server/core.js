@@ -327,6 +327,8 @@ export async function visitSave_(ctx, d) {
     result = await ctx.call('dco_visit_submit', { p_visit: toSnake(r), p_issues: issues });
   } catch (e) {
     const msg = String(e && e.message || e);
+    if (/column reference ["']visit_id["'] is ambiguous/i.test(msg))
+      throw new Error('SQL Visiting v28 belum diperbarui. Jalankan 20261114_018_fix_visit_id_ambiguity.sql pada Supabase project yang aktif. Form dan foto draft tidak dihapus.');
     if (/dco_visit_submit|database belum terpasang|could not find the function|PGRST202/i.test(msg))
       throw new Error('Fitur simpan Visit memerlukan SQL v22: jalankan supabase/migrations/20261114_017_visit_submit_visibility.sql. ' + msg);
     throw e;

@@ -727,6 +727,26 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 #visitTbl tr.visit-just-saved td{background:#dcfce7!important;transition:background .4s}
 @media(max-width:500px){.visit-tools-v22 .btn{flex:1 1 auto}.visit-tools-v22 small{flex-basis:100%}.visit-signal-v22 .btn{margin-left:0}}
 </style>
+
+<style id="dco-v28-mobile-visiting-layout">
+/* DCO v28: native iOS date control may exceed its CSS grid track's intrinsic width. */
+#mVisit .box,#mVisit #vBody,#mVisit .visit-issue-card,#mVisit .visit-issue-fields,
+#mVisit .visit-issue-fields > div,#mVisit .visit-issue-fields label {min-width:0;max-width:100%;}
+#mVisit .visit-issue-fields > div {box-sizing:border-box;}
+#mVisit .visit-issue-fields label {display:block;width:100%;overflow-wrap:anywhere;}
+#mVisit .visit-issue-fields input,#mVisit .visit-issue-fields select,
+#mVisit .visit-issue-fields textarea {display:block;box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;width:100%;min-width:0;max-width:100%;}
+#mVisit .visit-issue-fields input[type="date"] {font-size:16px;direction:ltr;}
+#mVisit #vBtn .visit-signal-v22.err {flex:1 0 100%;width:100%;max-width:100%;overflow-wrap:anywhere;}
+@media(max-width:650px){
+ #mVisit {padding:8px 5px calc(12px + env(safe-area-inset-bottom,0px));}
+ #mVisit > .box {width:100%;max-width:100%;padding:14px 12px;border-radius:16px;}
+ #mVisit .visit-issue-fields {display:grid;grid-template-columns:minmax(0,1fr)!important;gap:12px;}
+ #mVisit .visit-issue-fields > .wide {grid-column:auto!important;}
+ #mVisit #vBtn {display:flex;gap:9px;align-items:stretch;}
+ #mVisit #vBtn > .btn {min-height:44px;flex:1 1 125px;white-space:normal;}
+}
+</style>
 </head>
 <body>
 <div id="load"></div><div id="toast"></div><div id="lb" class="lb" onclick="this.classList.remove('on')"><img id="lbimg"></div>
@@ -914,7 +934,7 @@ function call(a,p,silent){
  return new Promise(function(res,rej){
   var settled=false;
   function finish(){if(settled)return false;settled=true;if(!silent){dcoInFlightVisible=Math.max(0,dcoInFlightVisible-1);if(!dcoInFlightVisible)$('load').style.display='none';}return true;}
-  function failed(error){if(!finish())return;var message=String(error&&error.message||error||'Permintaan gagal');toast(message,true);if(/login ulang/i.test(message))logout();rej(new Error(message));}
+  function failed(error){if(!finish())return;var message=String(error&&error.message||error||'Permintaan gagal');if(a!=='visitSave')toast(message,true);if(/login ulang/i.test(message))logout();rej(new Error(message));}
   try{google.script.run.withSuccessHandler(function(raw){
    var parsed;try{parsed=typeof raw==='string'?JSON.parse(raw):raw;}catch(e){return failed('Respons server tidak dapat dibaca: '+e.message);}
    if(!parsed||!parsed.ok)return failed(parsed&&parsed.error||'Server tidak mengonfirmasi permintaan');
@@ -3147,6 +3167,9 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
   var bad=v.issuesList.find(function(x){return !String(x.action||'').trim()||!String(x.pic||'').trim()||!/^\d{4}-\d{2}-\d{2}$/.test(String(x.dueDate||''));});
   if(bad)return toast('Lengkapi Action Plan, PIC, dan Due Date seluruh issue',true);
   var btn=$('btnVisitSave');visitSavingV22=true;
+  // A previous failed attempt may have left one or more inline errors.
+  // Remove them before the next attempt, without touching the unsent form/draft.
+  document.querySelectorAll('#vBtn .visit-signal-v22.err').forEach(function(el){el.remove();});
   if(btn){btn.disabled=true;btn.textContent='⏳ Menyimpan Visit...';}
   var savedId='';
   try{
@@ -3176,8 +3199,15 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
      visitStatusV22('Visit '+savedId+' sudah menerima ID server, tetapi verifikasi tampilan belum berhasil: '+message,'warn',true);
      toast('Visit '+savedId+' sudah tersimpan; buka semua riwayat, jangan buat duplikat',true);
    }else{
-     toast('Gagal menyimpan Visit: '+message,true);
-     if($('vBtn'))$('vBtn').insertAdjacentHTML('beforeend','<div class="visit-signal-v22 err" style="width:100%">'+esc(message)+'</div>');
+     // One actionable inline error only: no growing list of red errors on retries.
+     var friendly=/column reference ["']visit_id["'] is ambiguous/i.test(message)?
+       'Database Visiting belum diperbarui: jalankan SQL v28 (018_fix_visit_id_ambiguity.sql) di Supabase SQL Editor, lalu coba lagi. Draft tidak dihapus.':message;
+     toast('Simpan Visit gagal. '+friendly,true);
+     var target=$('vBtn');if(target){
+      var errorBox=target.querySelector('#visitSaveErrorV28');
+      if(!errorBox){errorBox=document.createElement('div');errorBox.id='visitSaveErrorV28';errorBox.className='visit-signal-v22 err';errorBox.setAttribute('role','alert');target.appendChild(errorBox);}
+      errorBox.textContent=friendly;
+     }
    }
   }finally{visitSavingV22=false;if(btn){btn.disabled=false;btn.textContent='Simpan Visit';}}
  };

@@ -1,5 +1,5 @@
 /**
- * DCO v27 - background per-user drafts, automatic restoration and pending photographs.
+ * DCO v28 - resilient background per-user drafts, automatic restoration and pending photographs.
  * No credentials or auth token are persisted in drafts.  Drafts are device-local.
  * A draft is NEVER considered a successful server submit.
  */
@@ -10,6 +10,14 @@ const STORE_PHOTOS = 'photos';
 const LOCAL_PREFIX = 'draftphoto-';
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const MAX_LOCAL_BYTES = 100 * 1024 * 1024;
+// Offline read cache is expendable; unsent drafts/photos are not. Prevent cache
+// accumulation from starving IndexedDB quota on mobile Safari/Chrome.
+const MAX_CACHE_ENTRIES = 12;
+const MAX_CACHE_ENTRY_BYTES = 220 * 1024;
+const MAX_CACHE_TOTAL_BYTES = 1500 * 1024;
+const CACHE_MAX_AGE = 7 * 86400000;
+const FALLBACK_ENTRY_BYTES = 65000;
+const FAST_PREFIX = 'dco28-fast-';
 const WRITE_ACTIONS = new Set(['add','update','bulk','ceklisSet','dsoSubmit','dsoPatch','dsoValidasi','dsoHapus','visitSave','visitValidasi','visitHapus','issueUpdate','rutinSave','rutinHapus','jadwalSave','jadwalHapus','periodSubmit','periodValidate','campaignSave','campaignRecordSave','campaignManage','campaignCleanup','validationUndo','cfgSave','defSave','defHapus','addToko','tokoSave','userSave','hapusUser','gantiPin','wipe','archiveRows','archiveDelete','backup','syncMasalah']);
 const CRITICAL_SUBMITS = new Set(['dsoSubmit','visitSave','periodSubmit','campaignSave','campaignRecordSave','rutinSave','jadwalSave','add','update','issueUpdate']);
 const submitInFlight=new Set();
@@ -29,26 +37,38 @@ function db(){
   const req=indexedDB.open(DB_NAME,DB_VERSION);
   req.onupgradeneeded=()=>{const d=req.result;if(!d.objectStoreNames.contains(STORE_DRAFTS))d.createObjectStore(STORE_DRAFTS,{keyPath:'key'});
    if(!d.objectStoreNames.contains(STORE_PHOTOS))d.createObjectStore(STORE_PHOTOS,{keyPath:'id'});};
-  req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('IndexedDB gagal dibuka'));
+  req.onsuccess=()=>{
+   const opened=req.result;
+   opened.onversionchange=()=>{try{opened.close();}catch{}openPromise=null;};
+   resolve(opened);
+  };
+  req.onerror=()=>reject(req.error||new Error('IndexedDB gagal dibuka'));
+  req.onblocked=()=>{console.warn('DCO draft: pembaruan database lokal diblokir tab lain');};
  }).catch(e=>{openPromise=null;throw e;});
  return openPromise;
 }
 async function tx(store,mode,operation){const d=await db();return new Promise((resolve,reject)=>{
- const t=d.transaction(store,mode);let result;
- t.oncomplete=()=>resolve(result);t.onabort=()=>reject(t.error||new Error('Transaksi draft dibatalkan'));
- t.onerror=()=>{};
- try{const r=operation(t.objectStore(store));if(r)r.onsuccess=()=>{result=r.result;};}
- catch(e){try{t.abort();}catch{}reject(e);}
+ let t;
+ try{t=d.transaction(store,mode);}catch(e){openPromise=null;reject(e);return;}
+ let result,requestError=null;
+ t.oncomplete=()=>resolve(result);
+ t.onabort=()=>reject(t.error||requestError||new DOMException('Transaksi draft dibatalkan','AbortError'));
+ t.onerror=()=>{requestError=t.error||requestError;};
+ try{
+  const r=operation(t.objectStore(store));
+  if(r){r.onsuccess=()=>{result=r.result;};r.onerror=()=>{requestError=r.error||requestError;};}
+ }catch(e){try{t.abort();}catch{}reject(e);}
 });}
 const put = (store,value)=>tx(store,'readwrite',s=>s.put(value));
 const del = (store,key)=>tx(store,'readwrite',s=>s.delete(key));
 const get = (store,key)=>tx(store,'readonly',s=>s.get(key));
 const getAll = store=>tx(store,'readonly',s=>s.getAll());
-let lastKey='',lastCaptureAt=0,saveTimer=null,locked=false,lastUser='',lastError='',flushInProgress=null;
+let lastKey='',lastCaptureAt=0,saveTimer=null,saveTimerKey='',saveTimerSnapshot=null,locked=false,lastUser='',lastError='',flushInProgress=null;
 const pendingWrites=new Map(),clearEpochs=new Map();
 let lastEditedAt=0,lastEditedKey='',activeEntryKey='',appliedEntryKey='',loginResumed='',restoreInFlight=false,autoRestoreTimer=null;
 const images=new Map(), refs=new Map(), photoIndex=new Map();
 let photoIndexAccount=null;
+let lastWarningText='',lastWarningAt=0,lastCachePruneAt=0;
 let originalApi,originalPhotoUrl;
 function localRef(v){return typeof v==='string'&&v.startsWith(LOCAL_PREFIX);}
 function isPending(v){return localRef(v)&&!refs.has(v);}
@@ -66,7 +86,13 @@ function replaceInPlace(obj){if(!obj||typeof obj!=='object')return;
   else if(v&&typeof v==='object')replaceInPlace(v);
  }}
 function toast(text,err){try{window.toast(text,err===true?true:'ok');}catch{console.info('DCO draft:',text);}}
-function notify(message,warning=false){lastError=warning?message:'';paint();if(warning)toast(message,true);}
+function notify(message,warning=false){
+ lastError=warning?message:'';paint();
+ if(warning){
+  const now=Date.now();
+  if(message!==lastWarningText||now-lastWarningAt>60000){lastWarningText=message;lastWarningAt=now;toast(message,true);}
+ }
+}
 function isVisible(el){return !!(el&&el.isConnected&&el.getClientRects().length&&!el.closest('.hid'))}
 function activeModal(){return [...document.querySelectorAll('.modal.on')].find(m=>m.id!=='mPin')||null;}
 function fieldState(root){if(!root)return [];
@@ -107,22 +133,95 @@ function capture(){const ctx=context();if(!ctx)return null;const S=window.S,tab=
  if(!fields.length&&!Object.keys(model).length)return null;
  return {key:ctx.key,account:ctx.account,tab,modalId:ctx.modalId,title:ctx.title,context:{date:qs('#dsTgl')?.value,store:qs('#dsToko')?.value,form:S.dsForm,ckDate:qs('#ckTgl')?.value,ckStore:qs('#ckToko')?.value,prType:qs('#prType')?.value,prStore:qs('#prToko')?.value,prDate:qs('#prDate')?.value},fields,model,updatedAt:Date.now()};
 }
+function bytes(s){return typeof TextEncoder==='function'?new TextEncoder().encode(s).byteLength:s.length*2;}
+function cacheBytes(row){return row.bytes||bytes(String(row.response||''));}
+async function pruneReadCache(aggressive=false){
+ const all=(await getAll(STORE_DRAFTS)).filter(x=>x?.kind==='cache').sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+ let kept=0,total=0,removed=0;
+ for(const row of all){
+  const size=cacheBytes(row);
+  const expired=Date.now()-(row.updatedAt||0)>CACHE_MAX_AGE;
+  if(aggressive||expired||size>MAX_CACHE_ENTRY_BYTES||kept>=MAX_CACHE_ENTRIES||total+size>MAX_CACHE_TOTAL_BYTES){
+   await del(STORE_DRAFTS,row.key);removed++;
+  }else{kept++;total+=size;}
+ }
+ lastCachePruneAt=Date.now();return removed;
+}
+async function durablePut(store,value){
+ try{return await put(store,value);}catch(initial){
+  // Never remove user drafts/photos to recover storage. Delete only disposable read cache.
+  try{await pruneReadCache(true);}catch{}
+  if(initial?.name==='InvalidStateError'||initial?.name==='AbortError')openPromise=null;
+  try{return await put(store,value);}catch(second){throw second||initial;}
+ }
+}
+async function storeReadCache(action,p,raw){
+ try{
+  const size=bytes(String(raw||''));if(!size||size>MAX_CACHE_ENTRY_BYTES)return;
+  const key='dco25-cache|'+user()+'|'+action+'|'+JSON.stringify(p||{});
+  await put(STORE_DRAFTS,{key,account:user(),kind:'cache',response:raw,bytes:size,updatedAt:Date.now()});
+  // Enforce quotas after EVERY cache update, including bursts shorter than one minute.
+  await pruneReadCache(false);
+ }catch(e){ // Optional read cache must never interrupt uploads or critical drafts.
+  try{await pruneReadCache(true);}catch{}
+ }
+}
+function fastKey(acc,key){
+ let h=2166136261;for(let i=0;i<key.length;i++){h^=key.charCodeAt(i);h=Math.imul(h,16777619);}
+ return FAST_PREFIX+cleanName(acc)+'-'+(h>>>0).toString(36);
+}
+function fastRead(key,acc=user()){
+ const keys=[fastKey(acc,key),'dco25-fast-'+cleanName(acc)];let newest=null;
+ for(const k of keys)try{const raw=localStorage.getItem(k),row=raw&&JSON.parse(raw);
+  if(row?.key===key&&row.account===acc&&(!newest||row.updatedAt>newest.updatedAt))newest=row;
+ }catch{}
+ return newest;
+}
+function fastEntries(acc=user()){
+ const result=new Map(),prefix=FAST_PREFIX+cleanName(acc)+'-';
+ try{for(let i=0;i<localStorage.length;i++){
+  const key=localStorage.key(i);if(!key?.startsWith(prefix))continue;
+  try{const row=JSON.parse(localStorage.getItem(key));
+   if(row?.account===acc&&row.key&&(row.fields?.length||Object.keys(row.model||{}).length))result.set(row.key,row);
+  }catch{}
+ }}catch{}
+ try{const old=localStorage.getItem('dco25-fast-'+cleanName(acc)),row=old&&JSON.parse(old);
+  if(row?.key&&row.account===acc&&(!result.get(row.key)||result.get(row.key).updatedAt<row.updatedAt))result.set(row.key,row);
+ }catch{}
+ return [...result.values()];
+}
 async function save(snapshot){
  if(!snapshot||!snapshot.account||!snapshot.key)return false;
  if(snapshot.updatedAt<=(clearEpochs.get(snapshot.key)||0))return false;
  const prior=pendingWrites.get(snapshot.key)||Promise.resolve();
  const work=prior.catch(()=>{}).then(async()=>{
   if(snapshot.updatedAt<=(clearEpochs.get(snapshot.key)||0))return false;
-  await put(STORE_DRAFTS,snapshot);
+  await durablePut(STORE_DRAFTS,snapshot);
   lastKey=snapshot.key;lastCaptureAt=snapshot.updatedAt;lastError='';return true;
  });
  pendingWrites.set(snapshot.key,work);
  try{const result=await work;return result;}
- catch(e){notify('Draft tidak dapat disimpan (periksa ruang penyimpanan/browser): '+(e.message||e),true);return false;}
+ catch(e){
+  const backed=Boolean(fastRead(snapshot.key,snapshot.account)?.updatedAt>=snapshot.updatedAt);
+  const why=e?.name==='QuotaExceededError'?'ruang penyimpanan browser penuh':String(e?.name||e?.message||e);
+  notify(backed?'Draft teks tersimpan di cadangan perangkat, tetapi penyimpanan utama sedang bermasalah ('+why+'). Foto belum tentu terlindungi.':'PERINGATAN: Draft BELUM berhasil disimpan ('+why+'). Jangan tutup aplikasi sebelum input diamankan.',true);
+  return backed;
+ }
  finally{if(pendingWrites.get(snapshot.key)===work)pendingWrites.delete(snapshot.key);}
 }
-function syncFallback(s){if(!s)return;try{const k='dco25-fast-'+cleanName(s.account);const compact=JSON.stringify(s);if(compact.length<65000)localStorage.setItem(k,compact);}catch{}}
-function forgetFastDraft(key,account=user()){try{const k='dco25-fast-'+cleanName(account);const value=localStorage.getItem(k);if(value&&JSON.parse(value).key===key)localStorage.removeItem(k);}catch{}}
+function syncFallback(s){if(!s)return false;
+ try{const compact=JSON.stringify(s);
+  if(bytes(compact)>FALLBACK_ENTRY_BYTES)return false;
+  localStorage.setItem(fastKey(s.account,s.key),compact);
+  // Keep the old key readable so unsent v25/v27 drafts are not lost on upgrade.
+  localStorage.setItem('dco25-fast-'+cleanName(s.account),compact);return true;
+ }catch{return false;}
+}
+function forgetFastDraft(key,account=user()){
+ try{localStorage.removeItem(fastKey(account,key));const k='dco25-fast-'+cleanName(account);
+  const value=localStorage.getItem(k);if(value&&JSON.parse(value).key===key)localStorage.removeItem(k);
+ }catch{}
+}
 async function clearKey(key,account=user(),submittedAt=null){
  if(!key)return false;
  // A user may type more while a slow request is running. Never delete newer edits.
@@ -130,29 +229,44 @@ async function clearKey(key,account=user(),submittedAt=null){
  const current=await get(STORE_DRAFTS,key).catch(()=>null);
  if(submittedAt!=null&&current?.updatedAt>submittedAt)return false;
  clearEpochs.set(key,Date.now());
- if(saveTimer){clearTimeout(saveTimer);saveTimer=null;}
+ if(saveTimer&&saveTimerKey===key){clearTimeout(saveTimer);saveTimer=null;saveTimerKey='';saveTimerSnapshot=null;}
  const inflight=pendingWrites.get(key);if(inflight)await inflight.catch(()=>{});
  await del(STORE_DRAFTS,key);forgetFastDraft(key,account);
  if(lastKey===key)lastKey='';
 }
-function captureNow(){if(locked)return Promise.resolve(false);const snap=capture();syncFallback(snap);return save(snap);}
+function captureNow(){if(locked)return Promise.resolve(false);
+ const snap=capture();syncFallback(snap);if(!snap)return Promise.resolve(false);
+ if(saveTimer&&saveTimerKey===snap.key){clearTimeout(saveTimer);saveTimer=null;saveTimerKey='';saveTimerSnapshot=null;}
+ return save(snap);
+}
 function schedule(delay=250){
  if(locked)return;
  const snap=capture();if(!snap)return;
  lastEditedAt=Date.now();lastEditedKey=snap.key;
  // Synchronous fallback covers sudden tab exits before the debounced IndexedDB write.
- syncFallback(snap);clearTimeout(saveTimer);
- saveTimer=setTimeout(()=>{saveTimer=null;const current=capture();save(current?.key===snap.key?current:snap);},delay);
+  syncFallback(snap);
+  // Navigating to another form must not discard the previous form's pending write.
+  if(saveTimer){clearTimeout(saveTimer);
+   if(saveTimerKey&&saveTimerKey!==snap.key&&saveTimerSnapshot)save(saveTimerSnapshot).catch(()=>{});
+  }
+  saveTimerKey=snap.key;saveTimerSnapshot=snap;
+  saveTimer=setTimeout(()=>{saveTimer=null;saveTimerKey='';saveTimerSnapshot=null;
+   const current=capture();save(current?.key===snap.key?current:snap);},delay);
 }
 function scopeRows(){return getAll(STORE_DRAFTS).then(a=>a.filter(x=>x.account===user()&&x.kind!=='cache').sort((a,b)=>b.updatedAt-a.updatedAt));}
-async function rows(){const a=await scopeRows();const fallback=localStorage.getItem('dco25-fast-'+cleanName(user()));if(fallback){try{const x=JSON.parse(fallback);if(x.account===user()&&!a.find(y=>y.key===x.key))a.unshift(x);}catch{}}return a;}
+async function rows(){
+ let a=[];try{a=await scopeRows();}catch(e){console.warn('DCO: IndexedDB drafts unavailable, reading text fallback',e);}
+ const result=new Map(a.map(row=>[row.key,row]));
+ for(const x of fastEntries(user())){const older=result.get(x.key);if(!older||older.updatedAt<x.updatedAt)result.set(x.key,x);}
+ return [...result.values()].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+}
 async function photoRows(){
  const acc=user();if(photoIndexAccount===acc)return [...photoIndex.values()];
  const all=await getAll(STORE_PHOTOS);photoIndex.clear();
  for(const record of all)if(record.account===acc)photoIndex.set(record.id,record);
  photoIndexAccount=acc;return [...photoIndex.values()];
 }
-async function putPhoto(record){await put(STORE_PHOTOS,record);if(record.account===photoIndexAccount)photoIndex.set(record.id,record);}
+async function putPhoto(record){await durablePut(STORE_PHOTOS,record);if(record.account===photoIndexAccount)photoIndex.set(record.id,record);}
 async function deletePhoto(id){await del(STORE_PHOTOS,id);photoIndex.delete(id);images.delete(id);refs.delete(id);} 
 async function prime(){const a=await photoRows();for(const r of a){if(r.state==='synced'&&r.remoteId)refs.set(r.id,r.remoteId);else if(r.dataUrl)images.set(r.id,r.dataUrl);}}
 function photoSize(data){return Math.floor((data.length-data.indexOf(',')-1)*3/4);}
@@ -214,8 +328,11 @@ async function uploadPhoto(p,sesi){let r;
  if(!online()){paint();return writeResult(true,{id:r.id,draft:true});}
  try{const raw=await originalApi('uploadFoto',p,sesi),response=isOkay(raw);
   if(!response?.id)throw new Error((typeof raw==='string'&&JSON.parse(raw).error)||'Upload belum dikonfirmasi server');
-  await put(STORE_PHOTOS,{id:r.id,account:r.account,state:'synced',remoteId:response.id,createdAt:r.createdAt,bytes:0});
-  if(account===user()){refs.set(r.id,response.id);images.delete(r.id);photoIndex.set(r.id,{id:r.id,account:r.account,state:'synced',remoteId:response.id,createdAt:r.createdAt,bytes:0});}
+  const receipt={id:r.id,account:r.account,state:'synced',remoteId:response.id,createdAt:r.createdAt,bytes:0};
+  if(account===user()){refs.set(r.id,response.id);images.delete(r.id);photoIndex.set(r.id,receipt);}
+  try{await durablePut(STORE_PHOTOS,receipt);}catch(e){
+   notify('Foto sudah terunggah ke server tetapi tanda sinkron lokal belum tersimpan. Jangan mengulang upload sebelum memeriksa foto. '+String(e?.message||e),true);
+  }
   paint();return raw;
  }catch(e){notify('Foto disimpan sebagai draft lokal; upload belum berhasil. '+(e.message||e),true);return writeResult(true,{id:r.id,draft:true});}
 }
@@ -237,7 +354,11 @@ async function syncPhotos(){if(flushInProgress)return flushInProgress;
    }catch(e){failed++;lastError=String(e.message||e);}}
   if(user()!==account)return {synced:succeeded,pending:failed};
   if(window.S)replaceInPlace(window.S);
-  const all=await scopeRows();for(const d of all){const v={...d,model:remap(d.model)};await put(STORE_DRAFTS,v);}
+  const all=await rows();for(const d of all){
+   if(d.kind==='cache')continue;
+   const v={...d,model:remap(d.model)};
+   syncFallback(v);await durablePut(STORE_DRAFTS,v).catch(e=>notify('Draft masih tersimpan tetapi remap foto belum berhasil: '+(e.message||e),true));
+  }
   if(typeof window.__dcoRemapCampaignPhoto==='function')window.__dcoRemapCampaignPhoto(remapString);
   if(succeeded)toast(succeeded+' foto draft berhasil diunggah; kirim formulir untuk mencatatnya.','ok');
   if(failed)notify(failed+' foto masih tersimpan di draft; periksa koneksi/izin lalu ulangi sinkronisasi.',true);
@@ -366,7 +487,9 @@ async function onFormReady(){
  if(appliedEntryKey===ctx.key)return false;
  if(lastEditedKey===ctx.key&&Date.now()-lastEditedAt<2000)return false;
  let d;
- try{d=await get(STORE_DRAFTS,ctx.key);}catch(e){notify('Draft tidak dapat dibaca: '+(e.message||e),true);return false;}
+ try{d=await get(STORE_DRAFTS,ctx.key);}catch(e){console.warn('DCO draft: IndexedDB read failed, checking local fallback',e);}
+ const backup=fastRead(ctx.key,ctx.account);
+ if(backup&&(!d||backup.updatedAt>d.updatedAt))d=backup;
  if(!isRecoverable(d)||locked||context()?.key!==ctx.key||appliedEntryKey===ctx.key)return false;
  if(ctx.tab==='ceklis'&&(!window.S.ckRows?.length||window.S.ckMode!=='isi'))return false;
  if(ctx.tab==='dso'&&(!window.S.dsForm||window.S.dsMode!=='isi'))return false;
@@ -379,7 +502,8 @@ async function onLoginReady(){
  const acc=user();if(!acc||loginResumed===acc)return false;
  loginResumed=acc;
  try{
-  await prime();const d=(await rows()).find(isRecoverable);
+  await prime().catch(e=>console.warn('DCO draft: photo restoration deferred',e));
+  const d=(await rows()).find(isRecoverable);
   if(!d)return false;
   if(Date.now()-lastEditedAt<2500)return false;
   restoreInFlight=true;
@@ -446,9 +570,8 @@ export function installDrafts(backend){originalApi=backend;originalPhotoUrl=wind
   try{raw=await backend(action,p,sesi);}
   finally{if(lockKey)submitInFlight.delete(lockKey);}
   if(CACHE_READS.has(action)&&isOkay(raw)!=null){
-   const key='dco25-cache|'+user()+'|'+action+'|'+JSON.stringify(p||{});
-   // Stored separately (same table) but filtered out of Draft list by key prefix.
-   put(STORE_DRAFTS,{key,account:user(),kind:'cache',response:raw,updatedAt:Date.now()}).catch(()=>{});
+   // Bound and prune expendable cache; never sacrifice draft storage for stale menu reads.
+   storeReadCache(action,p,raw).catch(()=>{});
   }
   if(WRITE_ACTIONS.has(action)&&isOkay(raw)!=null&&['periodSubmit','campaignSave','campaignRecordSave','rutinSave','jadwalSave','add','update','issueUpdate'].includes(action)){
    // Snapshot key is captured before the API call; navigation during submission must not clear another form.
