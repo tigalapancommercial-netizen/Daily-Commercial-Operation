@@ -123,7 +123,7 @@ function context(){const S=window.S,acc=user();if(!S||!acc)return null;
 function capture(){const ctx=context();if(!ctx)return null;const S=window.S,tab=ctx.tab;
  const model={};
  if(tab==='dso'){model.dsJaw=remap(deepCopy(S.dsJaw||{}));model.dsForm=S.dsForm;model.dsMode=S.dsMode;}
- if(tab==='ceklis')model.ckRows=(S.ckRows||[]).map(r=>({id:r.id,rutinId:r.rutinId,judul:r.judul,catatan:r.catatan,fotoId:r.fotoId,status:r.status,validasi:r.validasi}));
+ if(tab==='ceklis')model.ckRows=(S.ckRows||[]).map(r=>({id:r.id,rutinId:r.rutinId,judul:r.judul,catatan:r.catatan,fotoId:r.fotoId,status:r.status,validasi:r.validasi,_unsentPhotoId:r._unsentPhotoId||'',_draftPhotoPending:!!r._draftPhotoPending}));
  if(tab==='period')model.periodDraft=remap(deepCopy(S.periodDraft||{}));
  if(ctx.modalId==='mVisit')model.vis=remap(deepCopy(S.vis||{}));
  if(ctx.modalId==='mRutin')model.rt=deepCopy(S.rt||{});
@@ -424,7 +424,7 @@ async function restore(d,{automatic=false}={}){if(!window.S?.me||d.account!==use
  if(d.tab==='dso'){S.dsJaw=x.dsJaw||{};S.dsJaw._key=(S.dsForm||'')+'|'+(qs('#dsToko')?.value||S.me.toko||'')+'|'+(qs('#dsTgl')?.value||'');if(typeof window.renderDso==='function')window.renderDso();}
  if(d.tab==='ceklis'&&Array.isArray(x.ckRows)){
   const rows=S.ckRows||[];x.ckRows.forEach(v=>{const r=rows.find(y=>y.id&&y.id===v.id||y.rutinId&&y.rutinId===v.rutinId&&y.judul===v.judul);
-   if(r&&r.validasi!=='Y'){r.catatan=v.catatan;r.fotoId=v.fotoId;if(pendingIdsIn(v).length)r._draftStatus=v.status;}});
+   if(r&&r.validasi!=='Y'&&r.status!=='Selesai'){r.catatan=v.catatan;r.fotoId=v.fotoId;r._unsentPhotoId=v._unsentPhotoId||'';r._draftPhotoPending=!!v._draftPhotoPending;if(pendingIdsIn(v).length)r._draftStatus=v.status;}});
   if(typeof window.renderCeklis==='function')window.renderCeklis();
  }
  if(d.tab==='period'&&x.periodDraft){S.periodDraft=x.periodDraft;if(typeof window.__dcoRenderPeriodDraft==='function')window.__dcoRenderPeriodDraft();}
@@ -460,9 +460,11 @@ function applyCurrentDraft(d){
  if(d.tab==='ceklis'&&Array.isArray(x.ckRows)&&Array.isArray(S.ckRows)&&S.ckRows.length){
   x.ckRows.forEach(v=>{
    const r=S.ckRows.find(y=>(v.id&&y.id===v.id)||(v.rutinId&&y.rutinId===v.rutinId&&y.judul===v.judul));
-   if(r&&r.validasi!=='Y'){
+   if(r&&r.validasi!=='Y'&&r.status!=='Selesai'){
     r.catatan=v.catatan;r.fotoId=v.fotoId;
-    if(pendingIdsIn(v).length){r._draftPhotoPending=true;r.status='Belum';}
+    r._unsentPhotoId=v._unsentPhotoId||'';
+    r._draftPhotoPending=!!v._draftPhotoPending||pendingIdsIn(v).length>0;
+    if(r._draftPhotoPending)r.status='Belum';
    }
   });
   if(typeof window.renderCeklis==='function')window.renderCeklis();changed=true;

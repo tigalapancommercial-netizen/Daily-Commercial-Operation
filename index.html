@@ -958,10 +958,15 @@ function scCls(v){return v==null?'na':v>=85?'hi':v>=70?'md':'lo';}function sc(v)
 function scb(v){return '<div class="scb">'+sc(v)+'<div class="bar"><i style="width:'+(v||0)+'%;background:'+(scCls(v)==='hi'?'var(--g)':scCls(v)==='md'?'var(--y)':'var(--r)')+'"></i></div></div>';}
 function pill(t,c){return '<span class="pill '+c+'">'+t+'</span>';}
 // foto: 1 foto -> maks 640px q0.6 (±50 KB, jelas untuk validasi) ; kolase 2-4 foto -> 1 gambar 800px
-function loadImg(f){return new Promise(function(res){var img=new Image(),u=URL.createObjectURL(f);img.onload=function(){URL.revokeObjectURL(u);res(img);};img.src=u;});}
-function compress(f,cb){if(!f)return;loadImg(f).then(function(img){var max=640,s=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext('2d').drawImage(img,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',0.6));});}
-function collage(files,cb){var fs=Array.prototype.slice.call(files,0,4);if(fs.length===1)return compress(fs[0],cb);Promise.all(fs.map(loadImg)).then(function(imgs){var cell=400,cols=2,rows=Math.ceil(imgs.length/cols),c=document.createElement('canvas');c.width=cell*cols;c.height=cell*rows;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
-  imgs.forEach(function(im,i){var s=Math.max(cell/im.width,cell/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,(i%cols)*cell+(cell-w)/2,Math.floor(i/cols)*cell+(cell-h)/2,w,h);});cb(c.toDataURL('image/jpeg',0.55));});}
+// Legacy photo forms use the same reliable decoder as modern Evidence menus.
+// An invalid/unsupported image must never become an unhandled Promise rejection.
+function loadImg(f){return evidenceFileToDataURL(f).then(function(data){return new Promise(function(resolve,reject){
+  var img=new Image();img.onload=function(){resolve(img);};img.onerror=function(){reject(new Error('Foto hasil kompresi tidak dapat dibuka. Coba ulangi dengan JPG.'));};img.src=data;
+ });});}
+function compress(f,cb){if(!f)return Promise.resolve(false);return loadImg(f).then(function(img){var max=640,s=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*s));c.height=Math.max(1,Math.round(img.height*s));var ctx=c.getContext('2d');if(!ctx)throw new Error('Fitur pengolah foto tidak tersedia');ctx.drawImage(img,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',0.7));return true;}).catch(function(e){toast('Foto belum diproses: '+(e.message||e),true);return false;});}
+function collage(files,cb){var fs=Array.prototype.slice.call(files||[],0,4);if(!fs.length)return Promise.resolve(false);if(fs.length===1)return compress(fs[0],cb);
+ return Promise.all(fs.map(loadImg)).then(function(imgs){var cell=400,cols=2,rows=Math.ceil(imgs.length/cols),c=document.createElement('canvas');c.width=cell*cols;c.height=cell*rows;var x=c.getContext('2d');if(!x)throw new Error('Pengolah foto tidak tersedia');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+  imgs.forEach(function(im,i){var s=Math.max(cell/im.width,cell/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,(i%cols)*cell+(cell-w)/2,Math.floor(i/cols)*cell+(cell-h)/2,w,h);});cb(c.toDataURL('image/jpeg',0.65));return true;}).catch(function(e){toast('Foto belum diproses: '+(e.message||e),true);return false;});}
 function kb(d){return Math.round(d.length*0.75/1024)+' KB';}
 
 var FIELDS={MASALAH:[{k:'tanggal',l:'Tanggal briefing',t:'date',req:1},{k:'sesi',l:'Sesi / jam',t:'sel',o:['Pagi','Siang','Sore','Malam']},{k:'pemimpin',l:'Pemimpin briefing',t:'text'},{k:'peserta',l:'Peserta / jumlah',t:'text'},{k:'kategori',l:'Kategori',t:'sel',o:'kategori'},{k:'prioritas',l:'Prioritas',t:'sel',o:'prioritas'},
@@ -1743,45 +1748,152 @@ function evidencePanel(kind,key,small){key=String(key);var ids=photoList(evidenc
   if(!lock&&!busy)h+='<button type="button" class="evidence-remove" aria-label="Hapus foto" title="Hapus foto dari laporan" data-kind="'+esc(kind)+'" data-key="'+esc(key)+'" data-id="'+esc(id)+'" onclick="removeEvidencePhoto(this.dataset.kind,this.dataset.key,this.dataset.id)">×</button>';h+='</div>';});
  h+='</div>';
  if(!lock)h+='<div class="evidence-actions"><button type="button" class="btn s p" '+(busy?'disabled':'')+' data-kind="'+esc(kind)+'" data-key="'+esc(key)+'" onclick="openEvidenceCamera(this.dataset.kind,this.dataset.key)">📷 Foto langsung</button><label class="btn s" '+(busy?'style="opacity:.55"':'')+'>📱 Kamera HP<input type="file" accept="image/*" capture="environment" '+(busy?'disabled ':'')+'style="display:none" data-kind="'+esc(kind)+'" data-key="'+esc(key)+'" onchange="handleEvidenceInput(this)"></label><label class="btn s" '+(busy?'style="opacity:.55"':'')+'>🖼 Dari galeri<input type="file" accept="image/*" multiple '+(busy?'disabled ':'')+'style="display:none" data-kind="'+esc(kind)+'" data-key="'+esc(key)+'" onchange="handleEvidenceInput(this)"></label></div>';
- if(!small)h+='<div class="evidence-help">Bisa beberapa foto; WebP otomatis, ketuk foto untuk melihat jelas.</div>';
+ if(!small)h+='<div class="evidence-help">Bisa beberapa foto; format JPG/WebP otomatis, ketuk foto untuk melihat jelas.</div>';
  return h+'</div>';
 }
 function updateEvidencePanel(kind,key){document.querySelectorAll('[data-evidence-kind][data-evidence-key]').forEach(function(el){if(el.dataset.evidenceKind===String(kind)&&el.dataset.evidenceKey===String(key)){el.outerHTML=evidencePanel(kind,key,el.classList.contains('compact'));}});}
-function evidenceFileToDataURL(file){return new Promise(function(resolve,reject){
- if(!file||!String(file.type||'').startsWith('image/'))return reject(new Error('Hanya file gambar yang didukung'));
- if(file.size>25*1024*1024)return reject(new Error('Foto melebihi 25 MB; pilih foto yang lebih kecil'));
- var img=new Image(),url=URL.createObjectURL(file),finished=false;
- var clean=function(){if(!finished){finished=true;URL.revokeObjectURL(url);}};
- img.onerror=function(){clean();reject(new Error('Gambar tidak dapat dibaca'))};
- img.onload=function(){try{var maxSide=1600,scale=Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');
-  c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-  var data='',quality=.80;
-  for(var z=0;z<6;z++){data=c.toDataURL('image/webp',quality);if(!data.startsWith('data:image/webp;'))data=c.toDataURL('image/jpeg',quality);
-   if(data.length*0.75<420*1024||z===5)break;
-   quality=Math.max(.60,quality-.07);if(z>=2){var out=document.createElement('canvas');out.width=Math.max(1,Math.round(c.width*.87));out.height=Math.max(1,Math.round(c.height*.87));out.getContext('2d').drawImage(c,0,0,out.width,out.height);c=out;}
-  }clean();resolve(data);
- }catch(e){clean();reject(e);}};img.src=url;});}
+// v29: one decoder for DSO, Assignment, Visiting, Issues, Campaign and Reporting.
+// Copy the selected file bytes *before* decoding. On Android a camera/album File
+// can become inaccessible when a file input is reset too early.
+function dcoPhotoSignature(raw,originalType){
+ var b=new Uint8Array(raw,0,Math.min(32,raw.byteLength)),ascii=function(start,n){return Array.from(b.slice(start,start+n)).map(function(v){return String.fromCharCode(v);}).join('');};
+ if(b.length>=3&&b[0]===255&&b[1]===216&&b[2]===255)return 'image/jpeg';
+ if(b.length>=8&&b[0]===137&&ascii(1,3)==='PNG')return 'image/png';
+ if(b.length>=12&&ascii(0,4)==='RIFF'&&ascii(8,4)==='WEBP')return 'image/webp';
+ if(b.length>=6&&(ascii(0,6)==='GIF87a'||ascii(0,6)==='GIF89a'))return 'image/gif';
+ if(b.length>=12&&ascii(4,4)==='ftyp'){
+  var brand=ascii(8,4);if(['heic','heix','hevc','hevx','heim','heis','mif1','msf1'].indexOf(brand)>=0)return 'image/heic';
+  if(['avif','avis'].indexOf(brand)>=0)return 'image/avif';
+ }
+ var mime=String(originalType||'').toLowerCase();
+ return /^image\//.test(mime)?mime:'application/octet-stream';
+}
+function dcoImageFromBlob(blob,asDataUrl){return new Promise(function(resolve,reject){
+ var img=new Image(),url='',reader=null,done=false,timeout;
+ function finish(error){if(done)return;done=true;clearTimeout(timeout);if(error){if(url)URL.revokeObjectURL(url);reject(error);return;}
+  resolve({source:img,close:function(){if(url)URL.revokeObjectURL(url);}});
+ }
+ img.onload=function(){if(!img.naturalWidth||!img.naturalHeight)return finish(new Error('Ukuran gambar tidak valid'));finish();};
+ img.onerror=function(){finish(new Error('Format gambar tidak didukung oleh browser'));};
+ timeout=setTimeout(function(){finish(new Error('Waktu membaca gambar habis, pilih ulang foto'));},20000);
+ try{
+  if(asDataUrl){reader=new FileReader();reader.onload=function(){if(!done)img.src=reader.result;};reader.onerror=function(){finish(new Error('File foto tidak dapat dibaca'));};reader.readAsDataURL(blob);}
+  else{url=URL.createObjectURL(blob);img.src=url;}
+ }catch(e){finish(new Error('Browser gagal membaca berkas foto'));}
+ });}
+async function evidenceFileToDataURL(file){
+ if(!file)throw new Error('Pilih foto terlebih dahulu');
+ if(file.size===0)throw new Error('File foto kosong. Ambil ulang foto menggunakan kamera HP.');
+ if(file.size>25*1024*1024)throw new Error('Foto melebihi 25 MB. Gunakan foto JPG atau kecilkan ukuran di galeri.');
+ var raw;try{raw=await file.arrayBuffer();}catch(e){throw new Error('Berkas kamera tidak bisa dibaca. Ulangi pilih foto tanpa menutup galeri.');}
+ if(!raw||!raw.byteLength)throw new Error('Foto yang dipilih tidak berisi data. Coba ambil ulang.');
+ var type=dcoPhotoSignature(raw,file.type),blob=new Blob([raw],{type:type}),decoded=null,errors=[];
+ if(type==='application/octet-stream')throw new Error('File bukan gambar yang dikenali. Pilih foto JPG, PNG atau WebP.');
+ // Prefer createImageBitmap for Android photo providers and EXIF orientation.
+ if(typeof createImageBitmap==='function')try{
+  var bitmap=await createImageBitmap(blob);if(!bitmap.width||!bitmap.height)throw new Error('Dimensi kosong');
+  decoded={source:bitmap,close:function(){bitmap.close&&bitmap.close();}};
+ }catch(e){errors.push(String(e&&e.message||e));}
+ if(!decoded)try{decoded=await dcoImageFromBlob(blob,false);}catch(e){errors.push(String(e&&e.message||e));}
+ if(!decoded)try{decoded=await dcoImageFromBlob(blob,true);}catch(e){errors.push(String(e&&e.message||e));}
+ if(!decoded){
+  if(/heic|heif/.test(type)||/\.(heic|heif)$/i.test(file.name||''))throw new Error('Foto HEIC/HEIF tidak bisa dibuka pada browser ini. Ubah format kamera ke JPEG/JPG atau ekspor foto sebagai JPG, lalu pilih ulang.');
+  throw new Error('Foto tidak dapat dibuka oleh browser. Pilih ulang dari galeri atau gunakan Kamera HP dengan format JPG.');
+ }
+ try{
+  var source=decoded.source,w=source.width||source.naturalWidth,h=source.height||source.naturalHeight;
+  if(!w||!h)throw new Error('Resolusi foto tidak diketahui');
+  var side=1600,ratio=Math.min(1,side/Math.max(w,h)),c=document.createElement('canvas');
+  c.width=Math.max(1,Math.round(w*ratio));c.height=Math.max(1,Math.round(h*ratio));
+  var ctx=c.getContext('2d');if(!ctx)throw new Error('Canvas browser tidak tersedia');
+  ctx.drawImage(source,0,0,c.width,c.height);
+  var data='',quality=0.8;
+  for(var i=0;i<7;i++){
+   data=c.toDataURL('image/webp',quality);
+   if(!data.startsWith('data:image/webp;base64,'))data=c.toDataURL('image/jpeg',quality);
+   if(!/^data:image\/(webp|jpeg);base64,/.test(data))throw new Error('Format hasil kompresi tidak didukung');
+   if(data.length*0.75<420*1024||i===6)break;
+   quality=Math.max(.54,quality-.06);
+   if(i>=2){var small=document.createElement('canvas');small.width=Math.max(1,Math.round(c.width*.85));small.height=Math.max(1,Math.round(c.height*.85));
+    var smallCtx=small.getContext('2d');if(!smallCtx)throw new Error('Memori pengolah foto tidak cukup');smallCtx.drawImage(c,0,0,small.width,small.height);c=small;}
+  }
+  return data;
+ }catch(e){throw new Error('Gagal mengompres foto: '+(e.message||e)+'. Coba foto JPG dengan ukuran lebih kecil.');}
+ finally{decoded.close();}
+}
+
 function evidenceStateSave(kind,key,packed){key=String(key);var old=evidenceId(kind,key);if(kind==='ck')return ckSend(+key,{fotoId:packed}).then(function(){if(evidenceId(kind,key)!==packed)throw new Error('Server belum menyimpan foto checklist');});
- if(kind==='dso'){S.dsJaw[key]=packed;var cur=dsoCur();if(!cur){updateEvidencePanel(kind,key);return Promise.resolve();}
-   return call('dsoPatch',{id:cur.id,itemId:key,fotoId:packed},true).then(function(r){cur.jawaban=r.jawaban;},function(e){S.dsJaw[key]=old;throw e;});}
+ if(kind==='dso'){S.dsJaw[key]=packed;var cur=dsoCur();if(!cur||(window.__dcoDraft&&window.__dcoDraft.containsPending(packed))){updateEvidencePanel(kind,key);return Promise.resolve();}
+   return call('dsoPatch',{id:cur.id,itemId:key,fotoId:packed},true).then(function(r){cur.jawaban=r.jawaban;},function(e){/* Keep the selected photo in local DSO draft when the server patch fails. */throw new Error('Foto tetap ada pada draft lokal, tetapi server belum menyimpan perubahan: '+(e.message||e));});}
  if(kind==='form'){S.fotoTmp=packed;return Promise.resolve();}
  if(kind==='issue'){S.issueFotoTemp=packed;return Promise.resolve();}
  if(kind==='point'||kind==='seksi'){S.vis.foto[key]=packed;return Promise.resolve();}
  if(kind==='visitIssue'){if(!S.vis.issuesList[+key])throw new Error('Issue tidak tersedia');S.vis.issuesList[+key].fotoId=packed;return Promise.resolve();}
  return Promise.reject(new Error('Menu foto tidak diketahui: '+kind));}
-async function processEvidenceFiles(kind,key,files){key=String(key);var k=kind+':'+key;if(evidenceBusy[k])return toast('Upload sebelumnya masih berjalan',true);
- files=Array.from(files||[]);if(!files.length)return;if(evidenceLock(kind,key))return toast('Data telah dikunci, foto tidak dapat diubah',true);
+async function processEvidenceFiles(kind,key,files){key=String(key);var k=kind+':'+key;
+ if(evidenceBusy[k])return {uploaded:0,failed:0,reason:'Upload sebelumnya masih berjalan'};
+ files=Array.from(files||[]);if(!files.length)return {uploaded:0,failed:0};
+ if(evidenceLock(kind,key)){toast('Data telah dikunci, foto tidak dapat diubah',true);return {uploaded:0,failed:files.length};}
  var old=photoList(evidenceId(kind,key)),remain=DCO_EVIDENCE_LIMIT-old.length;
- if(files.length>remain)return toast('Maksimal '+DCO_EVIDENCE_LIMIT+' foto per bukti; tersisa '+Math.max(0,remain)+' slot',true);
- evidenceBusy[k]=true;updateEvidencePanel(kind,key);var result=old.slice(),failed=0,reason='';
- try{for(var i=0;i<files.length;i++){
-   try{var data=await evidenceFileToDataURL(files[i]);var sent=await call('uploadFoto',{dataUrl:data,nama:kind+'_'+Date.now(),captureSource:files[i].__dcoCaptureSource||'galeri',context:kind+':'+key},true);
-    if(!sent||!validId(sent.id))throw new Error('ID foto tidak valid');if(result.indexOf(sent.id)<0)result.push(sent.id);
-   }catch(e){failed++;reason=e&&e.message||String(e);}
+ if(files.length>remain){toast('Maksimal '+DCO_EVIDENCE_LIMIT+' foto; tersisa '+Math.max(0,remain)+' slot',true);return {uploaded:0,failed:files.length};}
+ evidenceBusy[k]=true;updateEvidencePanel(kind,key);
+ var result=old.slice(),failed=0,reason='',attached=false,localOnly=false;
+ try{
+  for(var i=0;i<files.length;i++){
+   try{
+    var data=await evidenceFileToDataURL(files[i]);
+    var sent=await call('uploadFoto',{dataUrl:data,nama:kind+'_'+Date.now(),captureSource:files[i].__dcoCaptureSource||'galeri',context:kind+':'+key},true);
+    if(!sent||!validId(sent.id))throw new Error('Server tidak mengonfirmasi penyimpanan foto');
+    if(result.indexOf(sent.id)<0)result.push(sent.id);
+   }catch(e){failed++;reason=(e&&e.message||String(e));console.warn('DCO foto gagal, menu='+kind,reason);}
   }
-  if(result.length>old.length){await evidenceStateSave(kind,key,photoPack(result),failed===0);if(window.__dcoDraft)await window.__dcoDraft.captureNow();toast((result.length-old.length)+' foto '+(window.__dcoDraft&&window.__dcoDraft.containsPending(result)?'aman sebagai DRAFT LOKAL (belum terkirim).':(['form','issue','issueAfter','point','seksi','visitIssue','visitIssueAfter','visitUpdate'].indexOf(kind)>=0?'siap. Simpan formulir untuk mencatatnya.':'tersimpan'))+(failed?(kind==='ck'?' · '+failed+' gagal; status checklist tidak berubah':' · '+failed+' gagal'):''),'ok');}
-  else toast(reason||'Upload foto gagal',true);
- }catch(e){toast('Foto belum tersimpan: '+(e&&e.message||e),true);}finally{delete evidenceBusy[k];updateEvidencePanel(kind,key);}
+  if(result.length>old.length){
+   var packed=photoPack(result);
+   try{
+    await evidenceStateSave(kind,key,packed,failed===0);attached=true;
+    if(kind==='ck'&&S.ckRows&&S.ckRows[+key]){
+      S.ckRows[+key]._unsentPhotoId='';S.ckRows[+key]._draftPhotoPending=false;
+    }
+   }catch(e){
+    // The Storage upload might already have succeeded. Never discard photo IDs
+    // merely because the parent DSO / checklist update failed.
+    localOnly=true;reason=(e&&e.message||String(e));
+    if(kind==='dso')S.dsJaw[key]=packed;
+    if(kind==='ck'&&S.ckRows&&S.ckRows[+key]){
+      // Keep the FAILED checklist untouched; only store a retryable reference in draft.
+      // A photo that failed checklist verification must NOT appear completed/linked.
+      S.ckRows[+key]._unsentPhotoId=packed;S.ckRows[+key]._draftPhotoPending=true;
+    }
+    if(kind==='dso'&&typeof renderDso==='function')renderDso();
+    if(kind==='ck'&&typeof renderCeklis==='function')renderCeklis();
+   }
+   if(window.__dcoDraft){
+    try{await window.__dcoDraft.captureNow();}catch(e){localOnly=true;reason='Penyimpanan draft lokal belum terkonfirmasi: '+(e.message||e);}
+   }
+   var count=result.length-old.length,localPending=window.__dcoDraft&&window.__dcoDraft.containsPending(result);
+   if(localOnly)toast(count+' foto tetap berada pada formulir; pengiriman belum berhasil: '+reason,true);
+   else if(failed)toast(count+' foto berhasil diproses, '+failed+' gagal: '+reason,true);
+   else toast(count+' foto '+(localPending?'tersimpan sebagai draft lokal (belum terkirim).':(['form','issue','issueAfter','point','seksi','visitIssue','visitIssueAfter','visitUpdate'].indexOf(kind)>=0?'siap. Kirim formulir untuk mencatatnya.':'tersimpan.')),'ok');
+  }else{
+   toast((reason||'Upload foto gagal')+'. Foto sebelumnya tidak dihapus. Coba pilih ulang.',true);
+  }
+  return {uploaded:result.length-old.length,failed,reason,attached,localOnly};
+ }catch(e){
+  toast('Foto belum berhasil dikirim: '+(e&&e.message||e),true);
+  return {uploaded:result.length-old.length,failed:failed+1,reason:String(e?.message||e),localOnly:true};
+ }finally{
+  delete evidenceBusy[k];updateEvidencePanel(kind,key);
+  // Keep the reason visible inside the photo picker beyond the short toast.
+  var hub=$('evidenceHubStatus');
+  if(hub&&$('dcoCameraModal')?.classList.contains('on')&&
+      cameraEvidence.kind===kind&&String(cameraEvidence.key)===key&&reason&&failed){
+    hub.textContent='⚠ '+failed+' foto belum diproses: '+reason+'. Foto yang sudah ada tidak dihapus.';
+    hub.setAttribute('role','alert');
+    hub.style.color='#9f1239';
+  }else if(hub&&(!failed||!reason)){
+    hub.removeAttribute('role');hub.style.color='';
+  }
+ }
 }
 function handleEvidenceInput(input){var files=Array.from(input.files||[]),kind=input.dataset.kind,key=input.dataset.key;input.value='';return processEvidenceFiles(kind,key,files);}
 function nativeEvidencePhoto(input){var files=Array.from(input.files||[]),kind=cameraEvidence.kind,key=cameraEvidence.key;input.value='';closeEvidenceCamera();return processEvidenceFiles(kind,key,files);}
@@ -2254,16 +2366,16 @@ renderIssues=function(){
   // Native camera file pickers are not cryptographic proof of live capture.
   nativeEvidencePhoto=async function(input){
     var files=Array.from(input.files||[]),kind=cameraEvidence.kind,key=cameraEvidence.key;
-    var mode=input.hasAttribute('capture')?'kamera_hp':'galeri';input.value='';
+    var mode=input.hasAttribute('capture')?'kamera_hp':'galeri';
     files.forEach(function(f){f.__dcoCaptureSource=mode;});
     if(!files.length)return;
-    await processEvidenceFiles(kind,key,files);renderEvidenceHub();
+    try{await processEvidenceFiles(kind,key,files);renderEvidenceHub();}finally{input.value='';}
   };
   handleEvidenceInput=function(input){
     var files=Array.from(input.files||[]),kind=input.dataset.kind,key=input.dataset.key;
-    var mode=input.hasAttribute('capture')?'kamera_hp':'galeri';input.value='';
+    var mode=input.hasAttribute('capture')?'kamera_hp':'galeri';
     files.forEach(function(f){f.__dcoCaptureSource=mode;});
-    return processEvidenceFiles(kind,key,files);
+    return Promise.resolve(processEvidenceFiles(kind,key,files)).finally(function(){input.value='';});
   };
   // Tap a photo to see an independently recorded Supabase receipt (for new photos).
   var lightboxOriginal=lightbox;
@@ -3472,15 +3584,17 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
     if(!row||!row._draftPhotoPending||!draft)return;
     if(navigator.onLine===false)return toast('Offline. Draft aman di perangkat.',true);
     try{
-      if(draft.containsPending(row.fotoId)){
+      var photos=row._unsentPhotoId||row.fotoId;
+      if(draft.containsPending(photos)){
         await draft.syncPhotos();
-        // A completed synchronization remaps the current row in window.S.
-        if(draft.containsPending(row.fotoId))return toast('Foto masih menunggu upload. Coba sinkronkan kembali.',true);
+        // A completed synchronization remaps draft references to confirmed server IDs.
+        photos=draft.remap(photos);
+        if(draft.containsPending(photos))return toast('Foto masih menunggu upload. Coba sinkronkan kembali.',true);
       }
-      var saved=await call('ceklisSet',{id:row.id||'',rutinId:row.rutinId,judul:row.judul,tanggal:$('ckTgl').value,toko:$('ckToko').value,fotoId:row.fotoId,status:true},true);
-      if(!saved||saved.status!=='Selesai'||!photoList(saved.fotoId).length)throw new Error('Server belum memastikan checklist dan foto tersimpan');
+      var saved=await call('ceklisSet',{id:row.id||'',rutinId:row.rutinId,judul:row.judul,tanggal:$('ckTgl').value,toko:$('ckToko').value,fotoId:photos,status:true},true);
+      if(!saved||saved.status!=='Selesai'||photoPack(photoList(saved.fotoId))!==photoPack(photoList(photos)))throw new Error('Server belum memastikan checklist dan semua foto tersimpan');
       ['id','status','jam','catatan','fotoId','validasi','validasiOleh'].forEach(function(k){if(Object.prototype.hasOwnProperty.call(saved,k))row[k]=saved[k];});
-      row._draftPhotoPending=false;renderCeklis();await draft.captureNow();toast('Foto draft terkirim dan checklist otomatis tercentang.','ok');
+      row._unsentPhotoId='';row._draftPhotoPending=false;renderCeklis();await draft.captureNow();toast('Foto draft terkirim dan checklist otomatis tercentang.','ok');
     }catch(e){toast('Draft masih tersimpan: '+(e.message||e),true);}
   };
   var originalOpenHub=openEvidenceHub;
