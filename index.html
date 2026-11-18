@@ -747,6 +747,90 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
  #mVisit #vBtn > .btn {min-height:44px;flex:1 1 125px;white-space:normal;}
 }
 </style>
+<style id="dco-v29-ui-audit">
+/* V29 — responsive UI audit: layout-only, preserve business data and Supabase integration */
+:root{--dco-space:12px;--dco-border:#dfe5ef}
+#vApp main{min-width:0;width:100%;max-width:100%;overflow-x:clip}
+#vApp main>section{min-width:0;width:100%;max-width:100%}
+#vApp .card,#vApp .box{min-width:0;max-width:100%;box-sizing:border-box}
+#vApp .card{overflow:visible}
+#vApp .tbl{max-width:100%;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch}
+#vApp .tbl table{min-width:max-content;border-collapse:separate;border-spacing:0}
+#vApp .tbl th,#vApp .tbl td{vertical-align:middle;line-height:1.4}
+#vApp .tbl th{position:sticky;top:0;z-index:2;white-space:nowrap}
+#vApp .tbl td:last-child{white-space:normal;min-width:135px}
+#vApp .tbl td:last-child .btn{margin:2px;white-space:normal;min-width:0}
+#vApp input[type="checkbox"]{width:18px;height:18px;min-height:18px;min-width:18px;accent-color:#5146e8;vertical-align:middle;cursor:pointer}
+#vApp .dco-control-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid #d5e3ff}
+#vApp .dco-control-bar label{display:inline-flex;gap:8px;align-items:center;line-height:1.4}
+#vApp .dco-control-bar .btn{white-space:normal;min-width:0}
+#vApp .tabs,#vApp .dco-subnav{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:8px;max-width:100%;padding:6px 2px 9px;scrollbar-width:thin;scroll-snap-type:x proximity}
+#vApp .tabs>button,#vApp .dco-subnav>button{flex:0 0 auto;min-height:42px;max-width:none;white-space:nowrap;padding:10px 15px;border-radius:10px;scroll-snap-align:start;font-size:12.5px}
+#vApp .tabs>button.on,#vApp .dco-subnav>button.on{background:#eeecff;color:#4338ca;border-bottom-color:#5146e8}
+#pVisit .visit-tools-v22{display:grid;grid-template-columns:repeat(2,minmax(0,max-content)) minmax(140px,1fr);align-items:center;gap:9px}
+#pVisit .visit-tools-v22 small{font-size:12px;line-height:1.4}
+#pVisit .mini,#pIssues .v6-overview,#pList .mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:10px;min-width:0}
+#pVisit .mini>div,#pList .mini>div{min-width:0;max-width:none;box-sizing:border-box}
+#pVisit #visitTbl{width:100%;overflow-x:auto}
+#pVisit #visitTbl th,#pVisit #visitTbl td{padding:10px 12px;text-align:left}
+#pVisit #visitTbl .visit-seksi-head{text-align:center!important;min-width:74px}
+#pCeklis .ckrow{grid-template-columns:48px minmax(0,1fr) auto 42px;align-items:center;gap:12px;border-color:var(--dco-border);margin-bottom:10px;min-height:72px}
+#pCeklis .ckrow .cb{height:44px;width:44px;display:grid;place-items:center;cursor:pointer;justify-self:center;outline-offset:3px}
+#pCeklis .ckrow .cb:focus-visible{outline:3px solid #8b83ff}
+#pCeklis .ckrow .t{overflow-wrap:anywhere;line-height:1.45}
+#pCeklis .ckrow .more{max-width:100%;align-items:stretch}
+#pCeklis .ckrow .more>input{min-width:0;flex:1 1 220px}
+#pCeklis .ckrow .ck-evidence{max-width:100%;justify-self:end}
+#pCeklis .ckrow .photo-chip{max-width:100%;white-space:normal}
+#pCeklis .ckhead{position:relative;top:auto;z-index:1;flex-wrap:wrap;gap:12px}
+#pCeklis .ckhead .big{font-size:30px;min-width:72px;text-align:center}
+#pCeklis .ckrow>button:last-child{width:38px;min-width:38px;height:38px;justify-self:end;padding:5px}
+#pDso .dsoit{min-width:0;grid-template-columns:minmax(0,1fr) auto}
+#pDso .dsoit .evidence-panel{max-width:100%}
+#pPeriod .pr-toolbar,#prHistoryFilters .pr-toolbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(195px,100%),1fr));align-items:end;gap:12px}
+#pPeriod .pr-toolbar>div,#pPeriod .pr-fields>*,#pPeriod .pr-checks>*{min-width:0}
+#pPeriod input:not([type="checkbox"]),#pPeriod select,#pPeriod textarea,#pIssues input:not([type="checkbox"]),#pIssues select,#pCeklis input:not([type="checkbox"]),#pCeklis select,#pDso input:not([type="checkbox"]),#pDso select{width:100%;max-width:100%;box-sizing:border-box}
+#pPeriod .pr-toolbar .btn{width:100%;min-width:0;white-space:normal}
+#pPeriod .pr-form-head{flex-wrap:wrap;gap:12px}
+#pPeriod .pr-savebar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;bottom:0;box-shadow:0 -4px 16px rgba(15,23,42,.05)}
+#pPeriod #prMessage{flex:1 1 220px;overflow-wrap:anywhere;font-size:12px}
+#pPeriod .pr-photo,#pPeriod .pr-check{min-width:0;max-width:100%}
+#pIssues .issue-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:12px;align-items:end}
+#pIssues .issue-filters>div{min-width:0;max-width:100%;flex:none!important}
+#pIssues .issue-filters .btn{width:100%;min-width:0;white-space:normal}
+#pList #dcoMsTabs{width:100%}
+#pJadwal .sched-row-top,#pJadwal .sched-filters{min-width:0;max-width:100%}
+#vApp .grid{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+#vApp .row{min-width:0;max-width:100%;gap:10px}
+#vApp .row>*{min-width:0}
+#vApp .btn{overflow-wrap:normal}
+@media(max-width:900px){
+  #vApp .tabs>button,#vApp .dco-subnav>button{min-height:43px;padding:10px 12px}
+  #pCeklis>.card>.row,#pDso>.card>.row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #pCeklis>.card>.row>div:last-child,#pDso>.card>.row>div:last-child{grid-column:1/-1}
+  #pVisit .visit-tools-v22{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #pVisit .visit-tools-v22 small{grid-column:1/-1}
+  #pVisit .visit-tools-v22 .btn{white-space:normal;min-width:0;width:100%}
+}
+@media(max-width:620px){
+  #vApp main{padding-left:10px;padding-right:10px}
+  #vApp .card{padding:12px}
+  #pCeklis>.card>.row,#pDso>.card>.row{grid-template-columns:1fr}
+  #pCeklis>.card>.row>div:last-child,#pDso>.card>.row>div:last-child{grid-column:auto}
+  #pCeklis .ckrow{grid-template-columns:44px minmax(0,1fr) 40px;gap:9px;padding:11px 10px}
+  #pCeklis .ckrow .cb{height:42px;width:42px}
+  #pCeklis .ckrow .ck-evidence{grid-column:2;grid-row:2;justify-self:start}
+  #pCeklis .ckrow>button:last-child{grid-column:3;grid-row:1}
+  #pCeklis .ckrow .more{grid-column:2/-1}
+  #pVisit .visit-tools-v22{grid-template-columns:1fr}
+  #pVisit .visit-tools-v22 small{grid-column:1}
+  #pPeriod .pr-savebar .btn{width:100%;min-width:0}
+  #pPeriod .pr-stats,#pPeriod .pr-totals{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #pIssues .issue-filters,#pPeriod .pr-toolbar,#prHistoryFilters .pr-toolbar{grid-template-columns:1fr}
+  #vApp .dco-control-bar{align-items:stretch;flex-direction:column}
+  #vApp .dco-control-bar .btn{width:100%;min-height:42px}
+}
+</style>
 </head>
 <body>
 <div id="load"></div><div id="toast"></div><div id="lb" class="lb" onclick="this.classList.remove('on')"><img id="lbimg"></div>
@@ -854,7 +938,7 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
       <div class="card tbl" id="tblWrap" style="padding:0"></div></section>
     <section id="pVisit" class="hid"><div class="tabs"><button id="visitTabPending" class="on" onclick="visitTab('pending')">Belum Divalidasi</button><button id="visitTabHistory" onclick="visitTab('history')">Riwayat Tervalidasi</button><button onclick="goIssues('pending')">Issue Visit · Submit</button><button onclick="goIssues('history')">Issue Visit · Riwayat</button></div><div class="visit-tools-v22"><button type="button" class="btn s" onclick="visitShowAllV22()">📚 Semua riwayat Visit</button><button type="button" class="btn s" onclick="refresh(true)">↻ Periksa data tersimpan</button><small>Filter tanggal, toko, dan pencarian berada di bagian atas halaman.</small></div><div id="visitStatusV22" role="status" aria-live="polite"></div><div id="visitMini"></div><div class="dco-control-bar mgr" id="visitSelectBar"><label class="dco-select-all"><input type="checkbox" id="visitAll" onchange="dcoSelectAllVisits(this.checked)"> Pilih semua yang tampil</label><button class="btn s g" onclick="dcoApproveSelectedVisits()">✔ Validasi pilihan (Master)</button><span id="visitSelectCount" class="mu"></span></div><div class="row" style="margin-bottom:8px;align-items:center"><div style="flex:1"><b style="font-size:14px">Visiting Check Point Control</b> <span class="mu" id="visitCount"></span></div><div style="flex:0"><button class="btn g" onclick="openVisit()">+ Visit baru</button></div><div style="flex:0"><button class="btn" onclick="exportVisit()">⬇ CSV</button></div></div><div class="card tbl" id="visitTbl" style="padding:0"></div></section>
     <section id="pIssues" class="hid">
-      <div class="tabs"><button onclick="go('visit')">Riwayat Visit</button><button id="isTabPending" class="on" onclick="issueTab('pending')">Submit / Belum Divalidasi</button><button id="isTabAll" onclick="issueTab('history')">Riwayat Tervalidasi</button></div>
+      <div class="tabs"><button onclick="go('visit')">← Kembali ke Visiting</button><button id="isTabPending" class="on" onclick="issueTab('pending')">Submit / Belum Divalidasi</button><button id="isTabAll" onclick="issueTab('history')">Riwayat Tervalidasi</button></div>
       <div class="card" style="margin-bottom:12px"><div class="row issue-filters">
         <div class="mgr"><label>Toko</label><select id="isToko" onchange="loadIssues()"><option value="SEMUA">Semua toko</option></select></div>
         <div><label>Status</label><select id="isStatus" onchange="loadIssues()"><option value="Pending">Belum tervalidasi / pending</option><option value="SEMUA">Semua</option><option value="Open">Open</option><option value="On Progress">On Progress</option><option value="Selesai">Selesai</option><option value="Dibatalkan">Dibatalkan</option></select></div>
@@ -1245,10 +1329,10 @@ function dsoKirim(){var jaw={};Object.keys(S.dsJaw).forEach(function(k){if(k!=='
   call('dsoSubmit',{form:S.dsForm,tanggal:$('dsTgl').value,toko:$('dsToko').value,jawaban:jaw,oleh:$('dsOleh').value,keterangan:$('dsKet').value}).then(function(r){toast('Laporan '+formById(r.form).nama+' terkirim · '+r.slaSubmit,'ok');S.dsJaw={};loadDso();loadNotif();});}
 function dsoHapus(id){if(!confirm('Hapus laporan ini beserta fotonya? Anda bisa mengisi ulang dari awal.'))return;call('dsoHapus',{id:id}).then(function(){toast('Laporan dihapus');S.dsJaw={};loadDso();loadNotif();});}
 function dsoVal(id,v){if(v==='')return validationUndo('DSO',id,'dso');var ket=$('dsKetSpv')?$('dsKetSpv').value:'';if(v==='Rejected'&&!ket)return toast('Isi keterangan alasan penolakan',true);call('dsoValidasi',{id:id,validasi:v,ketSpv:ket}).then(function(){toast(v?'Tersimpan: '+v:'Validasi dibatalkan','ok');S.dsJaw={};loadDso();closeM('mDetail');loadNotif();});}
-function renderDsoRiwayat(){var rows=S.rows,pend=rows.filter(function(r){return !r.validasi;}).length;
+function renderDsoRiwayat(){var rows=S.rows,pend=rows.filter(function(r){return r.validasi!=='Y';}).length;
   var h='<div class="mini"><div style="--ac:#0891b2"><span>Laporan 30 hari</span><b>'+rows.length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+pend+'</b></div><div style="--ac:#16a34a"><span>Approved</span><b>'+rows.filter(function(r){return r.validasi==='Approved';}).length+'</b></div><div style="--ac:#dc2626"><span>Submit terlambat</span><b>'+rows.filter(function(r){return r.slaSubmit==='Terlambat';}).length+'</b></div></div>';
   h+='<div class="card tbl" style="padding:0"><table><thead><tr><th>Tanggal</th>'+(isMgr()?'<th>Toko</th>':'')+'<th>Form</th><th>Submit</th><th>Pengisi</th><th>SLA submit</th><th>Validasi</th><th>SLA validasi</th><th></th></tr></thead><tbody>';
-  rows.forEach(function(r,i){h+='<tr><td style="white-space:nowrap">'+(isMaster()&&!r.validasi?'<input type="checkbox" class="dco-visit-pick" value="'+esc(r.id)+'" onchange="dcoUpdateVisitSelection()"> ':'')+fmtTgl(r.tanggal)+'</td>'+(isMgr()?'<td>'+esc(r.toko)+'</td>':'')+'<td>'+esc(formById(r.form).nama)+'</td><td>'+esc(r.waktuSubmit.slice(11))+'</td><td>'+esc(r.oleh)+'</td><td>'+bdg(r.slaSubmit)+'</td><td>'+bdg(dsoStatus(r))+(r.validasiOleh?'<div class="mu">'+esc(r.validasiOleh)+'</div>':'')+'</td><td>'+(r.slaValidasi?bdg(r.slaValidasi):'')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="dsoDetail('+i+')">Lihat</button> '+(r.validasi&&canUndoValidation(r,'DSO')?'<button class="btn s" onclick="validationUndo(\'DSO\',\''+esc(r.id)+'\',\'dso\')">↶ Batal</button> ':'')+(isMgr()||r.validasi!=='Approved'?'<button class="btn s r" onclick="dsoHapus(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
+  rows.forEach(function(r,i){h+='<tr><td style="white-space:nowrap">'+(isMaster()&&r.validasi!=='Y'?'<input type="checkbox" class="dco-visit-pick" value="'+esc(r.id)+'" onchange="dcoUpdateVisitSelection()"> ':'')+fmtTgl(r.tanggal)+'</td>'+(isMgr()?'<td>'+esc(r.toko)+'</td>':'')+'<td>'+esc(formById(r.form).nama)+'</td><td>'+esc(r.waktuSubmit.slice(11))+'</td><td>'+esc(r.oleh)+'</td><td>'+bdg(r.slaSubmit)+'</td><td>'+bdg(dsoStatus(r))+(r.validasiOleh?'<div class="mu">'+esc(r.validasiOleh)+'</div>':'')+'</td><td>'+(r.slaValidasi?bdg(r.slaValidasi):'')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="dsoDetail('+i+')">Lihat</button> '+(r.validasi&&canUndoValidation(r,'DSO')?'<button class="btn s" onclick="validationUndo(\'DSO\',\''+esc(r.id)+'\',\'dso\')">↶ Batal</button> ':'')+(isMgr()||r.validasi!=='Approved'?'<button class="btn s r" onclick="dsoHapus(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
   if(!rows.length)h+='<tr><td colspan="9" class="empty">Belum ada laporan 30 hari terakhir</td></tr>';$('dsBody').innerHTML=h+'</tbody></table></div>';}
 function dsoDetail(i){var r=S.rows[i],def=S.meta.formDef.filter(function(d){return d.form===r.form;});$('dTitle').textContent=formById(r.form).nama+' · '+r.toko+' · '+fmtTgl(r.tanggal);
   var h='<div class="mu">Dikirim '+r.waktuSubmit+' oleh '+esc(r.oleh)+' · '+bdg(r.slaSubmit)+' · '+bdg(dsoStatus(r))+(r.validasiOleh?' oleh '+esc(r.validasiOleh)+' '+r.validasiTgl+' '+bdg(r.slaValidasi):'')+'</div>'+(r.keterangan?'<p>Keterangan: '+esc(r.keterangan)+'</p>':'')+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:10px">';
@@ -1314,10 +1398,10 @@ function hapusJadwal(id){if(!confirm('Hapus jadwal ini?'))return;call('jadwalHap
 
 // ===== VISITING CHECK POINT =====
 function seksiList(){return cfg().visitSeksi;}function visitItems(k){return S.meta.visitDef.filter(function(d){return d.seksi===k&&d.aktif!=='N';});}
-function renderVisits(){var rows=(S.visits||[]).filter(function(r){return S.visitMode==='history'?!!r.validasi:!r.validasi;});$('visitCount').textContent='('+rows.length+' visit)';var avg=rows.length?Math.round(rows.reduce(function(a,r){return a+(+r.finalScore||0);},0)/rows.length):null;
-  $('visitMini').innerHTML='<div class="mini"><div style="--ac:#7c3aed"><span>Visit</span><b>'+rows.length+'</b></div><div style="--ac:#16a34a"><span>Rata-rata skor</span><b>'+(avg==null?'–':avg+'%')+'</b></div><div style="--ac:#059669"><span>Excellent</span><b>'+rows.filter(function(r){return r.rating==='Excellent';}).length+'</b></div><div style="--ac:#dc2626"><span>Critical / NI</span><b>'+rows.filter(function(r){return /Critical|Need/.test(r.rating);}).length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+rows.filter(function(r){return !r.validasi;}).length+'</b></div><div style="--ac:#0891b2"><span>Total temuan</span><b>'+rows.reduce(function(a,r){return a+((+r.totalDinilai||0)-(+r.totalPass||0));},0)+'</b></div></div>';
+function renderVisits(){var rows=(S.visits||[]).filter(function(r){return S.visitMode==='history'?r.validasi==='Y':r.validasi!=='Y';});$('visitCount').textContent='('+rows.length+' visit)';var avg=rows.length?Math.round(rows.reduce(function(a,r){return a+(+r.finalScore||0);},0)/rows.length):null;
+  $('visitMini').innerHTML='<div class="mini"><div style="--ac:#7c3aed"><span>Visit</span><b>'+rows.length+'</b></div><div style="--ac:#16a34a"><span>Rata-rata skor</span><b>'+(avg==null?'–':avg+'%')+'</b></div><div style="--ac:#059669"><span>Excellent</span><b>'+rows.filter(function(r){return r.rating==='Excellent';}).length+'</b></div><div style="--ac:#dc2626"><span>Critical / NI</span><b>'+rows.filter(function(r){return /Critical|Need/.test(r.rating);}).length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+rows.filter(function(r){return r.validasi!=='Y';}).length+'</b></div><div style="--ac:#0891b2"><span>Total temuan</span><b>'+rows.reduce(function(a,r){return a+((+r.totalDinilai||0)-(+r.totalPass||0));},0)+'</b></div></div>';
   var h='<table><thead><tr><th>Tanggal</th><th>Wk</th><th>Toko</th><th>Leader</th><th>Evaluator</th><th>Tipe</th>'+seksiList().map(function(s){return '<th class="visit-seksi-head" title="'+esc(s.kode+' - '+s.nama)+'"><b>'+esc(s.kode)+'</b><small>'+esc(visitSeksiSingkat(s))+'</small></th>';}).join('')+'<th>Final</th><th>Rating</th><th>Validasi</th><th></th></tr></thead><tbody>';
-  rows.forEach(function(r,i){var realIndex=S.visits.indexOf(r);var canDel=!r.validasi||isMaster();h+='<tr><td style="white-space:nowrap">'+(isMaster()&&!r.validasi?'<input type="checkbox" class="dco-visit-pick" value="'+esc(r.id)+'" onchange="dcoUpdateVisitSelection()"> ':'')+fmtTgl(r.tanggal)+'</td><td>'+r.minggu+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(r.leader)+'</td><td>'+esc(r.evaluator)+'</td><td>'+esc(r.tipe)+'</td>'+seksiList().map(function(s){var x=r.skor[s.kode];return '<td>'+(x&&x.score!=null?sc(Math.round(x.score)):'–')+'</td>';}).join('')+'<td>'+sc(Math.round(+r.finalScore))+'</td><td>'+bdg(r.rating)+'</td><td>'+(r.validasi?'<span class="ok">✔ '+esc(r.validasiOleh)+'</span>':'<span class="mu">belum</span>')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="openVisit('+realIndex+',true)">Lihat</button> '+(r.validasi&&isMaster()?'<button class="btn s" onclick="validationUndo(\'VISIT\',\''+esc(r.id)+'\',\'visit\')">↶ Batal validasi</button> ':'')+(canDel?'<button class="btn s" onclick="openVisit('+realIndex+')">Edit</button> <button class="btn s r" onclick="hapusVisit(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
+  rows.forEach(function(r,i){var realIndex=S.visits.indexOf(r);var canDel=r.validasi!=='Y'||isMaster();h+='<tr><td style="white-space:nowrap">'+(isMaster()&&r.validasi!=='Y'?'<input type="checkbox" class="dco-visit-pick" value="'+esc(r.id)+'" onchange="dcoUpdateVisitSelection()"> ':'')+fmtTgl(r.tanggal)+'</td><td>'+r.minggu+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(r.leader)+'</td><td>'+esc(r.evaluator)+'</td><td>'+esc(r.tipe)+'</td>'+seksiList().map(function(s){var x=r.skor[s.kode];return '<td>'+(x&&x.score!=null?sc(Math.round(x.score)):'–')+'</td>';}).join('')+'<td>'+sc(Math.round(+r.finalScore))+'</td><td>'+bdg(r.rating)+'</td><td>'+(r.validasi==='Y'?'<span class="ok">✔ '+esc(r.validasiOleh)+'</span>':'<span class="mu">belum</span>')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="openVisit('+realIndex+',true)">Lihat</button> '+(r.validasi==='Y'&&isMaster()?'<button class="btn s" onclick="validationUndo(\'VISIT\',\''+esc(r.id)+'\',\'visit\')">↶ Batal validasi</button> ':'')+(canDel?'<button class="btn s" onclick="openVisit('+realIndex+')">Edit</button> <button class="btn s r" onclick="hapusVisit(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
   if(!rows.length)h+='<tr><td colspan="15" class="empty">Belum ada visit pada periode ini</td></tr>';$('visitTbl').innerHTML=h+'</tbody></table>';}
 function hapusVisit(id){if(!confirm('Hapus data visit ini beserta fotonya?'))return;call('visitHapus',{id:id}).then(function(){toast('Visit dihapus');refresh();});}
 function openVisit(i,view){var r=i!=null?S.visits[i]:{tanggal:S.meta.today,toko:'',leader:'',evaluator:S.me.nama,tipe:'Offline Visit',jawaban:{},catatan:{},foto:{},issues:'',updateTemuan:{},keterangan:''};S.vis=JSON.parse(JSON.stringify(r));S.vis._view=!!view;renderVisit();$('mVisit').classList.add('on');}
@@ -1506,7 +1590,7 @@ function loadIssues(){
 }
 function renderIssues(){var rows=S.issues||[],today=S.meta.today,pending=rows.filter(function(x){return x.status!=='Dibatalkan'&&(x.status!=='Selesai'||x.validasi!=='Y');}),over=rows.filter(function(x){return x.dueDate&&x.dueDate<today&&x.status!=='Selesai'&&x.status!=='Dibatalkan';});
  $('issueMini').innerHTML='<div class="v6-overview" style="margin-bottom:12px">'+v6Stat('Issue ditampilkan',rows.length,'#6366f1')+v6Stat('Masih terbuka',pending.length,'#f59e0b')+v6Stat('Overdue',over.length,'#dc2626')+v6Stat('Selesai',rows.filter(function(x){return x.status==='Selesai';}).length,'#10b981')+'</div>';
- var h='<table><thead><tr><th>Visit / Tgl</th><th>Toko</th><th>Point</th><th>Temuan / Action</th><th>PIC</th><th>Due date</th><th>Prioritas</th><th>Status</th><th>Validasi</th>'+(isMaster()?'<th>Pilih</th>':'')+'<th>Aksi</th></tr></thead><tbody>';
+ var h='<table><thead><tr><th>Visit / Tgl</th><th>Toko</th><th>Point</th><th>Temuan / Action</th><th>PIC</th><th>Due date</th><th>Prioritas</th><th>Status</th><th>Validasi</th>'+'<th>Aksi</th></tr></thead><tbody>';
  rows.slice(0,200).forEach(function(x,i){h+='<tr><td><b>'+esc(x.visitId)+'</b><div class="mu">'+fmtTgl(x.tanggal)+'</div></td><td>'+esc(x.toko)+'</td><td>'+esc(x.pointId||'Umum')+'</td><td style="min-width:270px"><b>'+esc(x.issue)+'</b><div class="mu">'+esc(x.action||'Belum ada action')+'</div>'+thumbs([x.fotoId],32)+'</td><td>'+esc(x.pic||'—')+'</td><td class="'+(x.dueDate&&x.dueDate<today&&x.status!=='Selesai'?'late':'')+'">'+fmtTgl(x.dueDate)+'</td><td>'+bdg(x.prioritas)+'</td><td>'+bdg(x.status)+'</td><td>'+(x.validasi==='Y'?pill('Valid','g'):x.status==='Selesai'?pill('Menunggu Master','y'):pill('Belum','n'))+'</td><td><button class="btn s o" onclick="editVisitIssue('+i+')">Update</button>'+(isMaster()&&x.status==='Selesai'&&x.validasi!=='Y'?'<button class="btn s g" onclick="issueValidate('+i+')">✔ Validasi</button>':'')+(x.validasi==='Y'&&canUndoValidation(x,'VISIT_ISSUE')?'<button class="btn s" onclick="validationUndo(\'VISIT_ISSUE\',\''+esc(x.id)+'\',\'issue\')">↶ Batal validasi</button>':'')+'</td></tr>';});
  if(rows.length>200)h+='<tr><td colspan="10" class="mu">Menampilkan 200 issue pertama; gunakan filter untuk mempersempit, atau export semua CSV.</td></tr>';
  if(!rows.length)h+='<tr><td colspan="10" class="empty">Belum ada issue yang sesuai filter.</td></tr>';
@@ -3714,14 +3798,21 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
   window.dcoApproveSelectedVisits=async function(){if(!isMaster())return toast('Hanya Master yang dapat melakukan validasi massal',true);var ids=Array.from(document.querySelectorAll('.dco-visit-pick:checked')).map(function(x){return x.value;});if(!ids.length)return toast('Pilih minimal satu visit',true);if(!confirm('Setujui '+ids.length+' visit terpilih?'))return;try{var result=await call('bulk',{type:'VISIT',ids:ids,op:'validasi'},true);toast(result.jumlah+' visit tervalidasi','ok');S.visitMode='pending';await refresh(true);}catch(e){toast(e.message||String(e),true);}};
   // Row filters preserve source objects and database records.
   var oldRenderList=renderList;
-  renderList=function(t){if(t!=='MASALAH')return oldRenderList.apply(this,arguments);var original=S.masalahAllRows||S.rows,mode=S.masalahMode||'submit';S.masalahAllRows=original;S.rows=original.filter(function(x){return mode==='history'?!!x.validasi:!x.validasi;});oldRenderList.apply(this,arguments);var panel=$('listMini');if(panel&&!$('dcoMsTabs')){panel.insertAdjacentHTML('afterbegin','<div class="tabs dco-subnav" id="dcoMsTabs"><button id="dcoMsSubmit" onclick="dcoMasalahTab(\'submit\')">Submit / Belum Divalidasi</button><button id="dcoMsHistory" onclick="dcoMasalahTab(\'history\')">Riwayat Tervalidasi</button></div>');}['dcoMsSubmit','dcoMsHistory'].forEach(function(id){if($(id))$(id).classList.toggle('on',id===(mode==='history'?'dcoMsHistory':'dcoMsSubmit'));});};
+  renderList=function(t){if(t!=='MASALAH')return oldRenderList.apply(this,arguments);var original=S.masalahAllRows||S.rows,mode=S.masalahMode||'submit';S.masalahAllRows=original;S.rows=original.filter(function(x){return mode==='history'?x.validasi==='Y':x.validasi!=='Y';});oldRenderList.apply(this,arguments);var panel=$('listMini');if(panel&&!$('dcoMsTabs')){panel.insertAdjacentHTML('afterbegin','<div class="tabs dco-subnav" id="dcoMsTabs"><button id="dcoMsSubmit" onclick="dcoMasalahTab(\'submit\')">Submit / Belum Divalidasi</button><button id="dcoMsHistory" onclick="dcoMasalahTab(\'history\')">Riwayat Tervalidasi</button></div>');}['dcoMsSubmit','dcoMsHistory'].forEach(function(id){if($(id))$(id).classList.toggle('on',id===(mode==='history'?'dcoMsHistory':'dcoMsSubmit'));});};
   window.dcoMasalahTab=function(mode){S.masalahMode=mode;S.sel={};S.rows=S.masalahAllRows||S.rows;renderList('MASALAH');};
   var oldBulk=bulk;
   bulk=function(op,ids,value){if(op==='validasi'&&!isMaster())return toast('Validasi massal khusus Master (Manager)',true);return oldBulk.apply(this,arguments);};
   var oldEditIssue=editVisitIssue;
   editVisitIssue=function(i){oldEditIssue.apply(this,arguments);var item=S.issues&&S.issues[i];if(!item)return;var section=$('gBody');if(!section)return;var ids=[];[item.fotoId,item.fotoAfter].forEach(function(value){String(value||'').split(/[|,]/).forEach(function(v){if(validId(v.trim())&&!ids.includes(v.trim()))ids.push(v.trim());});});section.insertAdjacentHTML('beforeend','<div class="full"><span class="lbl">Foto bukti yang sudah diunggah · langsung terlihat oleh validator</span><div class="dco-inline-gallery">'+(ids.length?thumbs(ids,108):'<span class="mu">Belum ada bukti foto</span>')+'</div><small class="mu">Klik foto untuk memperbesar. Bukti lama tidak dihapus oleh upload baru.</small></div>');};
   var oldRenderIssues=renderIssues;
-  renderIssues=function(){oldRenderIssues.apply(this,arguments);var top=$('issueMini');if(top&&isMaster()&&S.issueMode!=='history'&&!$('dcoIssueBulk')){top.insertAdjacentHTML('afterend','<div id="dcoIssueBulk" class="dco-control-bar"><label><input type="checkbox" onchange="dcoPickAllIssues(this.checked)"> Pilih semua issue selesai yang tampil</label><button class="btn s g" onclick="dcoApproveIssues()">✔ Validasi issue terpilih</button><span id="dcoIssueNum" class="mu"></span></div>');var rows=$('issueTbl').querySelectorAll('tbody tr');rows.forEach(function(tr,i){var item=S.issues[i];if(item&&item.status==='Selesai'&&item.validasi!=='Y'){var td=tr.querySelector('td');if(td){var check=document.createElement('input');check.type='checkbox';check.className='dco-issue-pick';check.value=item.id;check.onchange=dcoIssueCount;td.prepend(check);}}});}};
+  renderIssues=function(){
+    oldRenderIssues.apply(this,arguments);
+    var existing=$('dcoIssueBulk');if(existing)existing.remove();
+    if(!isMaster()||S.issueMode==='history')return;
+    var top=$('issueMini');if(!top)return;
+    top.insertAdjacentHTML('afterend','<div id="dcoIssueBulk" class="dco-control-bar"><label class="dco-select-all"><input type="checkbox" onchange="dcoPickAllIssues(this.checked)"> Pilih semua issue selesai yang tampil</label><button class="btn s g" onclick="dcoApproveIssues()">✔ Validasi issue terpilih</button><span id="dcoIssueNum" class="mu"></span></div>');
+    $('issueTbl').querySelectorAll('tbody tr').forEach(function(tr,i){var item=S.issues&&S.issues[i];if(!item||item.status!=='Selesai'||item.validasi==='Y')return;var td=tr.querySelector('td');if(!td)return;var check=document.createElement('input');check.type='checkbox';check.className='dco-issue-pick';check.value=item.id;check.setAttribute('aria-label','Pilih issue '+item.id);check.onchange=dcoIssueCount;td.prepend(check);});
+  };
   window.dcoIssueCount=function(){if($('dcoIssueNum'))$('dcoIssueNum').textContent=document.querySelectorAll('.dco-issue-pick:checked').length+' issue dipilih';};
   window.dcoPickAllIssues=function(on){document.querySelectorAll('.dco-issue-pick').forEach(function(c){c.checked=on;});dcoIssueCount();};
   window.dcoApproveIssues=async function(){if(!isMaster())return toast('Khusus Master',true);var ids=Array.from(document.querySelectorAll('.dco-issue-pick:checked')).map(function(c){return c.value;});if(!ids.length)return toast('Pilih issue berstatus Selesai',true);if(!confirm('Validasi '+ids.length+' penyelesaian issue?'))return;try{var r=await call('bulk',{type:'VISIT_ISSUE',ids:ids,op:'validasi'},true);toast(r.jumlah+' issue masuk Riwayat','ok');loadIssues();}catch(e){toast(e.message||String(e),true);}};
@@ -3733,6 +3824,22 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
   // Report functions are scoped in their own IIFE. Never read an unexported global.
   var oldHistory=window.prRenderHistory;
   if(typeof oldHistory==='function')window.prRenderHistory=function(){return oldHistory.apply(this,arguments);};
+})();
+</script>
+<script id="dco-v29-checklist-a11y">
+(function(){
+  function upgrade(){
+    var root=document.getElementById('ckIsi');if(!root)return;
+    root.querySelectorAll('.ckrow').forEach(function(row){
+      var box=row.querySelector('.cb'),title=row.querySelector('.t');if(!box)return;
+      box.setAttribute('role','checkbox');box.setAttribute('tabindex','0');
+      box.setAttribute('aria-checked',row.classList.contains('done')?'true':'false');
+      box.setAttribute('aria-label',(title?title.textContent:'Checklist')+' — '+(row.classList.contains('done')?'Selesai':'Belum selesai'));
+      if(!box.dataset.dcoKeyboard){box.dataset.dcoKeyboard='1';box.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();box.click();}});}
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+  function mount(){var root=document.getElementById('ckIsi');if(!root)return;var scheduled=false;new MutationObserver(function(){if(scheduled)return;scheduled=true;requestAnimationFrame(function(){scheduled=false;upgrade();});}).observe(root,{childList:true,subtree:true});upgrade();}
 })();
 </script>
 </body>
