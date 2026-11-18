@@ -726,7 +726,7 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 .visit-signal-v22 .btn{margin-left:auto}
 #visitTbl tr.visit-just-saved td{background:#dcfce7!important;transition:background .4s}
 @media(max-width:500px){.visit-tools-v22 .btn{flex:1 1 auto}.visit-tools-v22 small{flex-basis:100%}.visit-signal-v22 .btn{margin-left:0}}
-</style>
+.pr-savebar{position:sticky;bottom:0;background:var(--card,#fff);z-index:5;padding:12px;border-top:1px solid #dce3ee}.pr-history-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}#prHistoryFilters .pr-toolbar{grid-template-columns:repeat(auto-fit,minmax(175px,1fr))}#prHistory .tbl{overflow-x:auto}#prHistory td{vertical-align:middle}#prHistory button{margin:2px}.pr-message{line-height:1.5}</style>
 
 <style id="dco-v28-mobile-visiting-layout">
 /* DCO v28: native iOS date control may exceed its CSS grid track's intrinsic width. */
@@ -823,7 +823,7 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 
     <section id="pPeriod" class="hid">
       <div class="card"><h3>📊 Weekly & Monthly Reporting</h3>
-        <p class="mu">Form input 12 toko · data dikirim ke Supabase · validasi SPV Area · foto lama tidak dimigrasikan.</p>
+        <p class="mu">Input laporan Weekly / Monthly per toko, lihat semua riwayat dan status validasi, serta lampirkan bukti foto.</p>
         <div class="pr-toolbar">
           <div><label>Jenis laporan</label><select id="prType" onchange="loadPeriodReports()">
             <option value="WEEKLY_SALES">Weekly Sales Report</option><option value="WEEKLY_GENSET">Weekly Genset Report</option>
@@ -836,7 +836,18 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
       </div>
       <div class="tabs dco-subnav" id="dcoPeriodTabs"><button class="on" id="dcoPeriodFormBtn" onclick="dcoPeriodView('form')">Isi / Update Laporan</button><button id="dcoPeriodHistoryBtn" onclick="dcoPeriodView('history')">Cari Riwayat Laporan</button></div><div id="prContent"><div class="skel"></div></div>
       <div id="prMatrix"></div>
-      <div id="prHistory"></div>
+      <div id="prHistoryFilters" class="card hid" style="padding:12px">
+        <div class="pr-toolbar">
+          <div><label>Jenis laporan</label><select id="prHistType" onchange="loadPeriodHistory()"><option value="">Semua laporan</option><option value="WEEKLY_SALES">Weekly Sales</option><option value="WEEKLY_GENSET">Weekly Genset</option><option value="MONTHLY_SALES">Monthly Sales</option><option value="MONTHLY_APAR">Monthly APAR</option></select></div>
+          <div class="mgr"><label>Toko</label><select id="prHistStore" onchange="loadPeriodHistory()"><option value="SEMUA">Semua toko</option></select></div>
+          <div><label>Dari periode</label><input type="date" id="prHistFrom" onchange="loadPeriodHistory()"></div>
+          <div><label>Sampai periode</label><input type="date" id="prHistTo" onchange="loadPeriodHistory()"></div>
+          <div><label>Status validasi</label><select id="prHistStatus" onchange="prRenderHistory()"><option value="">Semua status</option><option value="Pending">Menunggu</option><option value="Rejected">Perlu revisi</option><option value="Approved">Tervalidasi</option></select></div>
+          <div><label>Cari laporan</label><input id="prHistSearch" placeholder="Toko, pengisi, periode..." oninput="prRenderHistory()"></div>
+        </div>
+        <div class="row" style="margin-top:8px"><button class="btn s" onclick="prHistoryReset()">↻ Semua periode</button><button class="btn s p" onclick="loadPeriodHistory()">Cari Riwayat</button></div>
+      </div>
+      <div id="prHistory" class="hid"></div>
     </section>
     <section id="pList" class="hid"><div id="listMini"></div><div class="row" style="margin-bottom:8px;align-items:center"><div style="flex:1"><b id="listTitle" style="font-size:14px"></b> <span class="mu" id="listCount"></span></div><div style="flex:0"><button class="btn g" id="btnAdd" onclick="openForm()">+ Tambah</button></div><div style="flex:0"><button class="btn" onclick="exportCsv(false)">⬇ CSV</button></div></div>
       <div class="bulk" id="bulk"><b id="bulkN"></b>&nbsp;dipilih <button class="btn s g mgr" onclick="bulk('validasi')">✔ Validasi</button><button class="btn s mgr" onclick="bulk('batalValidasi')">Batal validasi</button><span id="bulkStWrap"><select id="bulkStatus" style="width:auto;padding:4px 8px"><option value="">Set status…</option></select> <button class="btn s" onclick="bulkStatus()">Terapkan</button></span><button class="btn s" onclick="exportCsv(true)">⬇ Terpilih</button><button class="btn s r" onclick="bulk('hapus')">🗑 Hapus</button><button class="btn s" onclick="selAll(false)">Batal</button></div>
@@ -988,7 +999,7 @@ NAV.splice(3,0,['period','Weekly & Monthly Report','<rect x="3" y="4" width="18"
 /* Issue Visit is now accessed within Visiting Check Point Control only. */
 NAV.splice(NAV.findIndex(function(n){return n[0]==='rutin';}),0,['campaign','Campaign Management','<circle cx="12" cy="12" r="9"/><path d="M4 12h16M12 4v16"/>','','#4f46e5,#a855f7']);
 var SHORT={campaign:'Campaign',period:'Reports',issues:'Issue Visit',dash:'Dashboard',ceklis:'Assignment',dso:'Daily Ops',MASALAH:'Masalah',jadwal:'Jadwal',visit:'Visiting',rutin:'Tugas',set:'Pengaturan'};
-var TITLE={};NAV.forEach(function(n){TITLE[n[0]]=n[1];});var CLAMP=/judul|masalah|akar|solusi|catatan|update|deskripsi|agenda/;
+var TITLE={};NAV.forEach(function(n){TITLE[n[0]]=n[1];});TITLE.issues='Issue Visit'; /* Internal submodule under Visiting; not a main navigation item. */ var CLAMP=/judul|masalah|akar|solusi|catatan|update|deskripsi|agenda/;
 function cfg(){return S.meta.cfg;}function formById(id){return cfg().dsoForms.filter(function(f){return f.id===id;})[0]||{nama:id};}
 
 // ===== AUTH / BOOT =====
@@ -1495,7 +1506,7 @@ function loadIssues(){
 }
 function renderIssues(){var rows=S.issues||[],today=S.meta.today,pending=rows.filter(function(x){return x.status!=='Dibatalkan'&&(x.status!=='Selesai'||x.validasi!=='Y');}),over=rows.filter(function(x){return x.dueDate&&x.dueDate<today&&x.status!=='Selesai'&&x.status!=='Dibatalkan';});
  $('issueMini').innerHTML='<div class="v6-overview" style="margin-bottom:12px">'+v6Stat('Issue ditampilkan',rows.length,'#6366f1')+v6Stat('Masih terbuka',pending.length,'#f59e0b')+v6Stat('Overdue',over.length,'#dc2626')+v6Stat('Selesai',rows.filter(function(x){return x.status==='Selesai';}).length,'#10b981')+'</div>';
- var h='<table><thead><tr><th>Visit / Tgl</th><th>Toko</th><th>Point</th><th>Temuan / Action</th><th>PIC</th><th>Due date</th><th>Prioritas</th><th>Status</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
+ var h='<table><thead><tr><th>Visit / Tgl</th><th>Toko</th><th>Point</th><th>Temuan / Action</th><th>PIC</th><th>Due date</th><th>Prioritas</th><th>Status</th><th>Validasi</th>'+(isMaster()?'<th>Pilih</th>':'')+'<th>Aksi</th></tr></thead><tbody>';
  rows.slice(0,200).forEach(function(x,i){h+='<tr><td><b>'+esc(x.visitId)+'</b><div class="mu">'+fmtTgl(x.tanggal)+'</div></td><td>'+esc(x.toko)+'</td><td>'+esc(x.pointId||'Umum')+'</td><td style="min-width:270px"><b>'+esc(x.issue)+'</b><div class="mu">'+esc(x.action||'Belum ada action')+'</div>'+thumbs([x.fotoId],32)+'</td><td>'+esc(x.pic||'—')+'</td><td class="'+(x.dueDate&&x.dueDate<today&&x.status!=='Selesai'?'late':'')+'">'+fmtTgl(x.dueDate)+'</td><td>'+bdg(x.prioritas)+'</td><td>'+bdg(x.status)+'</td><td>'+(x.validasi==='Y'?pill('Valid','g'):x.status==='Selesai'?pill('Menunggu Master','y'):pill('Belum','n'))+'</td><td><button class="btn s o" onclick="editVisitIssue('+i+')">Update</button>'+(isMaster()&&x.status==='Selesai'&&x.validasi!=='Y'?'<button class="btn s g" onclick="issueValidate('+i+')">✔ Validasi</button>':'')+(x.validasi==='Y'&&canUndoValidation(x,'VISIT_ISSUE')?'<button class="btn s" onclick="validationUndo(\'VISIT_ISSUE\',\''+esc(x.id)+'\',\'issue\')">↶ Batal validasi</button>':'')+'</td></tr>';});
  if(rows.length>200)h+='<tr><td colspan="10" class="mu">Menampilkan 200 issue pertama; gunakan filter untuk mempersempit, atau export semua CSV.</td></tr>';
  if(!rows.length)h+='<tr><td colspan="10" class="empty">Belum ada issue yang sesuai filter.</td></tr>';
@@ -2481,14 +2492,23 @@ renderIssues=function(){
  function prStart(){let d=prDate();return prType().startsWith('WEEKLY')?weekStart(d):d.slice(0,7)+'-01';}
  function prState(){if(!S.periodDraft)S.periodDraft={payload:{},evidence:{}};return S.periodDraft;}
  function prLocked(){return !!(S.periodCurrent&&S.periodCurrent.validation_status==='Approved'&&!isMaster());}
- function prField(key,value){if(prLocked())return;prState().payload[key]=String(value);if(key==='has_genset'&&$('prContent'))$('prContent').innerHTML=prForm();}
+ function prDraftKey(){return 'dco-period-draft-v28:'+String(S.me&&S.me.username||'')+':'+prType()+':'+prStore()+':'+prStart();}
+ function prDraftSave(){try{localStorage.setItem(prDraftKey(),JSON.stringify({payload:prState().payload,updated:Date.now()}));}catch(e){/* private browsing or quota */}}
+ function prDraftClear(){try{localStorage.removeItem(prDraftKey());}catch(e){}}
+ function prDraftRecover(found){if(found&&found.validation_status==='Approved')return false;
+  try{const raw=localStorage.getItem(prDraftKey());if(!raw)return false;const d=JSON.parse(raw);if(!d||!d.payload)return false;
+   const saved=found&&found.submitted_at?Date.parse(found.submitted_at):0;
+   if(found&&saved&&d.updated<=saved)return false;
+   prState().payload=Object.assign({},found&&found.payload||{},d.payload);return true;
+  }catch(e){return false;}}
+ function prField(key,value){if(prLocked())return;prState().payload[key]=String(value);prDraftSave();if(key==='has_genset'&&$('prContent'))$('prContent').innerHTML=prForm();}
  function prOption(value,label,selected){return '<option value="'+esc(value)+'" '+(value===selected?'selected':'')+'>'+esc(label)+'</option>';}
  function prInput(id,label,kind,required,choices,span,help){
   const v=String(prState().payload[id]||''),disable=prLocked()?'disabled':'',attr='data-pr-field="'+esc(id)+'" '+disable;
   let ctrl='';
   if(kind==='select')ctrl='<select '+attr+' onchange="prField(this.dataset.prField,this.value)">'+choices.map(x=>prOption(x[0],x[1],v)).join('')+'</select>';
-  else if(kind==='textarea')ctrl='<textarea rows="3" '+attr+' placeholder="Tulis hasil atau NIHIL" onchange="prField(this.dataset.prField,this.value)">'+esc(v)+'</textarea>';
-  else ctrl='<input type="'+kind+'" '+attr+' value="'+esc(v)+'" onchange="prField(this.dataset.prField,this.value)">';
+  else if(kind==='textarea')ctrl='<textarea rows="3" '+attr+' placeholder="Tulis hasil atau NIHIL" oninput="prField(this.dataset.prField,this.value)">'+esc(v)+'</textarea>';
+  else ctrl='<input type="'+kind+'" '+attr+' value="'+esc(v)+'" oninput="prField(this.dataset.prField,this.value)">';
   return '<label class="pr-field '+(span?'pr-wide':'')+'"><span>'+esc(label)+(required?' <em>*</em>':'')+'</span>'+ctrl+(help?'<small>'+esc(help)+'</small>':'')+'</label>';
  }
  function prPhoto(key,title){return '<div class="pr-photo"><div class="pr-photo-caption">'+esc(title||'Bukti foto')+'</div>'+evidencePanel('period',key,true)+'</div>';}
@@ -2518,22 +2538,24 @@ renderIssues=function(){
     html+=prInput('expired_date','Tanggal expired APAR','date',true,null,false);
     html+='<div class="pr-wide">'+prPhoto('attachment','Lampiran bukti APAR (wajib)')+'</div>';
   }
-  html+='</div><div class="pr-savebar"><span id="prMessage" role="status">Foto tersimpan setelah laporan dikirim. Tidak perlu migrasi foto lama.</span>'+
+  html+='</div><div class="pr-savebar"><span id="prMessage" role="status">Isian teks disimpan sebagai draft di browser ini. Foto baru dikaitkan setelah laporan dikirim.</span>'+
     (lock?'':'<button type="button" id="prSubmitBtn" class="btn p" onclick="submitPeriodReport()">📤 '+(rec?'Update laporan':'Kirim laporan')+'</button>')+'</div>';
   return html;
  }
  function prStatus(s){const cls=s==='Selesai'?'pr-done':s==='Menunggu Validasi'?'pr-pending':s==='Terlewat'?'pr-late':s==='Perlu Revisi'?'pr-revise':'';return '<span class="pr-badge '+cls+'">'+esc(s||'—')+'</span>';}
+ function prVisibleHistoryRows(){const status=$('prHistStatus')&&$('prHistStatus').value||'',query=String($('prHistSearch')&&$('prHistSearch').value||'').trim().toLowerCase();return (S.periodHistoryRows||[]).filter(r=>(!status||r.validation_status===status)&&(!query||[r.toko,r.report_type,r.period_key,r.submitted_by,r.validation_note].some(v=>String(v||'').toLowerCase().includes(query))));}
  function prRenderHistory(){
-  const rows=S.periodRows||[],total=S.periodTotal||rows.length;const wrap=$('prHistory');if(!wrap)return;
+  const allRows=S.periodHistoryRows||[],status=$('prHistStatus')&&$('prHistStatus').value||'',search=String($('prHistSearch')&&$('prHistSearch').value||'').trim().toLowerCase();const rows=allRows.filter(r=>(!status||r.validation_status===status)&&(!search||[r.toko,r.report_type,r.period_key,r.submitted_by,r.validation_note].some(v=>String(v||'').toLowerCase().includes(search))));const total=S.periodHistoryTotal||allRows.length;const wrap=$('prHistory');if(!wrap)return;
   const cs=['WEEKLY_SALES','WEEKLY_GENSET','MONTHLY_SALES','MONTHLY_APAR'];
-  let html='<div class="card"><div class="pr-history-header"><h3>Riwayat & validasi</h3><button class="btn s" onclick="exportPeriodCsv()">↓ Export CSV Lengkap</button></div><p class="mu">'+total+' laporan, '+rows.length+' tampil. Data mengikuti hak akses pengguna.</p><div class="tbl"><table><thead><tr><th>Periode</th><th>Toko</th><th>Form</th><th>Dikirim</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
+  let html='<div class="card"><div class="pr-history-header"><h3>Riwayat & validasi</h3><button class="btn s" onclick="exportPeriodCsv()">↓ Export CSV Lengkap</button></div><p class="mu">'+total+' laporan, '+rows.length+' tampil. Data mengikuti hak akses pengguna.</p><div class="tbl"><table><thead><tr><th>Periode</th><th>Toko</th><th>Form</th><th>Dikirim</th><th>Validasi</th>'+(isMaster()?'<th>Pilih</th>':'')+'<th>Aksi</th></tr></thead><tbody>';
   rows.forEach((r,i)=>{
     const st=r.validation_status==='Approved'?'Selesai':r.validation_status==='Rejected'?'Perlu Revisi':'Menunggu Validasi';
-    html+='<tr><td>'+esc(r.period_key||'')+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td>'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td>'+prStatus(st)+'</td><td><button class="btn s" onclick="editPeriodRow('+i+')">Buka</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button class="btn s g" onclick="validatePeriodRow('+i+',\'Approved\')">✔ Approve</button><button class="btn s r" onclick="validatePeriodRow('+i+',\'Rejected\')">✕ Revisi</button>':'')+(r.validation_status!=='Pending'&&canUndoValidation(r,'PERIOD')?'<button class="btn s" onclick="validationUndo(\'PERIOD\',\''+esc(r.id)+'\',\'period\')">↶ Batal validasi</button>':'')+'</td></tr>';
+    html+='<tr><td>'+esc(r.period_key||'')+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td>'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td>'+prStatus(st)+'</td>'+(isMaster()?'<td>'+(r.validation_status==='Pending'?'<input type="checkbox" class="pr-pick" value="'+esc(r.id)+'" aria-label="Pilih laporan">':'—')+'</td>':'')+'<td><button class="btn s" onclick="editPeriodRow('+i+')">Buka</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button class="btn s g" onclick="validatePeriodRow('+i+',\'Approved\')">✔ Approve</button><button class="btn s r" onclick="validatePeriodRow('+i+',\'Rejected\')">✕ Revisi</button>':'')+(r.validation_status!=='Pending'&&canUndoValidation(r,'PERIOD')?'<button class="btn s" onclick="validationUndo(\'PERIOD\',\''+esc(r.id)+'\',\'period\')">↶ Batal validasi</button>':'')+'</td></tr>';
   });
-  if(!rows.length)html+='<tr><td colspan="6" class="empty">Belum ada laporan yang dikirim pada filter ini</td></tr>';
+  if(!rows.length)html+='<tr><td colspan="'+(isMaster()?7:6)+'" class="empty">Belum ada laporan yang dikirim pada filter ini</td></tr>';
   html+='</tbody></table></div>';
-  if(S.periodHasMore)html+='<button type="button" class="btn" onclick="periodNextPage()">Muat '+Math.min(100,total-rows.length)+' data berikutnya</button>';
+  if(isMaster())html+='<div class="row" style="margin:10px 0"><label><input type="checkbox" onchange="document.querySelectorAll(\'.pr-pick\').forEach(x=>x.checked=this.checked)"> Pilih semua pending yang tampil</label><button class="btn s g" onclick="prApproveSelected()">✔ Validasi terpilih</button></div>';
+  if(S.periodHistoryHasMore)html+='<button type="button" class="btn" onclick="periodNextPage()">Muat '+Math.min(100,total-allRows.length)+' data berikutnya</button>';
   html+='</div>';wrap.innerHTML=html;
  }
  async function loadPeriodReports(){
@@ -2545,24 +2567,49 @@ renderIssues=function(){
     sel.value=S.meta.toko[0]||'SEMUA';
   }
   if(!isMgr())sel.value=S.me.toko;
+  const hStore=$('prHistStore');if(isMgr()&&hStore&&hStore.options.length<=1){hStore.innerHTML='<option value="SEMUA">Semua toko</option>'+S.meta.toko.map(x=>'<option>'+esc(x)+'</option>').join('');hStore.value='SEMUA';}
   const key=prType()+'|'+prStore()+'|'+prStart(),seq=S.periodLoadSeq=(S.periodLoadSeq||0)+1;
   if(S.periodKey!==key){S.periodKey=key;S.periodDraft={payload:{},evidence:{}};S.periodCurrent=null;}
-  if(!S.periodCurrent && (!S.periodRows||!S.periodRows.length))$('prContent').innerHTML='<div class="skel"></div>';
+  if(!S.periodCurrent)$('prContent').innerHTML='<div class="skel"></div>';
   try{
-    const [listing,overview,currentReport]=await Promise.all([
-      call('periodList',Object.assign({type:prType(),toko:prStore(),limit:100,offset:0},histRange()),true),
+    const [overview,currentReport]=await Promise.all([
       call('periodSummary',{date:prDate()},true),
       call('periodList',{type:prType(),toko:prStore(),from:prStart(),to:prStart(),limit:100,offset:0},true),
     ]);
     if(seq!==S.periodLoadSeq)return;
-    S.periodRows=listing.rows||[];S.periodTotal=listing.total||0;S.periodHasMore=listing.hasMore||false;S.periodOverview=overview;
+    S.periodOverview=overview;
     const found=(currentReport.rows||[]).find(r=>r.report_type===prType()&&r.toko===prStore()&&r.period_start===prStart());
     S.periodCurrent=found||null;
     if(found){S.periodDraft={payload:found.payload||{},evidence:found.evidence||{}};}
+    const restored=prDraftRecover(found);
     $('prContent').innerHTML=prForm();
-    prRenderHistory();prRenderMatrix();
+    if(restored&&$('prMessage'))$('prMessage').textContent='Draft input terakhir berhasil dipulihkan dari browser ini. Periksa sebelum submit.';
+    prRenderMatrix();
   }catch(e){if(seq===S.periodLoadSeq){$('prContent').innerHTML='<div class="card pr-message">'+esc(prError(e))+'</div>';
-   $('prHistory').innerHTML='<div class="card mu">Data belum dapat dimuat. Pastikan migrasi SQL 012 telah dijalankan.</div>';}}
+   if($('prHistory'))$('prHistory').innerHTML='<div class="card mu">Riwayat gagal dimuat. Periksa konfigurasi Supabase dan migrasi SQL 012.</div>';}}
+ }
+ async function loadPeriodHistory(){
+  if(!S.meta)return;
+  const seq=S.periodHistorySeq=(S.periodHistorySeq||0)+1;
+  const f=$('prHistFrom').value,to=$('prHistTo').value;
+  if(f&&to&&f>to)return toast('Tanggal awal riwayat lebih besar dari tanggal akhir',true);
+  const h=$('prHistory');if(h)h.innerHTML='<div class="card mu">Memuat riwayat...</div>';
+  try{const result=await call('periodList',{type:$('prHistType').value||null,toko:isMgr()?$('prHistStore').value:'SEMUA',from:f||null,to:to||null,limit:100,offset:0},true);
+   if(seq!==S.periodHistorySeq)return;
+   S.periodHistoryRows=result.rows||[];S.periodHistoryTotal=Number(result.total)||0;S.periodHistoryHasMore=!!result.hasMore;prRenderHistory();
+  }catch(e){if(seq===S.periodHistorySeq&&h)h.innerHTML='<div class="card pr-message">Gagal memuat riwayat: '+esc(prError(e))+'</div>';}
+ }
+ function prHistoryReset(){if($('prHistFrom'))$('prHistFrom').value='';if($('prHistTo'))$('prHistTo').value='';if($('prHistType'))$('prHistType').value='';if($('prHistStore'))$('prHistStore').value='SEMUA';if($('prHistStatus'))$('prHistStatus').value='';if($('prHistSearch'))$('prHistSearch').value='';loadPeriodHistory();}
+ async function prApproveSelected(){if(!isMaster())return toast('Validasi massal hanya untuk Master',true);
+  const ids=[...document.querySelectorAll('.pr-pick:checked')].map(x=>x.value);
+  if(!ids.length)return toast('Pilih laporan pending terlebih dahulu',true);
+  if(!confirm('Validasi '+ids.length+' laporan terpilih?'))return;
+  let good=0,errors=[];
+  for(const id of ids){try{const saved=await call('periodValidate',{id,action:'Approved',note:'Disetujui melalui validasi massal'},true);
+   if(!saved||saved.id!==id||saved.validation_status!=='Approved')throw Error('Respons server tidak sesuai');good++;}
+   catch(e){errors.push(id+': '+prError(e));}}
+  toast(good+' laporan tervalidasi'+(errors.length?' · '+errors.length+' gagal':''),errors.length?true:'ok');await loadPeriodHistory();
+  if(errors.length)alert('Gagal validasi:\n'+errors.slice(0,8).join('\n'));
  }
  function prRenderMatrix(){const o=S.periodOverview||{},a=o.items||[],target=$('prMatrix');if(!target)return;
   const done=a.filter(x=>x.status==='Selesai').length,pending=a.filter(x=>x.status==='Menunggu Validasi').length,
@@ -2576,7 +2623,7 @@ renderIssues=function(){
   }
   target.innerHTML=html;
  }
- function periodJump(type,store){$('prType').value=type;$('prToko').value=store;loadPeriodReports();if($('pPeriod'))$('pPeriod').scrollIntoView({block:'start',behavior:'smooth'});}
+ function periodJump(type,store){$('prType').value=type;$('prToko').value=store;if(typeof dcoPeriodView==='function')dcoPeriodView('form');loadPeriodReports();if($('pPeriod'))$('pPeriod').scrollIntoView({block:'start',behavior:'smooth'});}
  function prValidatePayload(){
   const p=prState().payload,t=prType(),e=prState().evidence,missing=[];
   if(t==='WEEKLY_SALES'||t==='MONTHLY_SALES'){
@@ -2604,37 +2651,37 @@ renderIssues=function(){
        S.periodLoadSeq=(S.periodLoadSeq||0)+1;
        var oldIndex=(S.periodRows||[]).findIndex(x=>x.id===rec.id);
        if(oldIndex>=0)S.periodRows[oldIndex]=rec;else S.periodRows=[rec].concat(S.periodRows||[]);
-       S.periodCurrent=rec;S.periodDraft={payload:rec.payload||{},evidence:rec.evidence||{}};
-       $('prContent').innerHTML=prForm();prRenderHistory();
+       S.periodCurrent=rec;S.periodDraft={payload:rec.payload||{},evidence:rec.evidence||{}};prDraftClear();
+       $('prContent').innerHTML=prForm();if(S.dcoPeriodMode==='history')await loadPeriodHistory();
      }
-     note.textContent='✓ Laporan berhasil diterima server';toast('Laporan tersimpan dan menunggu validasi SPV','ok');
+     note.textContent='✓ Laporan berhasil diterima server';toast('Laporan tersimpan dan menunggu validasi','ok');
      await loadPeriodReports();
    }catch(e){note.textContent='Gagal mengirim: '+prError(e);note.classList.add('late');toast(prError(e),true);}
    finally{if(btn.isConnected){btn.disabled=false;btn.textContent='📤 Kirim laporan';}}
  }
- async function validatePeriodRow(i,action){const r=S.periodRows&&S.periodRows[i];if(!r||!isMgr())return;
+ async function validatePeriodRow(i,action){const r=prVisibleHistoryRows()[i];if(!r||!isMgr())return;
    const note=action==='Rejected'?prompt('Jelaskan koreksi yang diperlukan (wajib):',''):prompt('Catatan validasi (opsional):','');
    if(note===null)return;if(action==='Rejected'&&!String(note).trim())return toast('Catatan perbaikan wajib diisi',true);
-   try{await call('periodValidate',{id:r.id,action,note:note||''},true);toast('Validasi berhasil disimpan','ok');await loadPeriodReports();}
+   try{await call('periodValidate',{id:r.id,action,note:note||''},true);toast('Validasi berhasil disimpan','ok');await loadPeriodHistory();}
    catch(e){toast(prError(e),true);}}
- function editPeriodRow(i){const r=S.periodRows&&S.periodRows[i];if(!r)return;
+ function editPeriodRow(i){const r=prVisibleHistoryRows()[i];if(!r)return;
    $('prType').value=r.report_type;if(isMgr())$('prToko').value=r.toko;
-   $('prDate').value=r.report_date;loadPeriodReports();}
- async function periodNextPage(){const old=S.periodRows||[];try{const r=await call('periodList',Object.assign({type:prType(),toko:prStore(),limit:100,offset:old.length},histRange()),true);
-    S.periodRows=old.concat(r.rows||[]);S.periodTotal=r.total;S.periodHasMore=r.hasMore;prRenderHistory();}
+   $('prDate').value=r.report_date;if(typeof dcoPeriodView==='function')dcoPeriodView('form');loadPeriodReports();}
+ async function periodNextPage(){const old=S.periodHistoryRows||[];try{const r=await call('periodList',{type:$('prHistType').value||null,toko:isMgr()?$('prHistStore').value:'SEMUA',from:$('prHistFrom').value||null,to:$('prHistTo').value||null,limit:100,offset:old.length},true);
+    S.periodHistoryRows=old.concat(r.rows||[]);S.periodHistoryTotal=r.total;S.periodHistoryHasMore=r.hasMore;prRenderHistory();}
    catch(e){toast(prError(e),true);}}
  async function exportPeriodCsv(){
   const q=v=>'"'+String(v===null||v===undefined?'':typeof v==='object'?JSON.stringify(v):v).replace(/"/g,'""')+'"';
   const rows=[];let offset=0,total=0;
-  do{const r=await call('periodList',Object.assign({type:prType(),toko:prStore(),limit:200,offset},histRange()),true);
-    rows.push(...(r.rows||[]));offset+=r.rows.length;total=r.total;
+  do{const r=await call('periodList',{type:$('prHistType').value||null,toko:isMgr()?$('prHistStore').value:'SEMUA',from:$('prHistFrom').value||null,to:$('prHistTo').value||null,limit:200,offset},true);
+    rows.push(...(r.rows||[]));offset+=(r.rows||[]).length;total=r.total;
     if(!r.hasMore)break;if(rows.length>=50000)throw new Error('Data terlalu besar, gunakan rentang tanggal lebih sempit');
    }while(offset<total);
   if(!rows.length)return toast('Belum ada data untuk diexport',true);
   const columns=['id','report_type','toko','period_key','period_start','report_date','payload','evidence','status','validation_status','validation_note','submitted_by','submitted_at','validated_by','validated_at'];
   const csv='\uFEFF'+columns.map(q).join(';')+'\r\n'+rows.map(x=>columns.map(k=>q(x[k])).join(';')).join('\r\n');
   const a=document.createElement('a'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.href=url;a.download='DCO_'+prType()+'_ALL_'+S.meta.today+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);
+  a.href=url;a.download='DCO_REPORT_RIWAYAT_'+S.meta.today+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);
  }
  function prRenderExecutive(rows){const all=(rows&&rows.items)||[];const t=['WEEKLY_SALES','WEEKLY_GENSET','MONTHLY_SALES','MONTHLY_APAR'];
    let html='<div class="exec-metric-grid">';
@@ -2668,7 +2715,7 @@ renderIssues=function(){
  updateEvidencePanel=function(kind,key){oldUpdate.apply(this,arguments);if(kind==='period'&&$('prMessage')){
   $('prMessage').textContent='Foto terunggah ke Storage; klik Kirim laporan untuk mencatat bukti pada report.';}};
  // Export functions for onclick handlers in classic-script generated HTML.
- Object.assign(window,{prField,loadPeriodReports,submitPeriodReport,validatePeriodRow,editPeriodRow,periodNextPage,exportPeriodCsv,periodJump,loadPeriodDashboard,loadPeriodicOverview});
+ Object.assign(window,{__dcoHistoryRowAt:i=>prVisibleHistoryRows()[i],prField,prRenderHistory,loadPeriodReports,loadPeriodHistory,prHistoryReset,prApproveSelected,submitPeriodReport,validatePeriodRow,editPeriodRow,periodNextPage,exportPeriodCsv,periodJump,loadPeriodDashboard,loadPeriodicOverview});
  window.__dcoRenderPeriodDraft=function(){if($('prContent'))$('prContent').innerHTML=prForm();};
 })();
 
@@ -3367,8 +3414,8 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
       localMerge(S.periodRows,id,row);
       if(S.periodCurrent&&S.periodCurrent.id===id)Object.assign(S.periodCurrent,row);
       if(S.tab==='period'){
-        prRenderHistory();
-        if(S.periodCurrent&&S.periodCurrent.id===id){const n=$('prContent');if(n)n.innerHTML=prForm();}
+        if(typeof window.prRenderHistory==='function')window.prRenderHistory();
+        if(S.periodCurrent&&S.periodCurrent.id===id&&typeof window.__dcoRenderPeriodDraft==='function')window.__dcoRenderPeriodDraft();
       }
     }else{
       if(S.tab==='MASALAH' || (S.tab==='ceklis'&&S.ckMode==='riwayat')){
@@ -3526,12 +3573,12 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
     });
   };
   validatePeriodRow=async function(i,action){
-    const r=S.periodRows&&S.periodRows[i];if(!r||!isMgr())return false;
+    const r=window.__dcoHistoryRowAt&&window.__dcoHistoryRowAt(i);if(!r||!isMgr())return false;
     const note=action==='Rejected'?prompt('Jelaskan perbaikan yang diperlukan (wajib):',''):prompt('Catatan validasi (opsional):','');
     if(note===null)return false;if(action==='Rejected'&&!String(note).trim())return toast('Catatan revisi wajib diisi',true);
     return execute('PERIOD',r.id,'periodValidate',{id:r.id,action:action,note:note||''},'Laporan '+action+' tersimpan',function(saved){
       if(!saved||saved.id!==r.id||saved.validation_status!==action)throw new Error('Respons validasi periodik belum sesuai');
-      paint('PERIOD',r.id,saved);
+      paint('PERIOD',r.id,saved);if(typeof window.loadPeriodHistory==='function')window.loadPeriodHistory();
     });
   };
   // Attach a visible and testable request indicator without claiming the DB has finished early.
@@ -3674,17 +3721,18 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
   var oldEditIssue=editVisitIssue;
   editVisitIssue=function(i){oldEditIssue.apply(this,arguments);var item=S.issues&&S.issues[i];if(!item)return;var section=$('gBody');if(!section)return;var ids=[];[item.fotoId,item.fotoAfter].forEach(function(value){String(value||'').split(/[|,]/).forEach(function(v){if(validId(v.trim())&&!ids.includes(v.trim()))ids.push(v.trim());});});section.insertAdjacentHTML('beforeend','<div class="full"><span class="lbl">Foto bukti yang sudah diunggah · langsung terlihat oleh validator</span><div class="dco-inline-gallery">'+(ids.length?thumbs(ids,108):'<span class="mu">Belum ada bukti foto</span>')+'</div><small class="mu">Klik foto untuk memperbesar. Bukti lama tidak dihapus oleh upload baru.</small></div>');};
   var oldRenderIssues=renderIssues;
-  renderIssues=function(){oldRenderIssues.apply(this,arguments);var top=$('issueMini');if(top&&isMaster()&&S.issueMode!=='history'){top.insertAdjacentHTML('afterend','<div id="dcoIssueBulk" class="dco-control-bar"><label><input type="checkbox" onchange="dcoPickAllIssues(this.checked)"> Pilih semua issue selesai yang tampil</label><button class="btn s g" onclick="dcoApproveIssues()">✔ Validasi issue terpilih</button><span id="dcoIssueNum" class="mu"></span></div>');var rows=$('issueTbl').querySelectorAll('tbody tr');rows.forEach(function(tr,i){var item=S.issues[i];if(item&&item.status==='Selesai'&&item.validasi!=='Y'){var td=tr.querySelector('td');if(td){var check=document.createElement('input');check.type='checkbox';check.className='dco-issue-pick';check.value=item.id;check.onchange=dcoIssueCount;td.prepend(check);}}});}};
+  renderIssues=function(){oldRenderIssues.apply(this,arguments);var top=$('issueMini');if(top&&isMaster()&&S.issueMode!=='history'&&!$('dcoIssueBulk')){top.insertAdjacentHTML('afterend','<div id="dcoIssueBulk" class="dco-control-bar"><label><input type="checkbox" onchange="dcoPickAllIssues(this.checked)"> Pilih semua issue selesai yang tampil</label><button class="btn s g" onclick="dcoApproveIssues()">✔ Validasi issue terpilih</button><span id="dcoIssueNum" class="mu"></span></div>');var rows=$('issueTbl').querySelectorAll('tbody tr');rows.forEach(function(tr,i){var item=S.issues[i];if(item&&item.status==='Selesai'&&item.validasi!=='Y'){var td=tr.querySelector('td');if(td){var check=document.createElement('input');check.type='checkbox';check.className='dco-issue-pick';check.value=item.id;check.onchange=dcoIssueCount;td.prepend(check);}}});}};
   window.dcoIssueCount=function(){if($('dcoIssueNum'))$('dcoIssueNum').textContent=document.querySelectorAll('.dco-issue-pick:checked').length+' issue dipilih';};
   window.dcoPickAllIssues=function(on){document.querySelectorAll('.dco-issue-pick').forEach(function(c){c.checked=on;});dcoIssueCount();};
   window.dcoApproveIssues=async function(){if(!isMaster())return toast('Khusus Master',true);var ids=Array.from(document.querySelectorAll('.dco-issue-pick:checked')).map(function(c){return c.value;});if(!ids.length)return toast('Pilih issue berstatus Selesai',true);if(!confirm('Validasi '+ids.length+' penyelesaian issue?'))return;try{var r=await call('bulk',{type:'VISIT_ISSUE',ids:ids,op:'validasi'},true);toast(r.jumlah+' issue masuk Riwayat','ok');loadIssues();}catch(e){toast(e.message||String(e),true);}};
   // Refresh data listing after navigating, keep selected queue.
   var previousGo=go;go=function(t){if(t==='issues'&&$('pIssues')){var nav=document.querySelector('[data-t="issues"]');if(nav)nav.style.display='none';}return previousGo.apply(this,arguments);};
   // Weekly/monthly: make the history filter and form navigation more evident.
-  window.dcoPeriodView=function(mode){S.dcoPeriodMode=mode;var isHistory=mode==='history';if($('prContent'))$('prContent').classList.toggle('hid',isHistory);if($('prMatrix'))$('prMatrix').classList.toggle('hid',isHistory);if($('prHistory'))$('prHistory').classList.toggle('hid',!isHistory);if($('dcoPeriodFormBtn'))$('dcoPeriodFormBtn').classList.toggle('on',!isHistory);if($('dcoPeriodHistoryBtn'))$('dcoPeriodHistoryBtn').classList.toggle('on',isHistory);};
+  window.dcoPeriodView=function(mode){S.dcoPeriodMode=mode;var isHistory=mode==='history';if($('prContent'))$('prContent').classList.toggle('hid',isHistory);if($('prMatrix'))$('prMatrix').classList.toggle('hid',isHistory);if($('prHistory'))$('prHistory').classList.toggle('hid',!isHistory);if($('prHistoryFilters'))$('prHistoryFilters').classList.toggle('hid',!isHistory);if(isHistory&&typeof window.loadPeriodHistory==='function')window.loadPeriodHistory();if($('dcoPeriodFormBtn'))$('dcoPeriodFormBtn').classList.toggle('on',!isHistory);if($('dcoPeriodHistoryBtn'))$('dcoPeriodHistoryBtn').classList.toggle('on',isHistory);};
   window.dcoPeriodSearch=function(value){var t=$('prHistory');if(!t)return;var query=String(value||'').trim().toLowerCase();t.querySelectorAll('tbody tr').forEach(function(tr){tr.style.display=tr.textContent.toLowerCase().includes(query)?'':'none';});};
-  var oldHistory=prRenderHistory;
-  prRenderHistory=function(){oldHistory.apply(this,arguments);var wrap=$('prHistory');if(!wrap)return;var head=wrap.querySelector('.pr-history-header');if(head&&!head.querySelector('.dco-hist-hint'))head.insertAdjacentHTML('afterend','<div class="dco-hist-hint"><label>Cari dalam daftar yang ditampilkan <input type="search" placeholder="Nama toko, periode, jenis laporan, pengisi..." oninput="dcoPeriodSearch(this.value)"></label><p class="mu">Klik Buka untuk melihat detail dan foto bukti. Gunakan filter periode di atas untuk mengambil data sebelumnya.</p></div>');if(typeof dcoPeriodView==='function')dcoPeriodView(S.dcoPeriodMode||'form');};
+  // Report functions are scoped in their own IIFE. Never read an unexported global.
+  var oldHistory=window.prRenderHistory;
+  if(typeof oldHistory==='function')window.prRenderHistory=function(){return oldHistory.apply(this,arguments);};
 })();
 </script>
 </body>
