@@ -883,6 +883,111 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
 .dco-validation-note.dco-error{background:#fff4f4;color:#a52131;border-color:#ffc9cf;border-left-color:#dc2626}
 .dco-detail-photos{display:flex;flex-wrap:wrap;gap:9px;max-width:100%}
 </style>
+<style id="dco-v31-responsive-tables">
+/* V31 - Fluid tables, fixed-height scrollbars removed, compact accessible icon action bar. */
+#vApp main{min-width:0;max-width:100%;overflow-x:clip}
+#vApp .tbl,#vApp .cp-table,#pPeriod #prHistory .tbl{width:100%;max-width:100%;max-height:none!important;height:auto!important;overflow-x:auto;overflow-y:visible;scrollbar-gutter:auto;overscroll-behavior-x:contain}
+#vApp #tblWrap,#vApp #visitTbl,#vApp #issueTbl,#vApp #rutinTbl{max-height:none!important;height:auto!important}
+#vApp #tblWrap th:last-child,#vApp #tblWrap td:last-child,#vApp #visitTbl th:last-child,#vApp #visitTbl td:last-child,#vApp #issueTbl th:last-child,#vApp #issueTbl td:last-child,#vApp .cp-table th:last-child,#vApp .cp-table td:last-child{position:static!important;right:auto!important;box-shadow:none!important}
+#vApp .tbl>table.dco-fit-table{width:100%;min-width:0!important;max-width:100%;table-layout:fixed;border-spacing:0;border-collapse:separate}
+#vApp .dco-fit-table th,#vApp .dco-fit-table td{max-width:none;min-width:0;padding:8px 7px;overflow-wrap:anywhere;word-break:normal;vertical-align:middle;line-height:1.35}
+#vApp .dco-fit-table td>small,#vApp .dco-fit-table td>div>small,#vApp .dco-fit-table .dco-visit-date>small{display:block;color:var(--mu);font-size:10px;line-height:1.3;margin-top:3px;white-space:normal}
+#vApp .dco-fit-table td>b{display:block;font-size:11.5px;line-height:1.35}
+#vApp .dco-fit-table .bdg{font-size:10px;max-width:100%;white-space:normal;line-height:1.3}
+#vApp .dco-action-cell{min-width:0!important;max-width:none!important;white-space:normal!important;padding:7px 6px!important;overflow:visible!important}
+#vApp .dco-action-inline{display:flex;flex-flow:row nowrap;align-items:center;justify-content:flex-start;gap:4px;width:100%;max-width:100%;min-width:0;white-space:nowrap}
+#vApp .dco-action-inline .btn.dco-icon-btn{display:inline-flex;flex:0 1 34px;min-width:0!important;max-width:36px!important;width:34px;height:33px;min-height:33px;padding:0!important;margin:0!important;border-radius:8px;font-size:15px;line-height:1;white-space:nowrap;overflow:hidden;justify-content:center;align-items:center;box-sizing:border-box}
+#vApp .dco-action-inline .btn.dco-icon-btn:focus-visible{outline:2px solid #4f46e5;outline-offset:1px}
+#vApp #tblWrap .dco-ms-table th:last-child{width:157px!important}
+#vApp #tblWrap .dco-ck-table th:last-child{width:155px!important}
+#vApp #tblWrap .dco-action-grid{display:none}
+#vApp #tblWrap .dco-ms-table td:last-child{width:157px!important}
+#vApp #tblWrap .dco-ms-table th:nth-child(3){width:13%}
+#vApp #tblWrap .dco-ms-table th:nth-child(5){width:14%}
+#vApp #tblWrap .dco-ms-table td.clamp div{max-width:100%;min-width:0}
+#vApp #visitTbl .dco-visit-table th:nth-child(1){width:112px}
+#vApp #visitTbl .dco-visit-table th:nth-child(2){width:14%}
+#vApp #visitTbl .dco-visit-table th:nth-child(3){width:15%}
+#vApp #visitTbl .dco-visit-table th:nth-child(4){width:9%}
+#vApp #visitTbl .dco-visit-table th:nth-child(5){width:20%}
+#vApp #visitTbl .dco-visit-table th:nth-child(6){width:65px}
+#vApp #visitTbl .dco-visit-table th:nth-child(7){width:95px}
+#vApp #visitTbl .dco-visit-table th:nth-child(8){width:95px}
+#vApp #visitTbl .dco-visit-table th:last-child{width:150px}
+#vApp #visitTbl .dco-visit-table td:last-child,#vApp #issueTbl .dco-issue-table td:last-child{width:auto;min-width:0!important;max-width:none!important}
+#vApp .dco-score-strip{display:flex;flex-wrap:nowrap;align-items:center;gap:3px;width:100%;min-width:0}
+#vApp .dco-area-score{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;flex:1 1 0;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:3px 1px}
+#vApp .dco-area-score b{font-size:10px;color:#4338ca}
+#vApp .dco-area-score small{font-size:9px;color:#475569;white-space:nowrap}
+#vApp #issueTbl .dco-issue-table th:nth-child(1){width:15%}
+#vApp #issueTbl .dco-issue-table th:nth-child(2){width:15%}
+#vApp #issueTbl .dco-issue-table th:nth-child(3){width:28%}
+#vApp #issueTbl .dco-issue-table th:nth-child(4){width:15%}
+#vApp #issueTbl .dco-issue-table th:nth-child(5){width:11%}
+#vApp #issueTbl .dco-issue-table th:nth-child(6){width:11%}
+#vApp #issueTbl .dco-issue-table th:last-child{width:89px}
+#vApp #prHistory .dco-period-table th:nth-child(1){width:11%}
+#vApp #prHistory .dco-period-table th:nth-child(2){width:21%}
+#vApp #prHistory .dco-period-table th:nth-child(3){width:19%}
+#vApp #prHistory .dco-period-table th:nth-child(4){width:17%}
+#vApp #prHistory .dco-period-table th:nth-child(5){width:16%}
+#vApp #prHistory .dco-period-table th:nth-last-child(2):not(:first-child){width:55px}
+#vApp #prHistory .dco-period-table th:last-child{width:124px}
+#vApp #prHistory .dco-period-table td:last-child{min-width:0;width:auto;white-space:normal}
+#vApp #prHistory .dco-period-table .dco-action-inline .btn.dco-icon-btn{flex:0 1 34px}
+#vApp #dsBody .dco-dso-table th:last-child{width:117px}
+#vApp #rutinTbl .dco-routine-table th:last-child{width:87px}
+#vApp #rutinTbl .dco-routine-table th:first-child{width:24%}
+#vApp #rutinTbl .dco-routine-table th:nth-child(2){width:19%}
+#vApp #rutinTbl .dco-routine-table td.clamp div{min-width:0;max-width:100%}
+#vApp #rutinTbl table{min-width:0!important}
+#vApp #prHistory .tbl{border:1px solid var(--bd);border-radius:10px}
+#vApp .dco-fit-table tbody tr{height:auto;min-height:44px}
+@media(min-width:1180px){#vApp .dco-fit-table th{font-size:10px}#vApp .dco-fit-table td{font-size:11.5px}}
+@media(max-width:1150px) and (min-width:701px){
+  #vApp #visitTbl .dco-visit-table th:nth-child(4),#vApp #visitTbl .dco-visit-table td:nth-child(4){display:none}
+  #vApp #visitTbl .dco-visit-table th:nth-child(8),#vApp #visitTbl .dco-visit-table td:nth-child(8){display:none}
+  #vApp #issueTbl .dco-issue-table th:nth-child(2),#vApp #issueTbl .dco-issue-table td:nth-child(2){display:none}
+  #vApp .dco-action-inline{gap:3px}
+  #vApp .dco-action-inline .btn.dco-icon-btn{flex-basis:31px;width:31px;height:32px;min-height:32px;font-size:13px}
+}
+/* Mobile: collapse wide data rows into legible cards, preserving all fields and controls. */
+@media(max-width:700px){
+  #vApp #tblWrap .dco-list-table,#vApp #visitTbl .dco-visit-table,#vApp #issueTbl .dco-issue-table,#vApp #prHistory .dco-period-table{min-width:0!important;width:100%!important;table-layout:fixed}
+  #vApp #tblWrap .dco-list-table thead,#vApp #visitTbl .dco-visit-table thead,#vApp #issueTbl .dco-issue-table thead,#vApp #prHistory .dco-period-table thead{display:none}
+  #vApp #visitTbl .dco-visit-table tr,#vApp #issueTbl .dco-issue-table tr,#vApp #prHistory .dco-period-table tr,#vApp #tblWrap .dco-list-table tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:10px;margin:8px;background:#fff;border:1px solid #e2e8f0;border-radius:11px}
+  #vApp #visitTbl .dco-visit-table td,#vApp #issueTbl .dco-issue-table td,#vApp #prHistory .dco-period-table td,#vApp #tblWrap .dco-list-table td{width:auto!important;min-width:0!important;max-width:none!important;display:block;padding:4px!important;border:0!important;font-size:12px}
+  #vApp #visitTbl .dco-visit-table td::before,#vApp #issueTbl .dco-issue-table td::before,#vApp #prHistory .dco-period-table td::before,#vApp #tblWrap .dco-list-table td::before{content:attr(data-label);display:block;color:#64748b;font-size:9px;text-transform:uppercase;font-weight:800;margin-bottom:3px}
+  #vApp #visitTbl .dco-visit-table td:nth-child(2),#vApp #visitTbl .dco-visit-table td:nth-child(5),#vApp #issueTbl .dco-issue-table td:nth-child(3),#vApp #tblWrap .dco-list-table td.clamp,#vApp #prHistory .dco-period-table td:nth-child(2){grid-column:1/-1}
+  #vApp #visitTbl .dco-visit-table td:last-child,#vApp #issueTbl .dco-issue-table td:last-child,#vApp #prHistory .dco-period-table td:last-child,#vApp #tblWrap .dco-list-table td:last-child{grid-column:1/-1!important}
+  #vApp .dco-score-strip{max-width:260px}
+  #vApp .dco-action-inline{justify-content:flex-start;gap:7px}
+  #vApp .dco-action-inline .btn.dco-icon-btn{flex:0 0 35px;width:35px;height:35px;min-height:35px;max-width:35px!important}
+  #vApp #prHistory .dco-period-table td:nth-last-child(2){grid-column:1/2}
+  #vApp #tblWrap .dco-list-table td:first-child{grid-column:1/2}
+}
+</style>
+<style id="dco-v31b-mobile-final">
+/* All actions remain inside their own cell even when list rows change to card layout. */
+@media(max-width:700px){
+ #vApp #tblWrap .dco-ms-table td.dco-action-cell,#vApp #tblWrap .dco-ck-table td.dco-action-cell{width:100%!important;max-width:100%!important;min-width:0!important;grid-column:1/-1!important;display:block}
+ #vApp #rutinTbl .dco-routine-table,#vApp #dsBody .dco-dso-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+ #vApp #rutinTbl .dco-routine-table thead,#vApp #dsBody .dco-dso-table thead{display:none}
+ #vApp #rutinTbl .dco-routine-table tr,#vApp #dsBody .dco-dso-table tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:10px;margin:8px;background:#fff;border:1px solid #e2e8f0;border-radius:11px}
+ #vApp #rutinTbl .dco-routine-table td,#vApp #dsBody .dco-dso-table tbody td{display:block;width:auto!important;min-width:0!important;max-width:none!important;padding:4px!important;border:0!important;white-space:normal;overflow-wrap:anywhere}
+ #vApp #rutinTbl .dco-routine-table td::before,#vApp #dsBody .dco-dso-table tbody td::before{content:attr(data-label);display:block;color:#64748b;font-size:9px;text-transform:uppercase;font-weight:800;margin-bottom:4px}
+ #vApp #rutinTbl .dco-routine-table td:first-child,#vApp #rutinTbl .dco-routine-table td:last-child,#vApp #dsBody .dco-dso-table td:last-child{grid-column:1/-1}
+ #vApp #rutinTbl .dco-routine-table td.clamp div{max-width:100%;min-width:0}
+ #vApp #rutinTbl .dco-routine-table td.dco-action-cell,#vApp #dsBody .dco-dso-table td.dco-action-cell{grid-column:1/-1}
+}
+/* Force mobile routines into full-width card lists, never horizontal scroll. */
+@media(max-width:700px){
+ #vApp #rutinTbl table.dco-routine-table{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;table-layout:auto!important}
+ #vApp #rutinTbl table.dco-routine-table tbody{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important}
+ #vApp #rutinTbl table.dco-routine-table tr{width:calc(100% - 16px)!important;min-width:0!important;max-width:100%!important}
+ #vApp #rutinTbl table.dco-routine-table td{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important}
+}
+</style>
 </head>
 <body>
 <div id="load"></div><div id="toast"></div><div id="lb" class="lb" onclick="this.classList.remove('on')"><img id="lbimg"></div>
@@ -1382,10 +1487,15 @@ function dsoKirim(){var jaw={};Object.keys(S.dsJaw).forEach(function(k){if(k!=='
 function dsoHapus(id){if(!confirm('Hapus laporan ini beserta fotonya? Anda bisa mengisi ulang dari awal.'))return;call('dsoHapus',{id:id}).then(function(){toast('Laporan dihapus');S.dsJaw={};loadDso();loadNotif();});}
 function dsoVal(id,v){if(v==='')return validationUndo('DSO',id,'dso');var ket=$('dsKetSpv')?$('dsKetSpv').value:'';if(v==='Rejected'&&!ket)return toast('Isi keterangan alasan penolakan',true);call('dsoValidasi',{id:id,validasi:v,ketSpv:ket}).then(function(){toast(v?'Tersimpan: '+v:'Validasi dibatalkan','ok');S.dsJaw={};loadDso();closeM('mDetail');loadNotif();});}
 function renderDsoRiwayat(){var rows=S.rows,pend=rows.filter(function(r){return !['Approved','Rejected'].includes(r.validasi);}).length;
-  var h='<div class="mini"><div style="--ac:#0891b2"><span>Laporan 30 hari</span><b>'+rows.length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+pend+'</b></div><div style="--ac:#16a34a"><span>Approved</span><b>'+rows.filter(function(r){return r.validasi==='Approved';}).length+'</b></div><div style="--ac:#dc2626"><span>Submit terlambat</span><b>'+rows.filter(function(r){return r.slaSubmit==='Terlambat';}).length+'</b></div></div>';
-  h+='<div class="card tbl" style="padding:0"><table><thead><tr><th>Tanggal</th>'+(isMgr()?'<th>Toko</th>':'')+'<th>Form</th><th>Submit</th><th>Pengisi</th><th>SLA submit</th><th>Validasi</th><th>SLA validasi</th><th></th></tr></thead><tbody>';
-  rows.forEach(function(r,i){h+='<tr><td style="white-space:nowrap">'+(isMaster()&&r.validasi!=='Y'?'<input type="checkbox" class="dco-visit-pick" value="'+esc(r.id)+'" onchange="dcoUpdateVisitSelection()"> ':'')+fmtTgl(r.tanggal)+'</td>'+(isMgr()?'<td>'+esc(r.toko)+'</td>':'')+'<td>'+esc(formById(r.form).nama)+'</td><td>'+esc(r.waktuSubmit.slice(11))+'</td><td>'+esc(r.oleh)+'</td><td>'+bdg(r.slaSubmit)+'</td><td>'+bdg(dsoStatus(r))+(r.validasiOleh?'<div class="mu">'+esc(r.validasiOleh)+'</div>':'')+'</td><td>'+(r.slaValidasi?bdg(r.slaValidasi):'')+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="dsoDetail('+i+')">Lihat</button> '+(r.validasi&&canUndoValidation(r,'DSO')?'<button class="btn s" onclick="validationUndo(\'DSO\',\''+esc(r.id)+'\',\'dso\')">↶ Batal</button> ':'')+(isMgr()||r.validasi!=='Approved'?'<button class="btn s r" onclick="dsoHapus(\''+r.id+'\')">🗑</button>':'')+'</td></tr>';});
-  if(!rows.length)h+='<tr><td colspan="9" class="empty">Belum ada laporan 30 hari terakhir</td></tr>';$('dsBody').innerHTML=h+'</tbody></table></div>';}
+ var h='<div class="mini"><div style="--ac:#0891b2"><span>Laporan 30 hari</span><b>'+rows.length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+pend+'</b></div><div style="--ac:#16a34a"><span>Approved</span><b>'+rows.filter(function(r){return r.validasi==='Approved';}).length+'</b></div><div style="--ac:#dc2626"><span>Submit terlambat</span><b>'+rows.filter(function(r){return r.slaSubmit==='Terlambat';}).length+'</b></div></div>';
+ h+='<div class="card tbl" style="padding:0"><table class="dco-fit-table dco-dso-table"><thead><tr><th>Tanggal</th>'+(isMgr()?'<th>Toko</th>':'')+'<th>Form</th><th>Dikirim</th><th>SLA Submit</th><th>Validasi / SLA</th><th>Aksi</th></tr></thead><tbody>';
+ rows.forEach(function(r,i){h+='<tr><td data-label="Tanggal">'+fmtTgl(r.tanggal)+'</td>'+(isMgr()?'<td data-label="Toko"><b>'+esc(r.toko||'–')+'</b></td>':'')
+ +'<td data-label="Form">'+esc(formById(r.form).nama)+'</td><td data-label="Dikirim">'+esc((r.waktuSubmit||'').slice(11)||'–')+'<small>'+esc(r.oleh||'')+'</small></td><td data-label="SLA Submit">'+bdg(r.slaSubmit)+'</td>'
+ +'<td data-label="Validasi">'+bdg(dsoStatus(r))+(r.validasiOleh?'<small>'+esc(r.validasiOleh)+'</small>':'')+(r.slaValidasi?'<small>'+bdg(r.slaValidasi)+'</small>':'')+'</td>'
+ +'<td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s o dco-icon-btn" title="Lihat laporan dan foto" aria-label="Lihat laporan" onclick="dsoDetail('+i+')">👁</button>'
+ +(r.validasi&&canUndoValidation(r,'DSO')?'<button type="button" class="btn s dco-icon-btn" title="Batalkan validasi" aria-label="Batalkan validasi DSO" onclick="validationUndo(\'DSO\',\''+esc(r.id)+'\',\'dso\')">↶</button>':'')
+ +(isMgr()||r.validasi!=='Approved'?'<button type="button" class="btn s r dco-icon-btn" title="Hapus laporan" aria-label="Hapus laporan" onclick="dsoHapus(\''+esc(r.id)+'\')">🗑</button>':'')+'</div></td></tr>';});
+ if(!rows.length)h+='<tr><td colspan="'+(isMgr()?7:6)+'" class="empty">Belum ada laporan 30 hari terakhir</td></tr>';$('dsBody').innerHTML=h+'</tbody></table></div>';}
 function dsoDetail(i){var r=S.rows[i],def=S.meta.formDef.filter(function(d){return d.form===r.form;});$('dTitle').textContent=formById(r.form).nama+' · '+r.toko+' · '+fmtTgl(r.tanggal);
   var h='<div class="mu">Dikirim '+r.waktuSubmit+' oleh '+esc(r.oleh)+' · '+bdg(r.slaSubmit)+' · '+bdg(dsoStatus(r))+(r.validasiOleh?' oleh '+esc(r.validasiOleh)+' '+r.validasiTgl+' '+bdg(r.slaValidasi):'')+'</div>'+(r.keterangan?'<p>Keterangan: '+esc(r.keterangan)+'</p>':'')+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:10px">';
   def.forEach(function(d){var id=r.jawaban[d.id];h+='<div style="border:1px solid var(--bd);border-radius:10px;padding:6px;font-size:11px">'+(validId(id)?'<img class="thumb" style="width:100%;height:120px" src="'+fotoUrl(id,400)+'" data-id="'+id+'" onclick="lightbox(this)" onerror="fotoFallback(this)">':'<div style="height:120px;display:grid;place-items:center;color:var(--mu)">tidak ada</div>')+'<div style="margin-top:4px;font-weight:600">'+esc(d.label)+'</div></div>';});
@@ -1399,13 +1509,19 @@ function renderList(t){var cols=COLS[t].filter(function(c){return !(c==='toko'&&
   var op=rows.filter(function(r){return r.status!=='Selesai'&&r.status!=='Dibatalkan';}).length;
   $('listMini').innerHTML=isCk?'<div class="mini"><div style="--ac:#059669"><span>Item</span><b>'+rows.length+'</b></div><div style="--ac:#16a34a"><span>Selesai</span><b>'+rows.filter(function(r){return r.status==='Selesai';}).length+'</b></div><div style="--ac:#4f46e5"><span>Divalidasi</span><b>'+rows.filter(function(r){return r.validasi==='Y';}).length+'</b></div></div>'
     :'<div class="mini"><div style="--ac:#d97706"><span>Total</span><b>'+rows.length+'</b></div><div style="--ac:#4f46e5"><span>Open</span><b>'+op+'</b></div><div style="--ac:#dc2626"><span>Terlambat</span><b>'+rows.filter(isLate).length+'</b></div><div style="--ac:#16a34a"><span>Selesai</span><b>'+rows.filter(function(r){return r.status==='Selesai';}).length+'</b></div><div style="--ac:#7c3aed"><span>Belum validasi</span><b>'+rows.filter(function(r){return r.validasi!=='Y';}).length+'</b></div><div style="--ac:#db2777"><span>Kritis/Tinggi open</span><b>'+rows.filter(function(r){return /Kritis|Tinggi/.test(r.prioritas)&&r.status!=='Selesai'&&r.status!=='Dibatalkan';}).length+'</b></div></div>';
-  var h='<table class="dco-list-table '+(isCk?'dco-ck-table':'dco-ms-table')+'"><thead><tr><th class="dco-pick-col"><input type="checkbox" aria-label="Pilih semua baris" onclick="selAll(this.checked)"></th>'+cols.map(function(c){return '<th>'+LABEL[c]+'</th>';}).join('')+'<th>Aksi</th></tr></thead><tbody>';
-  rows.forEach(function(r,idx){h+='<tr><td><input type="checkbox" data-id="'+r.id+'" '+(S.sel[r.id]?'checked':'')+' onclick="selOne(this)"></td>';
+  var h='<table class="dco-list-table dco-fit-table '+(isCk?'dco-ck-table':'dco-ms-table')+'"><thead><tr><th class="dco-pick-col"><input type="checkbox" aria-label="Pilih semua baris" onclick="selAll(this.checked)"></th>'+cols.map(function(c){return '<th>'+LABEL[c]+'</th>';}).join('')+'<th>Aksi</th></tr></thead><tbody>';
+  rows.forEach(function(r,idx){h+='<tr><td data-label="Pilih"><input type="checkbox" data-id="'+r.id+'" '+(S.sel[r.id]?'checked':'')+' onclick="selOne(this)"></td>';
     cols.forEach(function(c){var v=r[c],cell;if(c==='status')cell=bdg(v);else if(c==='prioritas')cell=v?'<span class="bdg pr-'+esc(v)+'">'+esc(v)+'</span>':'';else if(c==='validasi')cell=v==='Y'?'<span class="ok">✔ '+esc(r.validasiOleh)+'</span>':'<span class="mu">belum</span>';
       else if(c==='tindakLanjut')cell='<div class="dco-followup"><b>'+esc(r.pic||'PIC belum diisi')+'</b><small>'+((r.dueDate?fmtTgl(r.dueDate):'Belum ada tenggat'))+(isLate(r)?' ⚠ Terlambat':'')+'</small></div>';else if(c==='fotoId')cell=v?thumbs([v]):(r.linkBukti?'<a href="'+esc(r.linkBukti)+'" target="_blank">link</a>':'');else if(c==='dueDate')cell='<span class="'+(isLate(r)?'late':'')+'" style="white-space:nowrap">'+fmtTgl(v)+(isLate(r)?' ⚠':'')+'</span>';
       else if(c==='masalah'&&t==='MASALAH')cell='<div class="dco-ms-summary"><span>'+esc(v||'—')+'</span>'+(r.prioritas?'<small>'+bdg(r.prioritas)+'</small>':'')+'</div>';else if(c==='tanggal'||c==='tglSelesai')cell='<span style="white-space:nowrap">'+fmtTgl(v)+'</span>';else if(c==='toko')cell='<span style="font-size:12px;font-weight:600">'+esc(v)+'</span>';else cell=esc(v);
-      h+=CLAMP.test(c)?'<td class="clamp"><div onclick="openDetail('+idx+')">'+cell+'</div></td>':'<td>'+cell+'</td>';});
-    var canEdit=isMgr()||r.validasi!=='Y';h+='<td class="dco-action-cell"><div class="dco-action-grid"><button type="button" class="btn s" title="Lihat detail dan foto" aria-label="Lihat detail '+esc(r.id)+'" onclick="openDetail('+idx+')">👁</button>'+(canEdit?'<button type="button" class="btn s o" title="Edit data" onclick="openForm(\''+esc(r.id)+'\')">Edit</button> ':'<span class="dco-locked" title="Sudah tervalidasi">🔒</span>')+(isMgr()&&r.validasi!=='Y'?'<button type="button" class="btn s g" title="Validasi data" aria-label="Validasi '+esc(r.id)+'" onclick="quick(\''+esc(r.id)+'\',\'validasi\')">✔</button> ':'')+(r.validasi==='Y'&&canUndoValidation(r,t)?'<button type="button" class="btn s dco-action-full" onclick="validationUndo(\''+t+'\',\''+esc(r.id)+'\',\'list\')">↶ Batal validasi</button> ':'')+(canEdit?'<button type="button" class="btn s r" title="Hapus data" aria-label="Hapus '+esc(r.id)+'" onclick="quick(\''+esc(r.id)+'\',\'hapus\')">🗑</button>':'')+'</div></td></tr>';});
+      h+=CLAMP.test(c)?'<td class="clamp" data-label="'+esc(LABEL[c])+'"><div onclick="openDetail('+idx+')">'+cell+'</div></td>':'<td data-label="'+esc(LABEL[c])+'">'+cell+'</td>';});
+    var canEdit=isMgr()||r.validasi!=='Y';h+='<td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline">'
+      +'<button type="button" class="btn s dco-icon-btn" title="Lihat detail dan foto" aria-label="Lihat detail '+esc(r.id)+'" onclick="openDetail('+idx+')">👁</button>'
+      +(canEdit?'<button type="button" class="btn s o dco-icon-btn" title="Edit data" aria-label="Edit '+esc(r.id)+'" onclick="openForm(\''+esc(r.id)+'\')">✎</button>':'')
+      +(isMgr()&&r.validasi!=='Y'?'<button type="button" class="btn s g dco-icon-btn" title="Validasi" aria-label="Validasi '+esc(r.id)+'" onclick="quick(\''+esc(r.id)+'\',\'validasi\')">✔</button>':'')
+      +(r.validasi==='Y'&&canUndoValidation(r,t)?'<button type="button" class="btn s dco-icon-btn" title="Batalkan validasi" aria-label="Batalkan validasi '+esc(r.id)+'" onclick="validationUndo(\''+t+'\',\''+esc(r.id)+'\',\'list\')">↶</button>':'')
+      +(canEdit?'<button type="button" class="btn s r dco-icon-btn" title="Hapus data" aria-label="Hapus '+esc(r.id)+'" onclick="quick(\''+esc(r.id)+'\',\'hapus\')">🗑</button>':'')
+      +'</div></td></tr>';});
   if(!rows.length)h+='<tr><td colspan="'+(cols.length+2)+'" class="empty">Tidak ada data pada filter ini</td></tr>';$('tblWrap').innerHTML=h+'</tbody></table>';updBulk();}
 function openDetail(idx){var r=S.rows[idx];$('dTitle').textContent=(r.judul||r.masalah||r.id).slice(0,60)+' · '+r.toko;
   $('dBody').innerHTML='<dl>'+Object.keys(r).filter(function(k){return r[k]!==''&&k!=='fotoId';}).map(function(k){var v=r[k];if(k==='status')v=bdg(v);else if(k==='prioritas')v='<span class="bdg pr-'+esc(v)+'">'+esc(v)+'</span>';else if(/tanggal|dueDate|tglSelesai/.test(k))v=fmtTgl(v);else if(k==='validasi')v=v==='Y'?'✔ Sudah':'Belum';else v=esc(v);return '<dt>'+(LABEL[k]||k)+'</dt><dd>'+v+'</dd>';}).join('')+(r.fotoId?'<dt>Foto</dt><dd><div class="dco-detail-photos">'+thumbs(String(r.fotoId).split(/[|,]/).map(function(x){return x.trim();}),140)+'</div></dd>':'')+'</dl>';
@@ -1453,9 +1569,16 @@ function seksiList(){return cfg().visitSeksi;}function visitItems(k){return S.me
 function dcoVisitApproved(r){return !!r&&(r.validasi==='Approved'||r.validasi==='Y');}
 function renderVisits(){var rows=(S.visits||[]).filter(function(r){return S.visitMode==='history'?dcoVisitApproved(r):!dcoVisitApproved(r);});$('visitCount').textContent='('+rows.length+' visit)';var avg=rows.length?Math.round(rows.reduce(function(a,r){return a+(+r.finalScore||0);},0)/rows.length):null;
   $('visitMini').innerHTML='<div class="mini"><div style="--ac:#7c3aed"><span>Visit</span><b>'+rows.length+'</b></div><div style="--ac:#16a34a"><span>Rata-rata skor</span><b>'+(avg==null?'–':avg+'%')+'</b></div><div style="--ac:#059669"><span>Excellent</span><b>'+rows.filter(function(r){return r.rating==='Excellent';}).length+'</b></div><div style="--ac:#dc2626"><span>Critical / NI</span><b>'+rows.filter(function(r){return /Critical|Need/.test(r.rating);}).length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+rows.filter(function(r){return !dcoVisitApproved(r);}).length+'</b></div><div style="--ac:#0891b2"><span>Total temuan</span><b>'+rows.reduce(function(a,r){return a+((+r.totalDinilai||0)-(+r.totalPass||0));},0)+'</b></div></div>';
-  var h='<table><thead><tr><th>Tanggal</th><th>Wk</th><th>Toko</th><th>Leader</th><th>Evaluator</th><th>Tipe</th>'+seksiList().map(function(s){return '<th class="visit-seksi-head" title="'+esc(s.kode+' - '+s.nama)+'"><b>'+esc(s.kode)+'</b><small>'+esc(visitSeksiSingkat(s))+'</small></th>';}).join('')+'<th>Final</th><th>Rating</th><th>Validasi</th><th></th></tr></thead><tbody>';
-  rows.forEach(function(r,i){var realIndex=S.visits.indexOf(r);var canDel=!dcoVisitApproved(r)||isMaster();h+='<tr><td style="white-space:nowrap">'+(isMaster()&&!dcoVisitApproved(r)?'<input type="checkbox" class="dco-visit-pick" value="'+esc(r.id)+'" onchange="dcoUpdateVisitSelection()"> ':'')+fmtTgl(r.tanggal)+'</td><td>'+r.minggu+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(r.leader)+'</td><td>'+esc(r.evaluator)+'</td><td>'+esc(r.tipe)+'</td>'+seksiList().map(function(s){var x=r.skor[s.kode];return '<td>'+(x&&x.score!=null?sc(Math.round(x.score)):'–')+'</td>';}).join('')+'<td>'+sc(Math.round(+r.finalScore))+'</td><td>'+bdg(r.rating)+'</td><td>'+(dcoVisitApproved(r)?'<span class="ok">✔ '+esc(r.validasiOleh)+'</span>':'<span class="mu">belum</span>')+'</td><td class="dco-action-cell"><div class="dco-action-flex"><button class="btn s o" onclick="openVisit('+realIndex+',true)">Lihat</button> '+(dcoVisitApproved(r)&&isMaster()?'<button class="btn s" onclick="validationUndo(\'VISIT\',\''+esc(r.id)+'\',\'visit\')">↶ Batal validasi</button> ':'')+(canDel?'<button class="btn s" onclick="openVisit('+realIndex+')">Edit</button> <button class="btn s r" onclick="hapusVisit(\''+r.id+'\')">🗑</button>':'')+'</div></td></tr>';});
-  if(!rows.length)h+='<tr><td colspan="15" class="empty">Belum ada visit pada periode ini</td></tr>';$('visitTbl').innerHTML=h+'</tbody></table>';}
+  var h='<table class="dco-fit-table dco-visit-table"><thead><tr><th>Periode</th><th>Toko</th><th>Tim Visit</th><th>Tipe</th><th>Skor Area A–E</th><th>Final</th><th>Rating</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
+  rows.forEach(function(r,i){var realIndex=S.visits.indexOf(r);var canDel=!dcoVisitApproved(r)||isMaster();var scores=seksiList().map(function(s){var x=(r.skor||{})[s.kode];var value=x&&x.score!=null?Math.round(x.score)+'%':'–';return '<span class="dco-area-score" title="'+esc(s.nama)+': '+value+'"><b>'+esc(s.kode)+'</b><small>'+value+'</small></span>';}).join('');
+    h+='<tr><td data-label="Periode" class="dco-visit-date">'+(isMaster()&&!dcoVisitApproved(r)?'<input type="checkbox" class="dco-visit-pick" value="'+esc(r.id)+'" onchange="dcoUpdateVisitSelection()"> ':'')+fmtTgl(r.tanggal)+'<small>W'+esc(r.minggu||'–')+'</small></td>'
+      +'<td data-label="Toko"><b>'+esc(r.toko)+'</b></td><td data-label="Tim Visit"><b>'+esc(r.leader||'–')+'</b><small>Evaluator: '+esc(r.evaluator||'–')+'</small></td><td data-label="Tipe">'+esc(r.tipe||'–')+'</td><td data-label="Skor Area"><div class="dco-score-strip">'+scores+'</div></td>'
+      +'<td data-label="Final">'+sc(Math.round(+r.finalScore||0))+'</td><td data-label="Rating">'+bdg(r.rating)+'</td><td data-label="Validasi">'+(dcoVisitApproved(r)?'<span class="ok">✔ Disetujui</span><small>'+esc(r.validasiOleh||'')+'</small>':'<span class="mu">Menunggu</span>')+'</td>'
+      +'<td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s o dco-icon-btn" title="Lihat detail visit" aria-label="Lihat visit" onclick="openVisit('+realIndex+',true)">👁</button>'
+      +(dcoVisitApproved(r)&&isMaster()?'<button type="button" class="btn s dco-icon-btn" title="Batalkan validasi" aria-label="Batalkan validasi visit" onclick="validationUndo(\'VISIT\',\''+esc(r.id)+'\',\'visit\')">↶</button>':'')
+      +(canDel?'<button type="button" class="btn s dco-icon-btn" title="Edit visit" aria-label="Edit visit" onclick="openVisit('+realIndex+')">✎</button><button type="button" class="btn s r dco-icon-btn" title="Hapus visit" aria-label="Hapus visit" onclick="hapusVisit(\''+esc(r.id)+'\')">🗑</button>':'')+'</div></td></tr>';
+  });
+  if(!rows.length)h+='<tr><td colspan="9" class="empty">Belum ada visit pada periode ini</td></tr>';$('visitTbl').innerHTML=h+'</tbody></table>';}
 function hapusVisit(id){if(!confirm('Hapus data visit ini beserta fotonya?'))return;call('visitHapus',{id:id}).then(function(){toast('Visit dihapus');refresh();});}
 function openVisit(i,view){var r=i!=null?S.visits[i]:{tanggal:S.meta.today,toko:'',leader:'',evaluator:S.me.nama,tipe:'Offline Visit',jawaban:{},catatan:{},foto:{},issues:'',updateTemuan:{},keterangan:''};S.vis=JSON.parse(JSON.stringify(r));S.vis._view=!!view;renderVisit();$('mVisit').classList.add('on');}
 function vScore(){var jaw=S.vis.jawaban,th=cfg().rating,out={},tp=0,td=0;seksiList().forEach(function(s){var p=0,d=0;visitItems(s.kode).forEach(function(it){var v=jaw[it.id];if(v==='Sesuai'){p++;d++;}else if(v==='Tidak Sesuai')d++;});out[s.kode]={pass:p,dinilai:d,score:d?Math.round(p*10000/d)/100:null};tp+=p;td+=d;});
@@ -1484,8 +1607,8 @@ function exportVisit(){var rows=S.visits;if(!rows.length)return toast('Tidak ada
 function fraseRutin(r){var l=String(r.hari||'').split(',').filter(String);switch(r.frekuensi){case 'Mingguan':return 'Setiap '+l.map(function(d){return HARI[+d];}).join(', ');case 'Bulanan':return 'Setiap tanggal '+l.join(', ');case 'Tahunan':return 'Setiap '+l.map(function(x){var p=x.split('-');return (+p[0])+' '+BULAN[+p[1]-1];}).join(', ');case 'Periodik':return 'Setiap '+r.interval+' hari sejak '+fmtTgl(r.mulai);default:return 'Setiap hari';}}
 function renderRutin(){var byF={};S.rutin.forEach(function(r){if(r.aktif!=='N')byF[r.frekuensi]=(byF[r.frekuensi]||0)+1;});
   $('rtMini').innerHTML='<div class="mini"><div style="--ac:#0d9488"><span>Routine aktif</span><b>'+S.rutin.filter(function(r){return r.aktif!=='N';}).length+'</b></div>'+Object.keys(byF).map(function(k){return '<div style="--ac:#14b8a6"><span>'+k+'</span><b>'+byF[k]+'</b></div>';}).join('')+'<div style="--ac:#94a3b8"><span>Nonaktif</span><b>'+S.rutin.filter(function(r){return r.aktif==='N';}).length+'</b></div></div>';
-  var h='<table><thead><tr><th>Judul</th><th>Jadwal</th><th>Kategori</th><th>Prioritas</th><th>PIC</th><th>Toko</th><th>Status</th><th></th></tr></thead><tbody>';
-  S.rutin.forEach(function(r,i){h+='<tr><td class="clamp"><div onclick="openRutin('+i+')"><b>'+esc(r.judul)+'</b>'+(r.deskripsi?'<br><span class="mu">'+esc(r.deskripsi)+'</span>':'')+'</div></td><td>'+pill(esc(r.frekuensi),'b')+'<div class="mu">'+esc(fraseRutin(r))+'</div></td><td>'+esc(r.kategori)+'</td><td>'+(r.prioritas?'<span class="bdg pr-'+esc(r.prioritas)+'">'+esc(r.prioritas)+'</span>':'')+'</td><td>'+esc(r.pic)+'</td><td style="font-size:12px">'+esc(r.toko==='SEMUA'?'Semua toko':String(r.toko).split('|').join(', '))+'</td><td>'+(r.aktif==='N'?pill('Nonaktif','r'):pill('Aktif','g'))+'</td><td style="white-space:nowrap"><button class="btn s o" onclick="openRutin('+i+')">Edit</button> <button class="btn s r" onclick="hapusRutin(\''+r.id+'\')">🗑</button></td></tr>';});
+  var h='<table class="dco-fit-table dco-routine-table"><thead><tr><th>Judul</th><th>Jadwal</th><th>Kategori</th><th>Prioritas</th><th>PIC</th><th>Toko</th><th>Status</th><th>Aksi</th></tr></thead><tbody>';
+  S.rutin.forEach(function(r,i){h+='<tr><td class="clamp" data-label="Judul"><div onclick="openRutin('+i+')"><b>'+esc(r.judul)+'</b>'+(r.deskripsi?'<br><span class="mu">'+esc(r.deskripsi)+'</span>':'')+'</div></td><td data-label="Jadwal">'+pill(esc(r.frekuensi),'b')+'<div class="mu">'+esc(fraseRutin(r))+'</div></td><td data-label="Kategori">'+esc(r.kategori)+'</td><td data-label="Prioritas">'+(r.prioritas?'<span class="bdg pr-'+esc(r.prioritas)+'">'+esc(r.prioritas)+'</span>':'')+'</td><td data-label="PIC">'+esc(r.pic)+'</td><td data-label="Toko" style="font-size:12px">'+esc(r.toko==='SEMUA'?'Semua toko':String(r.toko).split('|').join(', '))+'</td><td data-label="Status">'+(r.aktif==='N'?pill('Nonaktif','r'):pill('Aktif','g'))+'</td><td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s o dco-icon-btn" title="Edit tugas" aria-label="Edit tugas" onclick="openRutin('+i+')">✎</button><button type="button" class="btn s r dco-icon-btn" title="Hapus tugas" aria-label="Hapus tugas" onclick="hapusRutin(\''+esc(r.id)+'\')">🗑</button></div></td></tr>';});
   if(!S.rutin.length)h+='<tr><td colspan="8" class="empty">Belum ada Daily Routine.</td></tr>';$('rutinTbl').innerHTML=h+'</tbody></table>';}
 function openRutin(i){var r=i!=null?S.rutin[i]:{frekuensi:'Harian',prioritas:'Sedang',toko:'SEMUA',aktif:'Y',hari:'',interval:7,mulai:S.meta.today};S.editId=r.id||null;S.rt=JSON.parse(JSON.stringify(r));$('rTitle').textContent=(r.id?'Edit':'Tambah')+' Daily Routine';renderRutinForm();$('mRutin').classList.add('on');}
 function renderRutinForm(){var r=S.rt,sel=function(id,arr,v){return '<select id="'+id+'">'+arr.map(function(x){return '<option '+(x===v?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select>';},tk=String(r.toko||'SEMUA'),tkList=tk==='SEMUA'?[]:tk.split('|');
@@ -1643,10 +1766,16 @@ function loadIssues(){
 }
 function renderIssues(){var rows=S.issues||[],today=S.meta.today,pending=rows.filter(function(x){return x.status!=='Dibatalkan'&&(x.status!=='Selesai'||x.validasi!=='Y');}),over=rows.filter(function(x){return x.dueDate&&x.dueDate<today&&x.status!=='Selesai'&&x.status!=='Dibatalkan';});
  $('issueMini').innerHTML='<div class="v6-overview" style="margin-bottom:12px">'+v6Stat('Issue ditampilkan',rows.length,'#6366f1')+v6Stat('Masih terbuka',pending.length,'#f59e0b')+v6Stat('Overdue',over.length,'#dc2626')+v6Stat('Selesai',rows.filter(function(x){return x.status==='Selesai';}).length,'#10b981')+'</div>';
- var h='<table><thead><tr><th>Visit / Tgl</th><th>Toko</th><th>Point</th><th>Temuan / Action</th><th>PIC</th><th>Due date</th><th>Prioritas</th><th>Status</th><th>Validasi</th>'+'<th>Aksi</th></tr></thead><tbody>';
- rows.slice(0,200).forEach(function(x,i){h+='<tr><td><b>'+esc(x.visitId)+'</b><div class="mu">'+fmtTgl(x.tanggal)+'</div></td><td>'+esc(x.toko)+'</td><td>'+esc(x.pointId||'Umum')+'</td><td style="min-width:270px"><b>'+esc(x.issue)+'</b><div class="mu">'+esc(x.action||'Belum ada action')+'</div>'+thumbs([x.fotoId],32)+'</td><td>'+esc(x.pic||'—')+'</td><td class="'+(x.dueDate&&x.dueDate<today&&x.status!=='Selesai'?'late':'')+'">'+fmtTgl(x.dueDate)+'</td><td>'+bdg(x.prioritas)+'</td><td>'+bdg(x.status)+'</td><td>'+(x.validasi==='Y'?pill('Valid','g'):x.status==='Selesai'?pill('Menunggu Master','y'):pill('Belum','n'))+'</td><td class="dco-action-cell"><div class="dco-action-flex"><button class="btn s o" onclick="editVisitIssue('+i+')">Update</button>'+(isMaster()&&x.status==='Selesai'&&x.validasi!=='Y'?'<button class="btn s g" onclick="issueValidate('+i+')">✔ Validasi</button>':'')+(x.validasi==='Y'&&canUndoValidation(x,'VISIT_ISSUE')?'<button class="btn s" onclick="validationUndo(\'VISIT_ISSUE\',\''+esc(x.id)+'\',\'issue\')">↶ Batal validasi</button>':'')+'</div></td></tr>';});
- if(rows.length>200)h+='<tr><td colspan="10" class="mu">Menampilkan 200 issue pertama; gunakan filter untuk mempersempit, atau export semua CSV.</td></tr>';
- if(!rows.length)h+='<tr><td colspan="10" class="empty">Belum ada issue yang sesuai filter.</td></tr>';
+ var h='<table class="dco-fit-table dco-issue-table"><thead><tr><th>Visit / Tgl</th><th>Toko</th><th>Temuan / Action</th><th>PIC / Tenggat</th><th>Status</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
+ rows.slice(0,200).forEach(function(x,i){h+='<tr><td data-label="Visit / Tgl"><b>'+esc(x.visitId||'–')+'</b><small>'+fmtTgl(x.tanggal)+'</small></td><td data-label="Toko">'+esc(x.toko)+'</td>'
+ +'<td data-label="Temuan"><b>'+esc(x.issue||'–')+'</b><small>'+esc(x.pointId||'Umum')+' · '+esc(x.action||'Belum ada tindakan')+'</small></td>'
+ +'<td data-label="PIC / Tenggat"><b>'+esc(x.pic||'–')+'</b><small class="'+(x.dueDate&&x.dueDate<today&&x.status!=='Selesai'?'late':'')+'">'+fmtTgl(x.dueDate)+'</small></td>'
+ +'<td data-label="Status">'+bdg(x.status)+'<small>'+esc(x.prioritas||'')+'</small></td><td data-label="Validasi">'+(x.validasi==='Y'?pill('Valid','g'):x.status==='Selesai'?pill('Menunggu Master','y'):pill('Belum','n'))+'</td>'
+ +'<td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s o dco-icon-btn" title="Buka detail / update, termasuk foto" aria-label="Update issue" onclick="editVisitIssue('+i+')">✎</button>'
+ +(isMaster()&&x.status==='Selesai'&&x.validasi!=='Y'?'<button type="button" class="btn s g dco-icon-btn" title="Validasi issue" aria-label="Validasi issue" onclick="issueValidate('+i+')">✔</button>':'')
+ +(x.validasi==='Y'&&canUndoValidation(x,'VISIT_ISSUE')?'<button type="button" class="btn s dco-icon-btn" title="Batalkan validasi issue" aria-label="Batalkan validasi issue" onclick="validationUndo(\'VISIT_ISSUE\',\''+esc(x.id)+'\',\'issue\')">↶</button>':'')+'</div></td></tr>';});
+ if(rows.length>200)h+='<tr><td colspan="7" class="mu">Menampilkan 200 issue pertama; gunakan filter atau ekspor CSV.</td></tr>';
+ if(!rows.length)h+='<tr><td colspan="7" class="empty">Belum ada issue yang sesuai filter.</td></tr>';
  $('issueTbl').innerHTML=h+'</tbody></table>';}
 function editVisitIssue(index){var item=S.issues[index];S.issueFotoTemp=item.fotoId||'';var fields=[
  {k:'issue',l:'Masalah',v:item.issue,full:1},{k:'akar',l:'Akar penyebab',v:item.akar||'',t:'area',full:1},
@@ -2684,10 +2813,10 @@ renderIssues=function(){
  function prRenderHistory(){
   const allRows=S.periodHistoryRows||[],status=$('prHistStatus')&&$('prHistStatus').value||'',search=String($('prHistSearch')&&$('prHistSearch').value||'').trim().toLowerCase();const rows=allRows.filter(r=>(!status||r.validation_status===status)&&(!search||[r.toko,r.report_type,r.period_key,r.submitted_by,r.validation_note].some(v=>String(v||'').toLowerCase().includes(search))));const total=S.periodHistoryTotal||allRows.length;const wrap=$('prHistory');if(!wrap)return;
   const cs=['WEEKLY_SALES','WEEKLY_GENSET','MONTHLY_SALES','MONTHLY_APAR'];
-  let html='<div class="card"><div class="pr-history-header"><h3>Riwayat & validasi</h3><button class="btn s" onclick="exportPeriodCsv()">↓ Export CSV Lengkap</button></div><p class="mu">'+total+' laporan, '+rows.length+' tampil. Data mengikuti hak akses pengguna.</p><div class="tbl"><table><thead><tr><th>Periode</th><th>Toko</th><th>Form</th><th>Dikirim</th><th>Validasi</th>'+(isMaster()?'<th>Pilih</th>':'')+'<th>Aksi</th></tr></thead><tbody>';
+  let html='<div class="card"><div class="pr-history-header"><h3>Riwayat & validasi</h3><button class="btn s" onclick="exportPeriodCsv()">↓ Export CSV Lengkap</button></div><p class="mu">'+total+' laporan, '+rows.length+' tampil. Data mengikuti hak akses pengguna.</p><div class="tbl"><table class="dco-fit-table dco-period-table"><thead><tr><th>Periode</th><th>Toko</th><th>Form</th><th>Dikirim</th><th>Validasi</th>'+(isMaster()?'<th>Pilih</th>':'')+'<th>Aksi</th></tr></thead><tbody>';
   rows.forEach((r,i)=>{
     const st=r.validation_status==='Approved'?'Selesai':r.validation_status==='Rejected'?'Perlu Revisi':'Menunggu Validasi';
-    html+='<tr><td>'+esc(r.period_key||'')+'</td><td><b>'+esc(r.toko)+'</b></td><td>'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td>'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td>'+prStatus(st)+'</td>'+(isMaster()?'<td>'+(r.validation_status==='Pending'?'<input type="checkbox" class="pr-pick" value="'+esc(r.id)+'" aria-label="Pilih laporan">':'—')+'</td>':'')+'<td><button class="btn s" onclick="editPeriodRow('+i+')">Buka</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button class="btn s g" onclick="validatePeriodRow('+i+',\'Approved\')">✔ Approve</button><button class="btn s r" onclick="validatePeriodRow('+i+',\'Rejected\')">✕ Revisi</button>':'')+(r.validation_status!=='Pending'&&canUndoValidation(r,'PERIOD')?'<button class="btn s" onclick="validationUndo(\'PERIOD\',\''+esc(r.id)+'\',\'period\')">↶ Batal validasi</button>':'')+'</td></tr>';
+    html+='<tr><td data-label="Periode">'+esc(r.period_key||'')+'</td><td data-label="Toko"><b>'+esc(r.toko)+'</b></td><td data-label="Form">'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td data-label="Dikirim">'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td data-label="Validasi">'+prStatus(st)+'</td>'+(isMaster()?'<td data-label="Pilih">'+(r.validation_status==='Pending'?'<input type="checkbox" class="pr-pick" value="'+esc(r.id)+'" aria-label="Pilih laporan">':'—')+'</td>':'')+'<td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s dco-icon-btn" title="Buka laporan dan foto" aria-label="Buka laporan" onclick="editPeriodRow('+i+')">👁</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button type="button" class="btn s g dco-icon-btn" title="Setujui laporan" aria-label="Approve laporan" onclick="validatePeriodRow('+i+',\'Approved\')">✔</button><button type="button" class="btn s r dco-icon-btn" title="Kembalikan untuk revisi" aria-label="Revisi laporan" onclick="validatePeriodRow('+i+',\'Rejected\')">✕</button>':'')+(r.validation_status!=='Pending'&&canUndoValidation(r,'PERIOD')?'<button type="button" class="btn s dco-icon-btn" title="Batalkan validasi" aria-label="Batalkan validasi laporan" onclick="validationUndo(\'PERIOD\',\''+esc(r.id)+'\',\'period\')">↶</button>':'')+'</div></td></tr>';
   });
   if(!rows.length)html+='<tr><td colspan="'+(isMaster()?7:6)+'" class="empty">Belum ada laporan yang dikirim pada filter ini</td></tr>';
   html+='</tbody></table></div>';
@@ -2998,9 +3127,9 @@ renderIssues=function(){
     let h=summary+'<div class="routine-filter"><label>Jenis pekerjaan <select onchange="S.rtFilter=this.value;renderRutin()">'+opts(values,values.includes(type)?type:'SEMUA')+'</select></label><span class="mu">Tugas aktif muncul otomatis di Assignment sesuai toko dan tanggal.</span></div>';
     el('rtMini').innerHTML=h;
     const rows=all.filter(r=>type==='SEMUA'||(r.jenisTugas||'Operasional')===type);
-    let tab='<table class="routine-table"><thead><tr><th>Tugas</th><th>Tipe</th><th>Frekuensi / jadwal</th><th>PIC</th><th>Target toko</th><th>Status</th><th>Aksi</th></tr></thead><tbody>';
+    let tab='<table class="routine-table dco-fit-table dco-routine-table"><thead><tr><th>Tugas</th><th>Tipe</th><th>Frekuensi / jadwal</th><th>PIC</th><th>Target toko</th><th>Status</th><th>Aksi</th></tr></thead><tbody>';
     rows.forEach(r=>{const i=all.indexOf(r);
-      tab+='<tr><td><b>'+esc(r.judul)+'</b>'+(r.namaProject?'<div class="mu">'+esc(r.namaProject)+'</div>':'')+(r.lokasi?'<div class="mu">⌖ '+esc(r.lokasi)+'</div>':'')+'</td><td><span class="routine-type-badge">'+esc(r.jenisTugas||'Operasional')+'</span></td><td><b>'+esc(r.frekuensi||'Harian')+'</b><div class="mu">'+esc(fraseRutin(r))+'</div>'+(r.tenggat?'<div class="mu">Deadline: '+fmtTgl(r.tenggat)+'</div>':'')+'</td><td>'+esc(r.pic||'—')+'</td><td>'+esc(r.toko==='SEMUA'?'12 toko / Semua toko':String(r.toko||'').split('|').join(', '))+'</td><td>'+(r.aktif==='N'?pill('Nonaktif','r'):pill('Aktif','g'))+'</td><td class="routine-table-actions"><button class="btn s o" onclick="openRutin('+i+')">Edit</button><button class="btn s r" onclick="hapusRutin(\''+esc(r.id)+'\')">Hapus</button></td></tr>';
+      tab+='<tr><td data-label="Tugas"><b>'+esc(r.judul)+'</b>'+(r.namaProject?'<div class="mu">'+esc(r.namaProject)+'</div>':'')+(r.lokasi?'<div class="mu">⌖ '+esc(r.lokasi)+'</div>':'')+'</td><td data-label="Tipe"><span class="routine-type-badge">'+esc(r.jenisTugas||'Operasional')+'</span></td><td data-label="Jadwal"><b>'+esc(r.frekuensi||'Harian')+'</b><div class="mu">'+esc(fraseRutin(r))+'</div>'+(r.tenggat?'<div class="mu">Deadline: '+fmtTgl(r.tenggat)+'</div>':'')+'</td><td data-label="PIC">'+esc(r.pic||'—')+'</td><td data-label="Target toko">'+esc(r.toko==='SEMUA'?'12 toko / Semua toko':String(r.toko||'').split('|').join(', '))+'</td><td data-label="Status">'+(r.aktif==='N'?pill('Nonaktif','r'):pill('Aktif','g'))+'</td><td class="routine-table-actions dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s o dco-icon-btn" title="Edit tugas" aria-label="Edit tugas" onclick="openRutin('+i+')">✎</button><button type="button" class="btn s r dco-icon-btn" title="Hapus tugas" aria-label="Hapus tugas" onclick="hapusRutin(\''+esc(r.id)+'\')">🗑</button></div></td></tr>';
     });
     if(!rows.length)tab+='<tr><td colspan="7" class="empty">Belum ada penugasan pada filter ini.</td></tr>';
     tab+='</tbody></table>';el('rutinTbl').innerHTML=tab;
