@@ -2866,13 +2866,13 @@ renderIssues=function(){
   let html='<div class="card"><div class="pr-history-header"><h3>Riwayat & validasi</h3><button class="btn s" onclick="exportPeriodCsv()">↓ Export CSV Lengkap</button></div><p class="mu">'+total+' laporan, '+rows.length+' tampil. Data mengikuti hak akses pengguna.</p><div class="tbl"><table class="dco-fit-table dco-period-table"><thead><tr><th>Periode</th><th>Toko</th><th>Form</th><th>Dikirim</th><th>Validasi</th>'+(isMaster()?'<th>Pilih</th>':'')+'<th>Aksi</th></tr></thead><tbody>';
   rows.forEach((r,i)=>{
     const st=r.validation_status==='Approved'?'Selesai':r.validation_status==='Rejected'?'Perlu Revisi':'Menunggu Validasi';
-    html+='<tr><td data-label="Periode">'+esc(r.period_key||'')+'</td><td data-label="Toko"><b>'+esc(r.toko)+'</b></td><td data-label="Form">'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td data-label="Dikirim">'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td data-label="Validasi">'+prStatus(st)+'</td>'+(isMaster()?'<td data-label="Pilih">'+(r.validation_status==='Pending'?'<input type="checkbox" class="pr-pick" value="'+esc(r.id)+'" aria-label="Pilih laporan">':'—')+'</td>':'')+'<td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s dco-icon-btn" title="Buka laporan dan foto" aria-label="Buka laporan" onclick="editPeriodRow('+i+')">👁</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button type="button" class="btn s g dco-icon-btn" title="Setujui laporan" aria-label="Approve laporan" onclick="validatePeriodRow('+i+',\'Approved\')">✔</button><button type="button" class="btn s r dco-icon-btn" title="Kembalikan untuk revisi" aria-label="Revisi laporan" onclick="validatePeriodRow('+i+',\'Rejected\')">✕</button>':'')+(r.validation_status!=='Pending'&&canUndoValidation(r,'PERIOD')?'<button type="button" class="btn s dco-icon-btn" title="Batalkan validasi" aria-label="Batalkan validasi laporan" onclick="validationUndo(\'PERIOD\',\''+esc(r.id)+'\',\'period\')">↶</button>':'')+'</div></td></tr>';
+    html+='<tr><td data-label="Periode">'+esc(r.period_key||'')+'</td><td data-label="Toko"><b>'+esc(r.toko)+'</b></td><td data-label="Form">'+esc(typeLabels[r.report_type]||r.report_type)+'</td><td data-label="Dikirim">'+esc(r.submitted_by||'')+'<br><small>'+esc(String(r.submitted_at||'').replace('T',' ').slice(0,16))+'</small></td><td data-label="Validasi">'+prStatus(st)+'</td>'+(isMaster()?'<td data-label="Pilih">'+(r.validation_status==='Pending'?'<input type="checkbox" class="pr-pick" value="'+esc(r.id)+'" aria-label="Pilih laporan" onchange="dcoSyncPeriodAll()">':'—')+'</td>':'')+'<td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s dco-icon-btn" title="Buka laporan dan foto" aria-label="Buka laporan" onclick="editPeriodRow('+i+')">👁</button>'+(isMgr()&&r.validation_status!=='Approved'?'<button type="button" class="btn s g dco-icon-btn" title="Setujui laporan" aria-label="Approve laporan" onclick="validatePeriodRow('+i+',\'Approved\')">✔</button><button type="button" class="btn s r dco-icon-btn" title="Kembalikan untuk revisi" aria-label="Revisi laporan" onclick="validatePeriodRow('+i+',\'Rejected\')">✕</button>':'')+(r.validation_status!=='Pending'&&canUndoValidation(r,'PERIOD')?'<button type="button" class="btn s dco-icon-btn" title="Batalkan validasi" aria-label="Batalkan validasi laporan" onclick="validationUndo(\'PERIOD\',\''+esc(r.id)+'\',\'period\')">↶</button>':'')+'</div></td></tr>';
   });
   if(!rows.length)html+='<tr><td colspan="'+(isMaster()?7:6)+'" class="empty">Belum ada laporan yang dikirim pada filter ini</td></tr>';
   html+='</tbody></table></div>';
-  if(isMaster())html+='<div class="row" style="margin:10px 0"><label><input type="checkbox" onchange="document.querySelectorAll(\'.pr-pick\').forEach(x=>x.checked=this.checked)"> Pilih semua pending yang tampil</label><button class="btn s g" onclick="prApproveSelected()">✔ Validasi terpilih</button></div>';
+  if(isMaster())html+='<div class="dco-v33-selectbar"><label class="dco-select-all"><input type="checkbox" id="prPickAll" onchange="dcoSelectPeriodAll(this.checked)"> Pilih semua pending yang tampil</label><span id="prPickCount" class="mu"></span><button type="button" class="btn s g" onclick="prApproveSelected()">✔ Validasi terpilih</button></div>';
   if(S.periodHistoryHasMore)html+='<button type="button" class="btn" onclick="periodNextPage()">Muat '+Math.min(100,total-allRows.length)+' data berikutnya</button>';
-  html+='</div>';wrap.innerHTML=html;
+  html+='</div>';wrap.innerHTML=html;if(typeof window.dcoSyncPeriodAll==='function')window.dcoSyncPeriodAll();
  }
  async function loadPeriodReports(){
   if(!S.meta||!$('prType'))return;
@@ -4093,6 +4093,108 @@ Object.assign(window,{loadCampaignUI,cpList,cpReload,cpChoose,cpTab,cpEditCampai
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
   function mount(){var root=document.getElementById('ckIsi');if(!root)return;var scheduled=false;new MutationObserver(function(){if(scheduled)return;scheduled=true;requestAnimationFrame(function(){scheduled=false;upgrade();});}).observe(root,{childList:true,subtree:true});upgrade();}
+})();
+</script>
+<!-- DCO v33: inline Visit evidence + synchronized select-all controls -->
+<style id="dco-v33-style">
+#mVisit .vitem{grid-template-columns:34px minmax(0,1fr) 137px minmax(185px,270px);gap:10px;align-items:center;min-width:0}
+#mVisit .vitem > span{overflow-wrap:anywhere}
+#mVisit .visit-point-photo{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;margin:0!important}
+#mVisit .visit-point-photo .evidence-panel{width:100%!important;max-width:100%!important;min-width:0!important}
+#mVisit .dco-v33-evidence{display:flex;align-items:center;justify-content:flex-start;gap:7px;flex-wrap:wrap;padding:4px 0;min-width:0;max-width:100%;}
+#mVisit .dco-v33-gallery{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-width:0;max-width:100%}
+#mVisit .dco-v33-gallery img.thumb{display:block;width:52px!important;height:52px!important;object-fit:cover;border-radius:9px;border:1px solid #cbd5e1;cursor:zoom-in}
+#mVisit .dco-v33-empty{font-size:11px;color:#94a3b8;font-weight:500}
+#mVisit .dco-v33-evidence .dco-v33-photo-action{white-space:nowrap;min-height:34px;font-size:11px;padding:6px 9px;flex:0 0 auto}
+#mVisit .dco-v33-evidence .dco-v33-photo-count{font-size:10px;color:#64748b;white-space:nowrap}
+#mVisit .dco-v33-photo-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;min-width:0}
+#mVisit .dco-v33-photo-pair .dco-v33-photo-side{min-width:0;padding:8px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc}
+#mVisit .dco-v33-photo-pair strong{display:block;margin-bottom:5px;font-size:10px;color:#475569}
+#mVisit .visit-issue-fields .dco-v33-evidence,#mVisit .visit-after-row .dco-v33-evidence{width:100%;}
+#mVisit .visit-issue-fields .evidence-panel{width:100%;max-width:100%}
+.dco-v33-selectbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;margin:10px 0}
+.dco-v33-selectbar .dco-select-all,.dco-control-bar .dco-select-all{display:inline-flex;align-items:center;gap:8px;font-weight:650;font-size:12px;cursor:pointer;max-width:100%;text-transform:none;color:#334155}
+.dco-v33-selectbar input[type="checkbox"],.dco-control-bar input[type="checkbox"],#mVisit .dco-v33-toolbar input[type="checkbox"]{width:18px;height:18px;min-width:18px;min-height:18px;accent-color:#4f46e5;cursor:pointer}
+#mVisit .dco-v33-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:9px 11px}
+#mVisit .dco-v33-toolbar span{flex:1 1 250px;font-size:11px;color:#64748b}
+#mVisit .dco-v33-toolbar .btn{min-height:34px;white-space:normal}
+#mVisit .vsec>h4{gap:8px;flex-wrap:wrap}
+@media(max-width:1030px){#mVisit .vitem{grid-template-columns:33px minmax(0,1fr) 136px}#mVisit .vitem .visit-point-photo{grid-column:2/-1;grid-row:auto;display:block;padding:4px 0}}
+@media(max-width:650px){#mVisit .vitem{grid-template-columns:30px minmax(0,1fr);align-items:start}#mVisit .vitem .vopt{grid-column:2;grid-row:auto;justify-content:flex-start}#mVisit .vitem .visit-point-photo{grid-column:2;grid-row:auto}#mVisit .dco-v33-photo-pair{grid-template-columns:1fr}#mVisit .dco-v33-gallery img.thumb{width:55px!important;height:55px!important}.dco-v33-selectbar{align-items:stretch}}
+</style>
+<script id="dco-v33-controls">
+(function(){
+ 'use strict';
+ // Preserve existing storage/API callbacks. Only extend presentation and selection controls.
+ var previousEvidencePanel=evidencePanel;
+ function evidenceThumbs(ids){var pictures=photoList(ids);return pictures.length?thumbs(pictures,52):'<span class="dco-v33-empty">Belum ada foto</span>';}
+ function photoHubButton(kind,key,count){var locked=evidenceLock(kind==='visitIssuePair'?'visitIssue':kind,key);var label=locked?'Lihat foto':'Tambah / kelola foto';var handler=kind==='visitIssuePair'?'openBeforeAfterHub(\'visitIssue\',this.dataset.key)':'openEvidenceHub(this.dataset.kind,this.dataset.key)';
+  return '<button type="button" class="btn s dco-v33-photo-action" data-kind="'+esc(kind)+'" data-key="'+esc(String(key))+'" onclick="'+handler+'" title="'+label+'" aria-label="'+label+'">📷 '+(locked?'Lihat':'Tambah')+'</button>';
+ }
+ evidencePanel=function(kind,key,small){
+  if(['point','visitUpdate','visitIssuePair'].indexOf(kind)<0)return previousEvidencePanel(kind,key,small);
+  key=String(key);var ids=kind==='visitIssuePair'?photoList(evidenceId('visitIssue',key)):photoList(evidenceId(kind,key));
+  var after=kind==='visitIssuePair'?photoList(evidenceId('visitIssueAfter',key)):[];
+  var busy=kind==='visitIssuePair'?!!evidenceBusy['visitIssue:'+key]||!!evidenceBusy['visitIssueAfter:'+key]:!!evidenceBusy[kind+':'+key];
+  var pictures=kind==='visitIssuePair'?'<div class="dco-v33-photo-pair"><div class="dco-v33-photo-side"><strong>SEBELUM · '+ids.length+'</strong><div class="dco-v33-gallery">'+evidenceThumbs(ids)+'</div></div><div class="dco-v33-photo-side"><strong>SESUDAH · '+after.length+'</strong><div class="dco-v33-gallery">'+evidenceThumbs(after)+'</div></div></div>':'<div class="dco-v33-gallery">'+evidenceThumbs(ids)+'</div>';
+  return '<div class="evidence-panel dco-v33-evidence" data-evidence-kind="'+esc(kind)+'" data-evidence-key="'+esc(key)+'">'+pictures+(!busy?photoHubButton(kind,key,ids.length+after.length):'<span class="mu">⏳ Upload foto…</span>')+'</div>';
+ };
+ // Avoid bulk actions referring to stale records from another filtered view.
+ var previousSelOne=selOne,previousSelAll=selAll;
+ function syncListHeader(){var boxes=Array.from(document.querySelectorAll('#tblWrap input[data-id]'));
+  var head=document.querySelector('#tblWrap thead input[type="checkbox"]');
+  if(head){var n=boxes.filter(function(x){return x.checked;}).length;head.checked=boxes.length>0&&n===boxes.length;head.indeterminate=n>0&&n<boxes.length;head.disabled=boxes.length===0;}
+ }
+ selOne=function(c){previousSelOne(c);syncListHeader();};
+ selAll=function(on){previousSelAll(on);syncListHeader();};
+ var originalRenderList=renderList;
+ renderList=function(){var result=originalRenderList.apply(this,arguments);syncListHeader();return result;};
+ // Master bulk selection for Visits: only the current visible, pending rows.
+ window.dcoUpdateVisitSelection=function(){var items=Array.from(document.querySelectorAll('#visitTbl .dco-visit-pick'));
+  var count=items.filter(function(x){return x.checked;}).length,all=$('visitAll');
+  if(all){all.checked=items.length>0&&count===items.length;all.indeterminate=count>0&&count<items.length;all.disabled=items.length===0;}
+  if($('visitSelectCount'))$('visitSelectCount').textContent=count+' dari '+items.length+' dipilih';
+ };
+ window.dcoSelectAllVisits=function(on){document.querySelectorAll('#visitTbl .dco-visit-pick').forEach(function(x){x.checked=!!on;});dcoUpdateVisitSelection();};
+ var originalRenderVisits=renderVisits;
+ renderVisits=function(){var result=originalRenderVisits.apply(this,arguments);dcoUpdateVisitSelection();return result;};
+ // Issues: select only completed, pending records rendered for validation.
+ window.dcoIssueCount=function(){var items=Array.from(document.querySelectorAll('#issueTbl .dco-issue-pick'));
+  var n=items.filter(function(c){return c.checked;}).length;
+  var root=$('dcoIssueBulk'),all=root&&root.querySelector('input[type="checkbox"]');
+  if(all){all.checked=items.length>0&&n===items.length;all.indeterminate=n>0&&n<items.length;all.disabled=items.length===0;}
+  if($('dcoIssueNum'))$('dcoIssueNum').textContent=n+' dari '+items.length+' dipilih';
+ };
+ window.dcoPickAllIssues=function(on){document.querySelectorAll('#issueTbl .dco-issue-pick').forEach(function(c){c.checked=!!on;});dcoIssueCount();};
+ var originalRenderIssues=renderIssues;
+ renderIssues=function(){var ret=originalRenderIssues.apply(this,arguments);dcoIssueCount();return ret;};
+ // Weekly & Monthly selection updates on every row change and new filter result.
+ window.dcoSyncPeriodAll=function(){var items=Array.from(document.querySelectorAll('#prHistory .pr-pick'));
+  var n=items.filter(function(x){return x.checked;}).length,all=$('prPickAll');
+  if(all){all.checked=items.length>0&&n===items.length;all.indeterminate=n>0&&n<items.length;all.disabled=items.length===0;}
+  if($('prPickCount'))$('prPickCount').textContent=n+' dari '+items.length+' laporan dipilih';
+ };
+ window.dcoSelectPeriodAll=function(on){document.querySelectorAll('#prHistory .pr-pick').forEach(function(c){c.checked=!!on;});dcoSyncPeriodAll();};
+ // Keep inline Before / After thumbnails current after both camera and gallery uploads.
+ var previousUpdateEvidencePanel=updateEvidencePanel;
+ updateEvidencePanel=function(kind,key){
+  var ret=previousUpdateEvidencePanel.apply(this,arguments);
+  if(kind==='visitIssue'||kind==='visitIssueAfter'){
+   document.querySelectorAll('[data-evidence-kind="visitIssuePair"]').forEach(function(el){
+    if(el.dataset.evidenceKey===String(key))el.outerHTML=evidencePanel('visitIssuePair',key,true);
+   });
+  }
+  return ret;
+ };
+ // Quick navigate across 5 categories; avoids scrolling through all checkpoints.
+ window.dcoVisitToggleSections=function(show){document.querySelectorAll('#vBody .vsec').forEach(function(el){el.classList.toggle('open',!!show);});};
+ var originalRenderVisit=renderVisit;
+ renderVisit=function(){var result=originalRenderVisit.apply(this,arguments);var body=$('vBody');if(!body)return result;
+  var head=body.querySelector('.grid');if(head){var toolbar=document.createElement('div');toolbar.className='dco-v33-toolbar';toolbar.innerHTML='<span><b>35 checkpoint / 5 area.</b> Foto yang tersimpan ditampilkan langsung pada tiap poin. Klik gambar untuk memperbesar.</span><button type="button" class="btn s" onclick="dcoVisitToggleSections(true)">Tampilkan semua area</button><button type="button" class="btn s" onclick="dcoVisitToggleSections(false)">Ringkas semua area</button>';head.insertAdjacentElement('afterend',toolbar);}
+  return result;
+ };
+ // Sync initial state; a missing panel should never throw.
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){dcoUpdateVisitSelection();dcoIssueCount();dcoSyncPeriodAll();});
 })();
 </script>
 </body>
