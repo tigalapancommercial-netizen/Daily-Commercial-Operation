@@ -92,12 +92,17 @@ export async function update_(ctx, type, id, data) {
 export async function bulk_(ctx, type, ids, op, value) {
   const me = ctx.me;
   if (['MASALAH', 'TUGAS', 'CEKLIS', 'VISIT', 'VISIT_ISSUE'].indexOf(type) < 0) throw new Error('Tipe bulk tidak diizinkan');
-  if (['VISIT','VISIT_ISSUE'].includes(type) || ids.length > 1 && ['validasi','batalValidasi'].includes(op)) mustMaster_(me);
-  if (!ids || !ids.length) throw new Error('Tidak ada data terpilih');
+  if (!Array.isArray(ids) || !ids.length) throw new Error('Pilih minimal satu data untuk diproses');
+  ids = [...new Set(ids.map((id) => String(id || '').trim()).filter(Boolean))];
+  if (!ids.length || ids.length > 500) throw new Error('Pilih 1-500 data per proses validasi');
+  if (!['validasi','batalValidasi','status','hapus'].includes(op)) throw new Error('Jenis tindakan tidak dikenal: ' + String(op));
+  if (['VISIT','VISIT_ISSUE'].includes(type) || (ids.length > 1 && ['validasi','batalValidasi'].includes(op))) mustMaster_(me);
   if (op !== 'status' && op !== 'hapus') mustMgr_(me);
   if (op === 'hapus') { const r = await ctx.del(type, ids); await removePhotos(r.photos); return { jumlah: r.jumlah }; }
   const keys = keys_(type), now = now_(), rows = await ctx.read(type, { ids }), out = [];
   if (rows.length !== ids.length) throw new Error('Sebagian data tidak ditemukan, muat ulang daftar');
+  if (op === 'validasi' && rows.some((r) => r.validasi === 'Y' || r.validasi === 'Approved'))
+    throw new Error('Sebagian data sudah tervalidasi. Muat ulang dan pilih hanya data yang masih menunggu.');
   if (['VISIT','VISIT_ISSUE'].includes(type) && !['validasi','batalValidasi'].includes(op)) throw new Error('Operasi ini hanya untuk validasi');
   if (op === 'validasi' && type === 'VISIT_ISSUE' && rows.some(r => r.status !== 'Selesai' || !String(r.action||'').trim() || !String(r.pic||'').trim() || !/^\d{4}-\d{2}-\d{2}$/.test(String(r.dueDate||'')))) throw new Error('Issue harus selesai serta memiliki Action, PIC, dan due date');
   rows.forEach((row) => {
@@ -112,6 +117,9 @@ export async function bulk_(ctx, type, ids, op, value) {
     u.updateTgl = now; u.updateOleh = me.nama; out.push(u);
   });
   const saved = await ctx.save(type, out, 'update');
+  if (saved.length !== out.length) throw new Error('Server belum mengonfirmasi semua data yang diproses; muat ulang dan periksa status.');
+  if (op === 'validasi' && saved.some((r) => r.validasi !== (type === 'VISIT' ? 'Approved' : 'Y')))
+    throw new Error('Status validasi dari database belum sesuai. Periksa ulang sebelum mengulangi validasi.');
   return { jumlah: saved.length, rows: saved };
 }
 
