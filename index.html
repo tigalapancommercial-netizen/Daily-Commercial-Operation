@@ -988,6 +988,55 @@ aside button span{white-space:normal;line-height:1.22;overflow-wrap:break-word;f
  #vApp #rutinTbl table.dco-routine-table td{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important}
 }
 </style>
+
+<style id="dco-v32-visit-area-columns">
+/* V32 — restore descriptive A-E columns, retaining V31 compact action buttons. */
+#vApp #visitTbl table.dco-visit-table{width:100%;max-width:100%;min-width:0!important;table-layout:fixed}
+#vApp #visitTbl .dco-visit-table th,#vApp #visitTbl .dco-visit-table td{box-sizing:border-box;min-width:0!important}
+#vApp #visitTbl .dco-visit-table th:nth-child(1){width:7%}
+#vApp #visitTbl .dco-visit-table th:nth-child(2){width:12%}
+#vApp #visitTbl .dco-visit-table th:nth-child(3){width:13%}
+#vApp #visitTbl .dco-visit-table th:nth-child(4){width:7%}
+#vApp #visitTbl .dco-visit-table th:nth-child(n+5):nth-child(-n+9){width:5.4%}
+#vApp #visitTbl .dco-visit-table th:nth-child(10){width:5%}
+#vApp #visitTbl .dco-visit-table th:nth-child(11){width:8%}
+#vApp #visitTbl .dco-visit-table th:nth-child(12){width:9%}
+#vApp #visitTbl .dco-visit-table th:nth-child(13){width:12%}
+#vApp #visitTbl .dco-visit-table .visit-seksi-head{text-align:center!important;padding:7px 2px!important;white-space:normal!important}
+#vApp #visitTbl .dco-visit-table .visit-seksi-head b{font-size:11px;color:#3730a3}
+#vApp #visitTbl .dco-visit-table .visit-seksi-head small{font-size:9px;line-height:1.2;overflow-wrap:normal;hyphens:auto;color:#64748b}
+#vApp #visitTbl .dco-visit-table td.dco-visit-area-cell{text-align:center!important;padding:7px 2px!important;white-space:nowrap}
+#vApp #visitTbl .dco-visit-table td.dco-visit-area-cell .sc{display:inline-flex;justify-content:center;min-width:0;max-width:100%;font-size:10px;padding:4px 5px;white-space:nowrap}
+#vApp #visitTbl .dco-visit-table .dco-action-cell .dco-action-inline{justify-content:center;gap:4px}
+#vApp #visitTbl .dco-visit-table .dco-action-cell .dco-icon-btn{flex:0 1 33px;min-width:0!important;max-width:34px!important;width:33px;height:33px}
+/* Keep all five category scores visible. Never hide column D as in V31. */
+@media (min-width:701px) and (max-width:1150px){
+  #vApp #visitTbl .dco-visit-table th:nth-child(8),#vApp #visitTbl .dco-visit-table td:nth-child(8){display:table-cell}
+  #vApp #visitTbl .dco-visit-table th:nth-child(4),#vApp #visitTbl .dco-visit-table td:nth-child(4){display:table-cell}
+  #vApp #visitTbl .dco-visit-table td,#vApp #visitTbl .dco-visit-table th{font-size:10px;padding:6px 3px}
+}
+/* On narrower screens, use responsive cards rather than squeezing or clipping A-E. */
+@media (min-width:701px) and (max-width:1020px){
+  #vApp #visitTbl .dco-visit-table{display:block;min-width:0!important;width:100%!important}
+  #vApp #visitTbl .dco-visit-table thead{display:none}
+  #vApp #visitTbl .dco-visit-table tbody{display:block}
+  #vApp #visitTbl .dco-visit-table tbody tr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;padding:12px;margin:10px;background:#fff;border:1px solid #e2e8f0;border-radius:10px}
+  #vApp #visitTbl .dco-visit-table td{display:block!important;width:auto!important;max-width:none!important;padding:6px!important;min-width:0!important;border:0!important;font-size:12px}
+  #vApp #visitTbl .dco-visit-table td::before{content:attr(data-label);display:block;color:#64748b;font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:4px}
+  #vApp #visitTbl .dco-visit-table td:nth-child(1),#vApp #visitTbl .dco-visit-table td:nth-child(2),#vApp #visitTbl .dco-visit-table td:nth-child(3),#vApp #visitTbl .dco-visit-table td:nth-child(4){grid-column:span 2}
+  #vApp #visitTbl .dco-visit-table td:nth-child(n+5):nth-child(-n+9){grid-column:span 1;text-align:center!important}
+  #vApp #visitTbl .dco-visit-table td:nth-child(12){grid-column:span 2}
+  #vApp #visitTbl .dco-visit-table td:nth-child(13){grid-column:1/-1}
+  #vApp #visitTbl .dco-visit-table td.dco-visit-area-cell{padding:8px 2px!important}
+  #vApp #visitTbl .dco-visit-table .dco-action-cell .dco-action-inline{justify-content:flex-start}
+}
+@media (max-width:700px){
+  #vApp #visitTbl .dco-visit-table td:nth-child(5){grid-column:auto}
+  #vApp #visitTbl .dco-visit-table td.dco-visit-area-cell{grid-column:auto;text-align:center!important;background:#f8fafc;border-radius:7px}
+  #vApp #visitTbl .dco-visit-table td:nth-child(13){grid-column:1/-1!important}
+  #vApp #visitTbl .dco-visit-table td.dco-visit-area-cell .sc{font-size:12px}
+}
+</style>
 </head>
 <body>
 <div id="load"></div><div id="toast"></div><div id="lb" class="lb" onclick="this.classList.remove('on')"><img id="lbimg"></div>
@@ -1569,16 +1618,17 @@ function seksiList(){return cfg().visitSeksi;}function visitItems(k){return S.me
 function dcoVisitApproved(r){return !!r&&(r.validasi==='Approved'||r.validasi==='Y');}
 function renderVisits(){var rows=(S.visits||[]).filter(function(r){return S.visitMode==='history'?dcoVisitApproved(r):!dcoVisitApproved(r);});$('visitCount').textContent='('+rows.length+' visit)';var avg=rows.length?Math.round(rows.reduce(function(a,r){return a+(+r.finalScore||0);},0)/rows.length):null;
   $('visitMini').innerHTML='<div class="mini"><div style="--ac:#7c3aed"><span>Visit</span><b>'+rows.length+'</b></div><div style="--ac:#16a34a"><span>Rata-rata skor</span><b>'+(avg==null?'–':avg+'%')+'</b></div><div style="--ac:#059669"><span>Excellent</span><b>'+rows.filter(function(r){return r.rating==='Excellent';}).length+'</b></div><div style="--ac:#dc2626"><span>Critical / NI</span><b>'+rows.filter(function(r){return /Critical|Need/.test(r.rating);}).length+'</b></div><div style="--ac:#d97706"><span>Menunggu validasi</span><b>'+rows.filter(function(r){return !dcoVisitApproved(r);}).length+'</b></div><div style="--ac:#0891b2"><span>Total temuan</span><b>'+rows.reduce(function(a,r){return a+((+r.totalDinilai||0)-(+r.totalPass||0));},0)+'</b></div></div>';
-  var h='<table class="dco-fit-table dco-visit-table"><thead><tr><th>Periode</th><th>Toko</th><th>Tim Visit</th><th>Tipe</th><th>Skor Area A–E</th><th>Final</th><th>Rating</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
-  rows.forEach(function(r,i){var realIndex=S.visits.indexOf(r);var canDel=!dcoVisitApproved(r)||isMaster();var scores=seksiList().map(function(s){var x=(r.skor||{})[s.kode];var value=x&&x.score!=null?Math.round(x.score)+'%':'–';return '<span class="dco-area-score" title="'+esc(s.nama)+': '+value+'"><b>'+esc(s.kode)+'</b><small>'+value+'</small></span>';}).join('');
+  var sections=seksiList();
+  var h='<table class="dco-fit-table dco-visit-table"><thead><tr><th>Periode</th><th>Toko</th><th>Tim Visit</th><th>Tipe</th>'+sections.map(function(s){return '<th class="visit-seksi-head" title="'+esc(s.kode+' - '+s.nama)+'"><b>'+esc(s.kode)+'</b><small>'+esc(visitSeksiSingkat(s))+'</small></th>';}).join('')+'<th>Final</th><th>Rating</th><th>Validasi</th><th>Aksi</th></tr></thead><tbody>';
+  rows.forEach(function(r,i){var realIndex=S.visits.indexOf(r);var canDel=!dcoVisitApproved(r)||isMaster();var scores=sections.map(function(s){var x=(r.skor||{})[s.kode];var value=x&&x.score!=null?Math.round(x.score):null;return '<td class="dco-visit-area-cell" data-label="'+esc(s.kode+' - '+visitSeksiSingkat(s))+'" title="'+esc(s.kode+' - '+s.nama)+'">'+sc(value)+'</td>';}).join('');
     h+='<tr><td data-label="Periode" class="dco-visit-date">'+(isMaster()&&!dcoVisitApproved(r)?'<input type="checkbox" class="dco-visit-pick" value="'+esc(r.id)+'" onchange="dcoUpdateVisitSelection()"> ':'')+fmtTgl(r.tanggal)+'<small>W'+esc(r.minggu||'–')+'</small></td>'
-      +'<td data-label="Toko"><b>'+esc(r.toko)+'</b></td><td data-label="Tim Visit"><b>'+esc(r.leader||'–')+'</b><small>Evaluator: '+esc(r.evaluator||'–')+'</small></td><td data-label="Tipe">'+esc(r.tipe||'–')+'</td><td data-label="Skor Area"><div class="dco-score-strip">'+scores+'</div></td>'
+      +'<td data-label="Toko"><b>'+esc(r.toko)+'</b></td><td data-label="Tim Visit"><b>'+esc(r.leader||'–')+'</b><small>Evaluator: '+esc(r.evaluator||'–')+'</small></td><td data-label="Tipe">'+esc(r.tipe||'–')+'</td>'+scores
       +'<td data-label="Final">'+sc(Math.round(+r.finalScore||0))+'</td><td data-label="Rating">'+bdg(r.rating)+'</td><td data-label="Validasi">'+(dcoVisitApproved(r)?'<span class="ok">✔ Disetujui</span><small>'+esc(r.validasiOleh||'')+'</small>':'<span class="mu">Menunggu</span>')+'</td>'
       +'<td class="dco-action-cell" data-label="Aksi"><div class="dco-action-inline"><button type="button" class="btn s o dco-icon-btn" title="Lihat detail visit" aria-label="Lihat visit" onclick="openVisit('+realIndex+',true)">👁</button>'
       +(dcoVisitApproved(r)&&isMaster()?'<button type="button" class="btn s dco-icon-btn" title="Batalkan validasi" aria-label="Batalkan validasi visit" onclick="validationUndo(\'VISIT\',\''+esc(r.id)+'\',\'visit\')">↶</button>':'')
       +(canDel?'<button type="button" class="btn s dco-icon-btn" title="Edit visit" aria-label="Edit visit" onclick="openVisit('+realIndex+')">✎</button><button type="button" class="btn s r dco-icon-btn" title="Hapus visit" aria-label="Hapus visit" onclick="hapusVisit(\''+esc(r.id)+'\')">🗑</button>':'')+'</div></td></tr>';
   });
-  if(!rows.length)h+='<tr><td colspan="9" class="empty">Belum ada visit pada periode ini</td></tr>';$('visitTbl').innerHTML=h+'</tbody></table>';}
+  if(!rows.length)h+='<tr><td colspan="'+(sections.length+8)+'" class="empty">Belum ada visit pada periode ini</td></tr>';$('visitTbl').innerHTML=h+'</tbody></table>';}
 function hapusVisit(id){if(!confirm('Hapus data visit ini beserta fotonya?'))return;call('visitHapus',{id:id}).then(function(){toast('Visit dihapus');refresh();});}
 function openVisit(i,view){var r=i!=null?S.visits[i]:{tanggal:S.meta.today,toko:'',leader:'',evaluator:S.me.nama,tipe:'Offline Visit',jawaban:{},catatan:{},foto:{},issues:'',updateTemuan:{},keterangan:''};S.vis=JSON.parse(JSON.stringify(r));S.vis._view=!!view;renderVisit();$('mVisit').classList.add('on');}
 function vScore(){var jaw=S.vis.jawaban,th=cfg().rating,out={},tp=0,td=0;seksiList().forEach(function(s){var p=0,d=0;visitItems(s.kode).forEach(function(it){var v=jaw[it.id];if(v==='Sesuai'){p++;d++;}else if(v==='Tidak Sesuai')d++;});out[s.kode]={pass:p,dinilai:d,score:d?Math.round(p*10000/d)/100:null};tp+=p;td+=d;});
