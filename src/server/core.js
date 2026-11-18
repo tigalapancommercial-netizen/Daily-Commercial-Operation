@@ -91,15 +91,19 @@ export async function update_(ctx, type, id, data) {
 
 export async function bulk_(ctx, type, ids, op, value) {
   const me = ctx.me;
-  if (['MASALAH', 'TUGAS', 'CEKLIS'].indexOf(type) < 0) throw new Error('Tipe bulk tidak diizinkan');
+  if (['MASALAH', 'TUGAS', 'CEKLIS', 'VISIT', 'VISIT_ISSUE'].indexOf(type) < 0) throw new Error('Tipe bulk tidak diizinkan');
+  if (['VISIT','VISIT_ISSUE'].includes(type) || ids.length > 1 && ['validasi','batalValidasi'].includes(op)) mustMaster_(me);
   if (!ids || !ids.length) throw new Error('Tidak ada data terpilih');
   if (op !== 'status' && op !== 'hapus') mustMgr_(me);
   if (op === 'hapus') { const r = await ctx.del(type, ids); await removePhotos(r.photos); return { jumlah: r.jumlah }; }
   const keys = keys_(type), now = now_(), rows = await ctx.read(type, { ids }), out = [];
+  if (rows.length !== ids.length) throw new Error('Sebagian data tidak ditemukan, muat ulang daftar');
+  if (['VISIT','VISIT_ISSUE'].includes(type) && !['validasi','batalValidasi'].includes(op)) throw new Error('Operasi ini hanya untuk validasi');
+  if (op === 'validasi' && type === 'VISIT_ISSUE' && rows.some(r => r.status !== 'Selesai' || !String(r.action||'').trim() || !String(r.pic||'').trim() || !/^\d{4}-\d{2}-\d{2}$/.test(String(r.dueDate||'')))) throw new Error('Issue harus selesai serta memiliki Action, PIC, dan due date');
   rows.forEach((row) => {
     if (!me.isMgr && row.toko !== me.toko) return;
     const u = { id: row.id };
-    if (op === 'validasi') { u.validasi = 'Y'; u.validasiOleh = me.nama; u.validasiTgl = now; }
+    if (op === 'validasi') { u.validasi = type === 'VISIT' ? 'Approved' : 'Y'; u.validasiOleh = me.nama; u.validasiTgl = now; }
     else if (op === 'batalValidasi') { u.validasi = ''; u.validasiOleh = ''; u.validasiTgl = ''; }
     else if (op === 'status') {
       if (!me.isMgr && row.validasi === 'Y') return;
@@ -376,9 +380,10 @@ export async function issueUpdate_(ctx, d) {
   const me = ctx.me; mustMgr_(me); if (!d || !d.id) throw new Error('Issue ID wajib');
   const cur = (await ctx.read('VISIT_ISSUE', { ids: [d.id] }))[0]; if (!cur) throw new Error('Issue tidak ditemukan');
   if (cur.validasi === 'Y' && !me.isMaster) throw new Error('Issue sudah divalidasi; hubungi Master');
+  if (d.validasi !== undefined && !me.isMaster) throw new Error('Hanya Master (Manager) yang berhak memvalidasi Issue Visit');
   ['akar', 'action', 'pic', 'dueDate', 'prioritas', 'status', 'progress', 'fotoId', 'fotoAfter', 'updateNote'].forEach((k) => { if (d[k] !== undefined) cur[k] = d[k]; });
   if (!String(cur.pic || '').trim() || !String(cur.action || '').trim() || !/^\d{4}-\d{2}-\d{2}$/.test(String(cur.dueDate || ''))) throw new Error('PIC, action dan due date wajib');
-  if (d.validasi !== undefined) { if (cur.status !== 'Selesai' && d.validasi === 'Y') throw new Error('Selesaikan issue sebelum validasi'); cur.validasi = d.validasi === 'Y' ? 'Y' : ''; cur.validasiOleh = cur.validasi ? me.nama : ''; cur.validasiTgl = cur.validasi ? now_() : ''; }
+  if (d.validasi !== undefined) { mustMaster_(me); if (cur.status !== 'Selesai' && d.validasi === 'Y') throw new Error('Selesaikan issue sebelum validasi'); cur.validasi = d.validasi === 'Y' ? 'Y' : ''; cur.validasiOleh = cur.validasi ? me.nama : ''; cur.validasiTgl = cur.validasi ? now_() : ''; }
   cur.progress = cur.status === 'Selesai' ? 100 : Math.max(0, Math.min(99, Number(cur.progress) || 0)); cur.updateTgl = now_(); cur.updateOleh = me.nama;
   return (await ctx.save('VISIT_ISSUE', [cur], 'update'))[0];
 }
